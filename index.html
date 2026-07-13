@@ -138,7 +138,26 @@
 .map-status{font-size:.78rem;color:var(--gray-sub);margin:8px 0 12px}
 @media(max-width:768px){#real-korea-map{height:68vh;min-height:460px}}
 </style>
-</head>
+
+<style>
+.v42-fab{position:fixed;right:14px;bottom:86px;z-index:9997;border:0;border-radius:999px;padding:11px 14px;background:#2f3542;color:#fff;font-weight:700;cursor:pointer}
+.v42-modal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.38);display:none;align-items:center;justify-content:center;padding:16px}
+.v42-modal.open{display:flex}.v42-panel{background:#fff;width:min(680px,100%);max-height:88vh;overflow:auto;border-radius:22px;padding:20px;box-sizing:border-box}
+.v42-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v42-list{display:flex;flex-direction:column;gap:9px}.v42-item{background:#fff8f9;border:1px solid #ffe3e7;border-radius:14px;padding:12px}
+.v42-author{font-size:.78rem;color:#747d8c;font-weight:700}.v42-stars{font-weight:800;color:#ff788e}.v42-tag{display:inline-block;padding:4px 8px;border-radius:999px;background:#ffe3e7;color:#ff788e;font-size:.75rem;font-weight:700;margin:2px;cursor:pointer}
+.v42-comments{margin-top:8px;padding-top:8px;border-top:1px dashed #ffe3e7}.v42-comment{font-size:.82rem;padding:5px 0}.v42-close{float:right;border:0;background:none;font-size:1.2rem;cursor:pointer}
+@media(max-width:768px){.v42-row{grid-template-columns:1fr}.v42-fab{bottom:82px}}
+</style>
+<style>
+.v43-upcoming{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.v43-upcoming-item{padding:10px;border-radius:12px;background:#fff8f9;border:1px solid #ffe3e7;font-size:.84rem}
+.v43-archive-controls{display:flex;gap:6px;align-items:center;margin:8px 0}
+.v43-archive-controls select{width:auto;margin:0;padding:6px}
+.v43-region-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+@media(max-width:768px){.v43-region-row{grid-template-columns:1fr 1fr}}
+</style><style>
+.v44-search-card{position:sticky;top:0;z-index:900;margin-bottom:16px}.v44-search-results{max-height:360px;overflow:auto;background:#fff;border:1px solid var(--light-pink);border-radius:14px;padding:10px}.v44-search-group{margin-bottom:10px}.v44-search-hit{padding:8px;border-bottom:1px dashed var(--light-pink);cursor:pointer}.v44-ribbons{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:thin}.v44-ribbon{border:1px solid var(--light-pink);background:#fff8f9;border-radius:999px;padding:8px 12px;white-space:nowrap;cursor:pointer;font-weight:700}.v44-ribbon.active{background:var(--point-pink);color:#fff}.v44-label{font-size:.78rem;font-weight:800;color:var(--gray-sub)}.v44-place-layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,1.3fr);gap:18px}.v44-filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.v44-filter-row select{width:auto;margin:0}.v44-filter-row input{width:auto;margin:0}.v44-scroll-list{max-height:620px;overflow:auto}.v44-history{margin-top:8px;padding-top:8px;border-top:1px dashed var(--light-pink)}.v44-link-selects{background:#fff8f9;padding:10px;border-radius:12px;margin-bottom:10px}.v44-link-selects select{min-height:42px}.v44-fav{border:0;background:none;font-size:1.2rem;cursor:pointer}.v44-summary-card{background:#fff8f9;padding:12px;border-radius:14px;text-align:center}.v44-summary-card b{display:block;font-size:1.1rem;margin-top:4px}@media(max-width:768px){.v44-search-card{top:0}.v44-place-layout{grid-template-columns:1fr}.v44-ribbon{min-height:42px}.v44-scroll-list{max-height:52vh}.v44-filter-row{align-items:stretch}.v44-filter-row select{width:100%}}
+</style></head>
 <body>
 
 <div class="container">
@@ -153,6 +172,12 @@
         <h1>우리들의 러블리 아카이브 🎀</h1>
         <p>우리만의 소중한 발자국과 타임라인 관리창</p>
     </header>
+
+    <section class="card-box v44-search-card">
+      <div class="section-title">🔎 통합 검색</div>
+      <input id="v44-global-search" type="search" placeholder="데이트 기록 · 장소 · 영화 · 댓글 검색" oninput="v44GlobalSearch(this.value)">
+      <div id="v44-search-results" class="v44-search-results" hidden></div>
+    </section>
 
     <!-- 대시보드 -->
     <section class="dashboard">
@@ -181,11 +206,17 @@
 
             <div class="card-box">
                 <div class="section-title">📅 개인 및 데이트/K리그 일정 등록</div>
+<div style="font-size:.85rem;font-weight:800;color:var(--point-pink);margin-bottom:7px;">⏰ 우리의 다음 일정</div>
+<div id="v43-upcoming" class="v43-upcoming"></div>
+
                 
                 <div style="font-size:0.8rem; font-weight:bold; margin-bottom:5px; color:var(--point-pink);">✨ 개인/데이트 일정 추가 (캘린더 ❤️ 표시)</div>
                 <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 5px; margin-bottom: 12px;">
                     <input type="date" id="date-schedule-date">
                     <input type="text" id="date-schedule-text" placeholder="일정 이름 입력">
+<input type="time" id="v43-general-start" title="시작시간">
+<input type="time" id="v43-general-end" title="종료시간">
+<input type="text" id="v43-general-memo" placeholder="메모 (선택)">
                     <button onclick="addGeneralSchedule()" class="btn-black" style="padding: 8px; font-size: 0.8rem; margin:0;">등록</button>
                 </div>
 
@@ -193,7 +224,11 @@
                 <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 5px;">
                     <input type="date" id="match-date">
                     <input type="text" id="match-team" placeholder="예: 강원 vs 전북 (송암)">
-                    <select id="match-crew">
+                    <input type="time" id="v43-match-time" title="킥오프 시간">
+<input list="v43-stadium-list" id="v43-match-stadium" placeholder="경기장 선택 또는 직접 입력">
+<datalist id="v43-stadium-list"><option value="춘천송암스포츠타운"><option value="강릉하이원아레나"><option value="수원월드컵경기장"><option value="수원종합운동장"><option value="서울월드컵경기장"><option value="전주월드컵경기장"><option value="포항스틸야드"><option value="울산문수축구경기장"></datalist>
+<input type="text" id="v43-match-memo" placeholder="경기 메모 (선택)">
+<select id="match-crew">
                         <option value="강원">강원 🧡</option>
                         <option value="수원">수원 💙</option>
                         <option value="기타">기타 🤍</option>
@@ -202,6 +237,9 @@
                 <button onclick="addKleagueMatch()" class="btn-black" style="padding: 8px; font-size: 0.85rem; margin-top: 5px;">K리그 일정 추가</button>
                 
                 <div class="match-list" id="kleague-match-box"></div>
+<details style="margin-top:10px"><summary style="cursor:pointer;font-size:.85rem;font-weight:700;">🗃️ 지난 경기 보기</summary>
+<div class="v43-archive-controls"><select id="v43-match-year" onchange="v43RenderSchedules()"></select></div>
+<div id="v43-past-matches" class="match-list"></div></details>
             </div>
 
             <div class="card-box" style="background: #fffdf0;">
@@ -339,18 +377,70 @@
  <p class="storage-note">방문 처리된 시·군·구는 분홍색으로 표시됩니다. 지도 경계 데이터는 GitHub Pages 배포 후 인터넷 연결 상태에서 불러옵니다.</p>
 </section>
 
+
+<section class="visual-map-card mobile-section" data-mobile-section="places">
+ <div class="section-title">📍 방문 장소 리뷰</div>
+ <div class="v44-place-layout">
+  <div class="v44-place-form">
+   <div class="v44-label">시·도</div><div id="v44-place-sido-ribbons" class="v44-ribbons"></div>
+   <div class="v44-label">시·군·구</div><div id="v44-place-sgg-ribbons" class="v44-ribbons"></div>
+   <div class="v44-label">장소 카테고리</div><div id="v44-place-category-ribbons" class="v44-ribbons"></div>
+   <input id="v42-place-name" placeholder="장소명">
+   <input id="v44-place-date" type="date" title="방문일">
+   <select id="v42-place-rating"><option value="5">⭐⭐⭐⭐⭐ 5점</option><option value="4.5">4.5점</option><option value="4">4점</option><option value="3.5">3.5점</option><option value="3">3점</option><option value="2">2점</option><option value="1">1점</option></select>
+   <select id="v42-revisit"><option>꼭 다시</option><option>기회 되면</option><option>한 번이면 충분</option></select>
+   <textarea id="v42-place-review" placeholder="리뷰"></textarea><button class="btn-black" onclick="v42AddPlace()">방문 장소 저장</button>
+  </div>
+  <div>
+   <div class="v44-filter-row"><select id="v44-place-sort" onchange="v42Render()"><option value="rating">별점 높은 순</option><option value="recent">최근 방문 순</option><option value="revisit">재방문 우선</option></select><label><input id="v44-favorite-only" type="checkbox" onchange="v42Render()"> ❤️ 다시 가고 싶은 곳만</label></div>
+   <div id="v42-place-list" class="v42-list v44-scroll-list"></div>
+  </div>
+ </div>
+</section>
+<section class="visual-map-card mobile-section" data-mobile-section="movies">
+ <div class="section-title">🎬 같이 본 영화 아카이브</div>
+ <div class="v42-row">
+  <div><input id="v42-movie-title" placeholder="영화 제목"><input id="v42-movie-date" type="date"><input id="v42-movie-poster" placeholder="포스터 이미지 URL (선택)"><input id="v42-movie-release" placeholder="개봉일 (선택)">
+  <select id="v44-rating-user1"><option value="5">서형 별점 5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+  <select id="v44-rating-user2"><option value="5">현진 별점 5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+  <textarea id="v42-movie-review" placeholder="메모 / 한줄평"></textarea><button class="btn-black" onclick="v42AddMovie()">영화 저장</button></div>
+  <div id="v42-movie-list" class="v42-list v44-scroll-list"></div>
+ </div>
+</section>
+<section class="visual-map-card">
+ <div class="section-title">📊 연도별 결산</div><select id="v44-year-select" onchange="v44RenderAnnualSummary()" style="max-width:180px"></select><div id="v44-annual-summary" class="dashboard" style="margin-top:12px;margin-bottom:0"></div>
+</section>
 </div>
 
 <nav class="mobile-nav">
  <button class="active" onclick="showMobileSection('home',this)"><span>🏠</span>홈</button>
  <button onclick="showMobileSection('diary',this)"><span>📖</span>기록</button>
- <button onclick="showMobileSection('wish',this)"><span>❤️</span>위시</button>
+ <button onclick="showMobileSection('places',this)"><span>📍</span>장소</button>
+ <button onclick="showMobileSection('movies',this)"><span>🎬</span>영화</button>
  <button onclick="showMobileSection('map',this)"><span>🗺️</span>지도</button>
- <button onclick="showMobileSection('home',this)"><span>📅</span>일정</button>
 </nav>
 
 <script>
-    const firstMeetDate = new Date(2026, 4, 24); 
+    const firstMeetDate = { year: 2026, month: 5, day: 24 };
+    function getLocalCalendarDayNumber(year, month, day) {
+        return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+    }
+    function updateDDayCounter() {
+        const today = new Date();
+        const todayDayNumber = getLocalCalendarDayNumber(
+            today.getFullYear(),
+            today.getMonth() + 1,
+            today.getDate()
+        );
+        const startDayNumber = getLocalCalendarDayNumber(
+            firstMeetDate.year,
+            firstMeetDate.month,
+            firstMeetDate.day
+        );
+        const diffDays = todayDayNumber - startDayNumber + 1;
+        const el = document.getElementById('dday-counter');
+        if (el) el.innerText = diffDays >= 1 ? `D+${diffDays}` : `D${diffDays}`;
+    } 
     let currentStats = { count: 0, cost: 0 }; 
     let currentDate = new Date(2026, 6, 1); 
 
@@ -1011,7 +1101,7 @@
     }
 
     function renderVisualMapBoard() {
-        const board = document.getElementById('visual-map-board'); board.innerHTML = '';
+        const board = document.getElementById('visual-map-board'); if(!board) return; board.innerHTML = '';
         Object.keys(koreaMapData).forEach(sido => {
             const sigungus = Object.keys(koreaMapData[sido]);
             if(sigungus.length === 0) {
@@ -1156,6 +1246,70 @@
     }
 </script>
 
+
+<button class="v42-fab" onclick="v42OpenSettings()">⚙️ 설정</button>
+<div id="v42-settings" class="v42-modal"><div class="v42-panel"><button class="v42-close" onclick="v42CloseSettings()">✕</button><h3>⚙️ 사이트 & 내 프로필</h3>
+<input id="v42-site-title" placeholder="사이트 이름"><input id="v42-site-subtitle" placeholder="부제목">
+<input id="v42-nickname" placeholder="내 별명"><input id="v42-emoji" placeholder="대표 이모지 예: 🐰">
+<button class="btn-black" onclick="v42SaveSettings()">저장</button></div></div>
+<div id="v42-history-modal" class="v42-modal"><div class="v42-panel"><button class="v42-close" onclick="v42CloseHistory()">✕</button><h3 id="v42-history-title">지역 방문 이력</h3><div id="v42-history-list"></div></div></div>
+<script>
+const V42_KEY="lovelyDateArchiveV42";
+const V44_CATEGORIES=["식당","카페","술집","숙소","관광지","기타"];
+let v42={settings:{title:"우리들의 러블리 아카이브 🎀",subtitle:"우리만의 소중한 발자국과 타임라인 관리창"},profiles:{},places:[],movies:[],comments:{}};
+let v44PlaceFilter={sido:"",sgg:"",category:"식당"};
+const V44_SIDO_ALIAS={"서울특별시":"서울","부산광역시":"부산","대구광역시":"대구","인천광역시":"인천","광주광역시":"광주","대전광역시":"대전","울산광역시":"울산","세종특별자치시":"세종","경기도":"경기","강원도":"강원","강원특별자치도":"강원","충청북도":"충북","충청남도":"충남","전라북도":"전북","전북특별자치도":"전북","전라남도":"전남","경상북도":"경북","경상남도":"경남","제주도":"제주","제주특별자치도":"제주","Seoul":"서울","Busan":"부산","Daegu":"대구","Incheon":"인천","Gwangju":"광주","Daejeon":"대전","Ulsan":"울산","Sejong":"세종","Gyeonggi-do":"경기","Gangwon-do":"강원","Chungcheongbuk-do":"충북","Chungcheongnam-do":"충남","Jeollabuk-do":"전북","Jeollanam-do":"전남","Gyeongsangbuk-do":"경북","Gyeongsangnam-do":"경남","Jeju-do":"제주"};
+function v44NormText(x){return String(x||"").trim().replace(/\s+/g," ");}
+function v44CanonicalSido(x){x=v44NormText(x);return V44_SIDO_ALIAS[x]||x;}
+function v44CanonicalSgg(sido,x){x=v44NormText(x);if(!x)return "";const keys=Object.keys(koreaMapData[v44CanonicalSido(sido)]||{});if(keys.includes(x))return x;const compact=x.replace(/[-_ ]/g,"").toLowerCase();const hit=keys.find(k=>k.replace(/[-_ ]/g,"").toLowerCase()===compact);return hit||x;}
+function v44RegionId(sido,sgg){sido=v44CanonicalSido(sido);sgg=v44CanonicalSgg(sido,sgg);return sido&&sgg?`${sido}::${sgg}`:"";}
+function v44RegionLabel(id){const [s,g]=String(id||"").split("::");return s&&g?`${s} ${g}`:id||"";}
+function v44FeaturePropCandidates(p){return [p.CTP_KOR_NM,p.SIDO_NM,p.NAME_1,p.name_1,p.province,p.ENGTYPE_1,p.SIG_KOR_NM,p.SGG_NM,p.NAME_2,p.name_2,p.name,p.SIG_ENG_NM].filter(Boolean);}
+function v44BuildGeoMapping(geo){const map=new Map();for(const f of geo?.features||[]){const p=f.properties||{};let sido=v44CanonicalSido(p.CTP_KOR_NM||p.SIDO_NM||p.NAME_1||p.name_1||"");let sgg=v44CanonicalSgg(sido,p.SIG_KOR_NM||p.SGG_NM||p.NAME_2||p.name_2||p.name||"");if(sido&&sgg&&koreaMapData[sido]?.[sgg]!==undefined){const id=v44RegionId(sido,sgg);map.set(f,id);f.properties.__canonicalRegionId=id;continue;}const vals=v44FeaturePropCandidates(p).map(v44NormText);outer:for(const s of Object.keys(koreaMapData)){for(const g of Object.keys(koreaMapData[s])){if(vals.some(v=>v===g||v.includes(g))){sido=s;sgg=g;break outer;}}}if(sido&&sgg){const id=v44RegionId(sido,sgg);map.set(f,id);f.properties.__canonicalRegionId=id;}}
+return map;}
+function v44VisitedRegionIds(){return new Set((visitedNodes||[]).map(n=>String(n).includes("::")?n:(()=>{const parts=String(n).split(" ");return parts.length>=2?v44RegionId(parts[0],parts[1]):"";})()).filter(Boolean));}
+function v44MarkVisited(id){if(!id)return;const label=v44RegionLabel(id);if(!visitedNodes.includes(label)&&!visitedNodes.includes(id))visitedNodes.push(label);saveState();updateDashboard();drawMunicipalityMap();}
+function v42Load(){try{v42=Object.assign(v42,JSON.parse(localStorage.getItem(V42_KEY)||"{}"));}catch(e){}v42.settings=v42.settings||{};v42.profiles=v42.profiles||{};v42.places=(v42.places||[]).map(v44MigratePlace);v42.movies=(v42.movies||[]).map(v44MigrateMovie);v42.comments=v42.comments||{};v42ApplySettings();v44InitPlaceUI();v42Render();v44RefreshDiaryLinks();v44RenderAnnualSummary();}
+function v42Save(){localStorage.setItem(V42_KEY,JSON.stringify(v42));v42Render();v44RefreshDiaryLinks();v44RenderAnnualSummary();}
+function v42Uid(){return (window.v42CurrentUser&&window.v42CurrentUser.uid)||"local";}function v42Profile(){return v42.profiles[v42Uid()]||{nickname:"작성자",emoji:"💕"};}function v42Author(){const p=v42Profile();return `${p.emoji||"💕"} ${p.nickname||"작성자"}`;}
+function v42ApplySettings(){const h=document.querySelector("header h1"),p=document.querySelector("header p");if(h)h.textContent=v42.settings.title||"우리들의 러블리 아카이브 🎀";if(p)p.textContent=v42.settings.subtitle||"";document.title=v42.settings.title||"데이트 아카이브";}
+function v42OpenSettings(){const p=v42Profile();document.getElementById("v42-site-title").value=v42.settings.title||"";document.getElementById("v42-site-subtitle").value=v42.settings.subtitle||"";document.getElementById("v42-nickname").value=p.nickname||"";document.getElementById("v42-emoji").value=p.emoji||"";document.getElementById("v42-settings").classList.add("open");}function v42CloseSettings(){document.getElementById("v42-settings").classList.remove("open");}
+function v42SaveSettings(){v42.settings.title=document.getElementById("v42-site-title").value.trim();v42.settings.subtitle=document.getElementById("v42-site-subtitle").value.trim();v42.profiles[v42Uid()]={nickname:document.getElementById("v42-nickname").value.trim()||"작성자",emoji:document.getElementById("v42-emoji").value.trim()||"💕"};v42Save();v42ApplySettings();v42CloseSettings();}
+function v44MigratePlace(x){const parts=String(x.region||"").split(" ");const sido=v44CanonicalSido(x.sido||parts[0]||"");const sgg=v44CanonicalSgg(sido,x.sigungu||x.sgg||parts.slice(1).join(" ")||"");const visit={id:x.visitId||x.id||Date.now(),date:x.visitDate||x.date||new Date().toISOString().slice(0,10),rating:+x.rating||0,revisit:x.revisit||"",review:x.review||"",author:x.author||"💕 기존 기록",authorUid:x.authorUid||"local",createdAt:x.createdAt||new Date().toISOString()};return {id:x.id||Date.now(),name:x.name||"",sido,sgg,canonicalRegionId:x.canonicalRegionId||v44RegionId(sido,sgg),category:x.category||"식당",favorite:!!x.favorite,visits:Array.isArray(x.visits)?x.visits:[visit],createdAt:x.createdAt||visit.createdAt};}
+function v44MigrateMovie(m){const ratings=m.ratings||{};return {id:m.id||Date.now(),title:m.title||"",watchedDate:m.watchedDate||m.date||"",posterUrl:m.posterUrl||m.poster||"",releaseDate:m.releaseDate||m.release||"",ratingUser1:m.ratingUser1??Object.values(ratings)[0]?.score??0,ratingUser2:m.ratingUser2??Object.values(ratings)[1]?.score??0,review:m.review||Object.values(ratings)[0]?.review||"",favorite:!!m.favorite,author:m.author||v42Author(),authorUid:m.authorUid||"local",createdAt:m.createdAt||new Date().toISOString()};}
+function v44InitPlaceUI(){const sr=document.getElementById("v44-place-sido-ribbons"),cr=document.getElementById("v44-place-category-ribbons");if(!sr||!cr)return;if(!v44PlaceFilter.sido)v44PlaceFilter.sido=Object.keys(koreaMapData)[0];sr.innerHTML=Object.keys(koreaMapData).map(s=>`<button class="v44-ribbon ${s===v44PlaceFilter.sido?'active':''}" onclick="v44SelectSido('${s}')">${s}</button>`).join("");cr.innerHTML=V44_CATEGORIES.map(c=>`<button class="v44-ribbon ${c===v44PlaceFilter.category?'active':''}" onclick="v44SelectCategory('${c}')">${c}</button>`).join("");v44RenderSggRibbons();const d=document.getElementById("v44-place-date");if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);}
+function v44RenderSggRibbons(){const box=document.getElementById("v44-place-sgg-ribbons");if(!box)return;const list=Object.keys(koreaMapData[v44PlaceFilter.sido]||{});if(!list.includes(v44PlaceFilter.sgg))v44PlaceFilter.sgg=list[0]||"";box.innerHTML=list.map(g=>`<button class="v44-ribbon ${g===v44PlaceFilter.sgg?'active':''}" onclick="v44SelectSgg('${g}')">${g}</button>`).join("");}
+function v44SelectSido(s){v44PlaceFilter.sido=s;v44PlaceFilter.sgg="";v44InitPlaceUI();v42Render();}function v44SelectSgg(g){v44PlaceFilter.sgg=g;v44RenderSggRibbons();v42Render();}function v44SelectCategory(c){v44PlaceFilter.category=c;v44InitPlaceUI();v42Render();}
+function v42AddPlace(){const name=document.getElementById("v42-place-name")?.value.trim();if(!name)return alert("장소 이름을 입력해줘.");if(!v44PlaceFilter.sido||!v44PlaceFilter.sgg)return alert("시·도와 시·군·구를 선택해줘.");const id=v44RegionId(v44PlaceFilter.sido,v44PlaceFilter.sgg),visit={id:Date.now(),date:document.getElementById("v44-place-date").value||new Date().toISOString().slice(0,10),rating:+document.getElementById("v42-place-rating").value,revisit:document.getElementById("v42-revisit").value,review:document.getElementById("v42-place-review").value.trim(),author:v42Author(),authorUid:v42Uid(),createdAt:new Date().toISOString()};let place=v42.places.find(p=>p.canonicalRegionId===id&&p.category===v44PlaceFilter.category&&p.name.trim().toLowerCase()===name.toLowerCase());if(place)place.visits.push(visit);else v42.places.unshift({id:Date.now()+1,name,sido:v44PlaceFilter.sido,sgg:v44PlaceFilter.sgg,canonicalRegionId:id,category:v44PlaceFilter.category,favorite:false,visits:[visit],createdAt:new Date().toISOString()});v44MarkVisited(id);document.getElementById("v42-place-review").value="";v42Save();}
+function v44LatestVisit(p){return [...(p.visits||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0]||{};}function v44ToggleFavorite(id){const p=v42.places.find(x=>x.id===id);if(p){p.favorite=!p.favorite;v42Save();}}
+function v42AddMovie(){const title=document.getElementById("v42-movie-title").value.trim();if(!title)return alert("영화 제목을 입력해줘.");v42.movies.unshift({id:Date.now(),title,watchedDate:document.getElementById("v42-movie-date").value,posterUrl:document.getElementById("v42-movie-poster").value.trim(),releaseDate:document.getElementById("v42-movie-release").value.trim(),ratingUser1:+document.getElementById("v44-rating-user1").value,ratingUser2:+document.getElementById("v44-rating-user2").value,review:document.getElementById("v42-movie-review").value.trim(),favorite:false,author:v42Author(),authorUid:v42Uid(),createdAt:new Date().toISOString()});v42Save();}
+function v44ToggleMovieFavorite(id){const m=v42.movies.find(x=>x.id===id);if(m){m.favorite=!m.favorite;v42Save();}}
+function v42AddComment(kind,id){const text=prompt("댓글을 입력해줘.");if(!text)return;const key=kind+":"+id;v42.comments[key]=v42.comments[key]||[];v42.comments[key].push({id:Date.now(),uid:v42Uid(),author:v42Author(),text,createdAt:new Date().toISOString()});v42Save();}function v42Comments(kind,id){return (v42.comments[kind+":"+id]||[]).map(c=>`<div class="v42-comment"><b>${c.author}</b> · ${c.text}</div>`).join("");}
+function v44LinkedDiaryCount(kind,id){return diaryFeeds.filter(f=>(kind==="place"?(f.placeIds||[]):(f.movieIds||[])).includes(id)).length;}
+function v42Render(){const pl=document.getElementById("v42-place-list");if(pl){let arr=v42.places.filter(p=>(!v44PlaceFilter.sido||p.sido===v44PlaceFilter.sido)&&(!v44PlaceFilter.sgg||p.sgg===v44PlaceFilter.sgg)&&(!v44PlaceFilter.category||p.category===v44PlaceFilter.category));if(document.getElementById("v44-favorite-only")?.checked)arr=arr.filter(p=>p.favorite);const sort=document.getElementById("v44-place-sort")?.value||"rating";const rank={"꼭 다시":3,"기회 되면":2,"한 번이면 충분":1};arr.sort((a,b)=>sort==="recent"?String(v44LatestVisit(b).date).localeCompare(String(v44LatestVisit(a).date)):sort==="revisit"?(rank[v44LatestVisit(b).revisit]||0)-(rank[v44LatestVisit(a).revisit]||0):(v44LatestVisit(b).rating||0)-(v44LatestVisit(a).rating||0));pl.innerHTML=arr.map(p=>{const last=v44LatestVisit(p);return `<div class="v42-item"><button class="v44-fav" onclick="v44ToggleFavorite(${p.id})">${p.favorite?'❤️':'🤍'}</button> <b>${p.name}</b> <span class="v42-stars">★ ${last.rating||0}</span><div>${p.sido} ${p.sgg} · ${p.category} · 총 ${p.visits.length}회 방문 · 연결 데이트 ${v44LinkedDiaryCount('place',p.id)}건</div><div class="v44-history">${[...p.visits].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(v=>`<div><b>${v.date}</b> ★${v.rating} “${v.review||''}” · ${v.author}</div>`).join('')}</div><button onclick="v42AddComment('place',${p.id})">댓글</button><div class="v42-comments">${v42Comments('place',p.id)}</div></div>`}).join("")||"조건에 맞는 장소가 없어.";}
+const ml=document.getElementById("v42-movie-list");if(ml)ml.innerHTML=v42.movies.map(m=>`<div class="v42-item">${m.posterUrl?`<img src="${m.posterUrl}" style="width:70px;border-radius:8px;float:right" onerror="this.style.display='none'">`:''}<button class="v44-fav" onclick="v44ToggleMovieFavorite(${m.id})">${m.favorite?'❤️':'🤍'}</button> <b>${m.title}</b><div>${m.releaseDate?`개봉 ${m.releaseDate} · `:''}관람 ${m.watchedDate||'-'} · 연결 데이트 ${v44LinkedDiaryCount('movie',m.id)}건</div><div><span class="v42-stars">서형 ★${m.ratingUser1||0}</span> · <span class="v42-stars">현진 ★${m.ratingUser2||0}</span></div><div>${m.review||''}</div><button onclick="v42AddComment('movie',${m.id})">댓글</button><div class="v42-comments">${v42Comments('movie',m.id)}</div></div>`).join("")||"아직 같이 본 영화가 없어.";}
+function v42CloseHistory(){document.getElementById("v42-history-modal").classList.remove("open");}
+function v43RegionRows(){const box=document.getElementById("v43-diary-regions");if(!box)return;box.innerHTML="";for(let i=1;i<=3;i++)box.insertAdjacentHTML('beforeend',`<div class="v43-region-row"><select id="v43-sido-${i}" onchange="v43FillSgg(${i})"><option value="">${i}지역 시·도</option>${Object.keys(koreaMapData).map(s=>`<option value="${s}">${s}</option>`).join('')}</select><select id="v43-sgg-${i}"><option value="">시·군·구</option></select></div>`);}
+function v43FillSgg(i){const s=document.getElementById(`v43-sido-${i}`)?.value,g=document.getElementById(`v43-sgg-${i}`);if(g)g.innerHTML='<option value="">시·군·구</option>'+Object.keys(koreaMapData[s]||{}).map(x=>`<option value="${x}">${x}</option>`).join('');}
+function v43SelectedRegionIds(){return [1,2,3].map(i=>v44RegionId(document.getElementById(`v43-sido-${i}`)?.value,document.getElementById(`v43-sgg-${i}`)?.value)).filter(Boolean);}
+function v44EnhanceDiary(){const form=document.querySelector('.diary-form');if(!form||document.getElementById('v44-diary-links'))return;const wrap=document.createElement('div');wrap.id='v44-diary-links';wrap.className='v44-link-selects';wrap.innerHTML=`<div style="font-size:.8rem;font-weight:bold;color:var(--point-pink)">📍 방문지역 (최대 3곳)</div><div id="v43-diary-regions"></div><div style="font-size:.8rem;font-weight:bold">📌 연결 장소</div><select id="v44-diary-places" multiple></select><div style="font-size:.8rem;font-weight:bold">🎬 연결 영화</div><select id="v44-diary-movies" multiple></select>`;form.insertBefore(wrap,document.getElementById('diary-files'));v43RegionRows();v44RefreshDiaryLinks();}
+function v44RefreshDiaryLinks(){const ps=document.getElementById('v44-diary-places'),ms=document.getElementById('v44-diary-movies');if(ps)ps.innerHTML=v42.places.map(p=>`<option value="${p.id}">${p.sido} ${p.sgg} · ${p.name}</option>`).join('');if(ms)ms.innerHTML=v42.movies.map(m=>`<option value="${m.id}">${m.title}</option>`).join('');}
+const v44OriginalAddDiary=window.addDiary;window.addDiary=function(){const before=diaryFeeds.length;v44OriginalAddDiary();if(diaryFeeds.length>before){const f=diaryFeeds[0];f.regionIds=v43SelectedRegionIds();f.regions=f.regionIds.map(v44RegionLabel);f.placeIds=Array.from(document.getElementById('v44-diary-places')?.selectedOptions||[]).map(o=>+o.value);f.movieIds=Array.from(document.getElementById('v44-diary-movies')?.selectedOptions||[]).map(o=>+o.value);f.authorUid=v42Uid();f.author=v42Author();f.regionIds.forEach(v44MarkVisited);saveState();recalculateStatsAndFeeds();v42Render();}};
+const v44OriginalRecalc=window.recalculateStatsAndFeeds;window.recalculateStatsAndFeeds=function(){v44OriginalRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;f.regionIds=f.regionIds||[];f.placeIds=f.placeIds||[];f.movieIds=f.movieIds||[];const content=card.querySelector('.feed-content');if(!content)return;const places=f.placeIds.map(id=>v42.places.find(p=>p.id===id)?.name).filter(Boolean),movies=f.movieIds.map(id=>v42.movies.find(m=>m.id===id)?.title).filter(Boolean);const extra=document.createElement('div');extra.innerHTML=`<div class="v42-author">${f.author||'💕 기존 기록'}</div><div>${f.regionIds.map(id=>`<span class="v42-tag">${v44RegionLabel(id)}</span>`).join('')}</div>${places.length?`<div>📍 ${places.join(' · ')}</div>`:''}${movies.length?`<div>🎬 ${movies.join(' · ')}</div>`:''}<button onclick="v42AddComment('diary',${f.id})">댓글</button><div class="v42-comments">${v42Comments('diary',f.id)}</div>`;content.prepend(extra);});};
+const v43OldGeneral=window.addGeneralSchedule;window.addGeneralSchedule=function(){const before=allSchedules.length;v43OldGeneral();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.startTime=document.getElementById('v43-general-start').value||'';x.endTime=document.getElementById('v43-general-end').value||'';x.memo=document.getElementById('v43-general-memo').value.trim();saveState();v43RenderSchedules();}};
+const v43OldMatch=window.addKleagueMatch;window.addKleagueMatch=function(){const before=allSchedules.length;v43OldMatch();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.kickoff=document.getElementById('v43-match-time').value||'';x.stadium=document.getElementById('v43-match-stadium').value.trim();x.memo=document.getElementById('v43-match-memo').value.trim();saveState();v43RenderSchedules();}};
+function v43RenderSchedules(){const today=new Date().toISOString().slice(0,10),upcoming=[...allSchedules].filter(s=>s.date>=today).sort((a,b)=>(a.date+(a.startTime||a.kickoff||'')).localeCompare(b.date+(b.startTime||b.kickoff||''))).slice(0,8),up=document.getElementById('v43-upcoming');if(up)up.innerHTML=upcoming.map(s=>`<div class="v43-upcoming-item">${s.type==='K리그'?'⚽':'❤️'} <b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${s.content}${s.stadium?' · '+s.stadium:''}${s.memo?`<div style="color:#747d8c">${s.memo}</div>`:''}</div>`).join('')||'<div style="font-size:.8rem;color:#747d8c">예정된 일정이 없습니다.</div>';const past=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)),years=[...new Set(past.map(s=>s.date.slice(0,4)))],ys=document.getElementById('v43-match-year');if(ys){const cur=ys.value;ys.innerHTML='<option value="all">전체 연도</option>'+years.map(y=>`<option>${y}</option>`).join('');if([...ys.options].some(o=>o.value===cur))ys.value=cur;}const selected=ys?.value||'all',box=document.getElementById('v43-past-matches');if(box)box.innerHTML=past.filter(s=>selected==='all'||s.date.startsWith(selected)).slice(0,selected==='all'?5:9999).map(s=>`<div class="match-item"><span>⚽ ${s.date} ${s.kickoff||''} · ${s.content}${s.stadium?' · '+s.stadium:''}</span></div>`).join('')||'<div style="padding:10px;color:#747d8c">지난 경기가 없습니다.</div>';}
+function v44GlobalSearch(q){q=v44NormText(q).toLowerCase();const box=document.getElementById('v44-search-results');if(!box)return;if(!q){box.hidden=true;box.innerHTML='';return;}const diaries=diaryFeeds.filter(f=>[f.comment,f.tags,...(f.regions||[])].join(' ').toLowerCase().includes(q)),places=v42.places.filter(p=>[p.name,p.sido,p.sgg,p.category,...p.visits.map(v=>v.review)].join(' ').toLowerCase().includes(q)),movies=v42.movies.filter(m=>[m.title,m.review,m.releaseDate].join(' ').toLowerCase().includes(q)),comments=Object.entries(v42.comments).flatMap(([key,a])=>a.map(c=>({key,...c}))).filter(c=>[c.text,c.author].join(' ').toLowerCase().includes(q));const group=(title,a,fmt)=>`<div class="v44-search-group"><b>${title} ${a.length}건</b>${a.map(fmt).join('')||'<div class="v44-search-hit">결과 없음</div>'}</div>`;box.innerHTML=group('데이트 기록',diaries,x=>`<div class="v44-search-hit" onclick="showMobileSection('diary',document.querySelector('.mobile-nav button:nth-child(2)'))">${x.startDate} · ${x.comment}</div>`)+group('장소',places,x=>`<div class="v44-search-hit" onclick="showMobileSection('places',document.querySelector('.mobile-nav button:nth-child(3)'))">${x.sido} ${x.sgg} · ${x.name}</div>`)+group('영화',movies,x=>`<div class="v44-search-hit" onclick="showMobileSection('movies',document.querySelector('.mobile-nav button:nth-child(4)'))">${x.title}</div>`)+group('댓글',comments,x=>`<div class="v44-search-hit">${x.author} · ${x.text}</div>`);box.hidden=false;}
+function v44RenderAnnualSummary(){const ys=document.getElementById('v44-year-select'),box=document.getElementById('v44-annual-summary');if(!ys||!box)return;const years=[...new Set([...diaryFeeds.map(f=>f.startDate?.slice(0,4)),...v42.places.flatMap(p=>p.visits.map(v=>v.date?.slice(0,4))),...v42.movies.map(m=>m.watchedDate?.slice(0,4))].filter(Boolean))].sort().reverse();if(!years.length)years.push(String(new Date().getFullYear()));const cur=ys.value;ys.innerHTML=years.map(y=>`<option>${y}</option>`).join('');if(years.includes(cur))ys.value=cur;const y=ys.value,ds=diaryFeeds.filter(f=>f.startDate?.startsWith(y)),visits=v42.places.flatMap(p=>p.visits.filter(v=>v.date?.startsWith(y)).map(v=>({p,v}))),ms=v42.movies.filter(m=>m.watchedDate?.startsWith(y)),regions=new Map(),placeCounts=new Map();ds.forEach(f=>(f.regionIds||[]).forEach(id=>regions.set(id,(regions.get(id)||0)+1)));visits.forEach(({p})=>placeCounts.set(p.id,(placeCounts.get(p.id)||0)+1));const topRegion=[...regions].sort((a,b)=>b[1]-a[1])[0],topPlace=[...placeCounts].sort((a,b)=>b[1]-a[1])[0],avg=visits.length?(visits.reduce((a,x)=>a+(+x.v.rating||0),0)/visits.length).toFixed(1):'0.0',placeSet=new Set(visits.map(x=>x.p.id));const stats=[['데이트 횟수',ds.length+'회'],['방문 지역 수',regions.size+'곳'],['가장 많이 방문한 지역',topRegion?v44RegionLabel(topRegion[0]):'-'],['등록된 장소 수',placeSet.size+'곳'],['장소 평균 별점',avg],['같이 본 영화 수',ms.length+'편'],['가장 많이 방문한 장소',topPlace?(v42.places.find(p=>p.id===topPlace[0])?.name||'-'):'-'],['즐겨찾기 장소 수',v42.places.filter(p=>p.favorite&&placeSet.has(p.id)).length+'곳']];box.innerHTML=stats.map(([k,v])=>`<div class="v44-summary-card"><span>${k}</span><b>${v}</b></div>`).join('');}
+// GeoJSON properties are analyzed at runtime and assigned canonical IDs.
+const v44OldFeatureNames=window.featureNames;window.featureNames=function(feature){if(feature?.properties?.__canonicalRegionId){const [sido,sigungu]=feature.properties.__canonicalRegionId.split('::');return {sido,sigungu};}return v44OldFeatureNames(feature);};
+const v44OldDraw=window.drawMunicipalityMap;window.drawMunicipalityMap=function(){if(municipalityGeoJSON)v44BuildGeoMapping(municipalityGeoJSON);return v44OldDraw();};
+const v44OldIsVisited=window.isMunicipalityVisited;window.isMunicipalityVisited=function(sido,sigungu){return v44VisitedRegionIds().has(v44RegionId(sido,sigungu))||v44OldIsVisited(sido,sigungu);};
+// Stronger backup validation while preserving V4.3 storage model and Firebase localStorage sync.
+window.exportArchive=function(){saveState();v42Save();const payload={version:'4.4',exportedAt:new Date().toISOString(),allSchedules,diaryFeeds,bucketData,visitedNodes,visitedRegionIds:[...v44VisitedRegionIds()],places:v42.places,movies:v42.movies,comments:v42.comments,profiles:v42.profiles,settings:v42.settings};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='date-archive-v4.4-backup.json';a.click();URL.revokeObjectURL(a.href);};
+window.importArchive=function(event){const file=event.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const o=JSON.parse(reader.result);if(!o||!Array.isArray(o.allSchedules)||!Array.isArray(o.diaryFeeds)||!o.bucketData||!Array.isArray(o.places)||!Array.isArray(o.movies)||typeof o.comments!=='object')throw new Error('필수 데이터 구조 없음');if(!confirm('현재 데이터를 백업 파일 내용으로 복구할까요?'))return;const state={allSchedules:o.allSchedules,diaryFeeds:o.diaryFeeds,bucketData:o.bucketData,visitedNodes:o.visitedNodes||[],currentDate:new Date().toISOString()};localStorage.setItem(STORAGE_KEY_V2,JSON.stringify(state));localStorage.setItem(V42_KEY,JSON.stringify({settings:o.settings||v42.settings,profiles:o.profiles||{},places:o.places,movies:o.movies,comments:o.comments}));location.reload();}catch(e){alert('올바른 V4.4 백업 JSON이 아니어서 기존 데이터를 변경하지 않았습니다.');}};reader.readAsText(file);event.target.value='';};
+window.addEventListener('load',()=>{v44EnhanceDiary();v42Load();v43RenderSchedules();setTimeout(()=>{recalculateStatsAndFeeds();v42Render();v44RenderAnnualSummary();},180);});
+</script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
@@ -1198,21 +1352,43 @@ document.getElementById("fb-login-btn").onclick=async()=>{
  catch(e){msg.textContent="로그인 실패: 이메일 또는 비밀번호를 확인해줘.";}
 };
 
-function collectLocalStorage(){
+function stripImagesFromArchive(raw){
+ try{
+   const state=JSON.parse(raw);
+   if(Array.isArray(state.diaryFeeds)) state.diaryFeeds=state.diaryFeeds.map(f=>({...f,images:[]}));
+   return JSON.stringify(state);
+ }catch(e){return raw;}
+}
+function collectSharedStorage(){
  const data={};
- for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);data[k]=localStorage.getItem(k);}
+ for(let i=0;i<localStorage.length;i++){
+   const k=localStorage.key(i), v=localStorage.getItem(k);
+   data[k]=k==="lovelyDateArchiveV2"?stripImagesFromArchive(v):v;
+ }
  return data;
 }
-function applyLocalStorage(data){
- if(!data)return;
+function mergeRemotePreservingImages(data){
+ if(!data)return false;
+ let changed=false;
  applyingRemote=true;
- Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v));
+ Object.entries(data).forEach(([k,v])=>{
+   let next=v;
+   if(k==="lovelyDateArchiveV2"){
+     try{
+       const remote=JSON.parse(v), local=JSON.parse(localStorage.getItem(k)||"{}");
+       const localImages=new Map((local.diaryFeeds||[]).map(f=>[String(f.id),f.images||[]]));
+       remote.diaryFeeds=(remote.diaryFeeds||[]).map(f=>({...f,images:localImages.get(String(f.id))||[]}));
+       next=JSON.stringify(remote);
+     }catch(e){}
+   }
+   if(localStorage.getItem(k)!==next){originalSet.call(localStorage,k,next);changed=true;}
+ });
  applyingRemote=false;
- try{location.reload();}catch(e){}
+ return changed;
 }
 async function pushSharedState(){
  if(applyingRemote||!auth.currentUser)return;
- await setDoc(sharedRef,{localStorage:collectLocalStorage(),updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
+ await setDoc(sharedRef,{localStorage:collectSharedStorage(),updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
 }
 const originalSet=Storage.prototype.setItem;
 Storage.prototype.setItem=function(k,v){
@@ -1222,7 +1398,7 @@ Storage.prototype.setItem=function(k,v){
  }
 };
 
-onAuthStateChanged(auth,async user=>{
+onAuthStateChanged(auth,async user=>{ window.v42CurrentUser=user||null; if(window.v42Load) window.v42Load();
  if(unsubscribe){unsubscribe();unsubscribe=null;}
  document.querySelector(".firebase-userbar")?.remove();
  if(!user){loginOverlay.style.display="flex";return;}
@@ -1232,15 +1408,25 @@ onAuthStateChanged(auth,async user=>{
  document.getElementById("fb-logout").onclick=()=>signOut(auth);
  unsubscribe=onSnapshot(sharedRef,async snap=>{
    if(!snap.exists()){
-     await setDoc(sharedRef,{localStorage:collectLocalStorage(),updatedAt:serverTimestamp(),updatedBy:user.uid});
+     await setDoc(sharedRef,{localStorage:collectSharedStorage(),updatedAt:serverTimestamp(),updatedBy:user.uid});
      return;
    }
    const remote=snap.data().localStorage||{};
-   const local=collectLocalStorage();
-   if(JSON.stringify(remote)!==JSON.stringify(local)) applyLocalStorage(remote);
+   const local=collectSharedStorage();
+   if(JSON.stringify(remote)!==JSON.stringify(local)){
+     const changed=mergeRemotePreservingImages(remote);
+     if(changed && sessionStorage.getItem("v41RemoteReload")!=="1"){
+       sessionStorage.setItem("v41RemoteReload","1"); location.reload();
+     }
+   } else sessionStorage.removeItem("v41RemoteReload");
  });
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    updateDDayCounter();
+});
+</script>
 </body>
 </html>
