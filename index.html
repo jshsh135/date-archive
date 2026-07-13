@@ -423,23 +423,24 @@
 <script>
     const firstMeetDate = new Date(2026, 4, 24);
     function getLocalCalendarDayNumber(year, month, day) {
-        return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+        return Math.trunc(Date.UTC(year, month - 1, day) / 86400000);
     }
+
     function updateDDayCounter() {
         const today = new Date();
-        const todayDayNumber = getLocalCalendarDayNumber(
+        const todayNum = getLocalCalendarDayNumber(
             today.getFullYear(),
             today.getMonth() + 1,
             today.getDate()
         );
-        const startDayNumber = getLocalCalendarDayNumber(
+        const startNum = getLocalCalendarDayNumber(
             firstMeetDate.getFullYear(),
             firstMeetDate.getMonth() + 1,
             firstMeetDate.getDate()
         );
-        const diffDays = todayDayNumber - startDayNumber + 1;
-        const el = document.getElementById('dday-counter');
-        if (el) el.innerText = diffDays >= 1 ? `D+${diffDays}` : `D${diffDays}`;
+        const diff = todayNum - startNum + 1;
+        const counter = document.getElementById('dday-counter');
+        if (counter) counter.innerText = diff >= 1 ? `D+${diff}` : `D${diff}`;
     } 
     let currentStats = { count: 0, cost: 0 }; 
     let currentDate = new Date(2026, 6, 1); 
@@ -1232,8 +1233,9 @@
 
     window.onload = function() {
         loadState();
+    updateDDayCounter();
         const diff = Math.ceil((new Date() - firstMeetDate) / (1000 * 60 * 60 * 24)) + 1;
-        document.getElementById('dday-counter').innerText = `D+${diff}`;
+
         document.getElementById('diary-date').value = new Date().toISOString().substring(0, 10);
         document.getElementById('match-date').value = new Date().toISOString().substring(0, 10);
         document.getElementById('date-schedule-date').value = new Date().toISOString().substring(0, 10);
@@ -1425,7 +1427,7 @@ onAuthStateChanged(auth,async user=>{ window.v42CurrentUser=user||null; if(windo
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    updateDDayCounter();
+
 });
 </script>
 </body>
