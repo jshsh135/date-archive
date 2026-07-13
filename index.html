@@ -204,42 +204,12 @@
                 </div>
             </div>
 
-            <div class="card-box">
-                <div class="section-title">📅 개인 및 데이트/K리그 일정 등록</div>
-<div style="font-size:.85rem;font-weight:800;color:var(--point-pink);margin-bottom:7px;">⏰ 우리의 다음 일정</div>
-<div id="v43-upcoming" class="v43-upcoming"></div>
-
-                
-                <div style="font-size:0.8rem; font-weight:bold; margin-bottom:5px; color:var(--point-pink);">✨ 개인/데이트 일정 추가 (캘린더 ❤️ 표시)</div>
-                <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 5px; margin-bottom: 12px;">
-                    <input type="date" id="date-schedule-date">
-                    <input type="text" id="date-schedule-text" placeholder="일정 이름 입력">
-<input type="time" id="v43-general-start" title="시작시간">
-<input type="time" id="v43-general-end" title="종료시간">
-<input type="text" id="v43-general-memo" placeholder="메모 (선택)">
-                    <button onclick="addGeneralSchedule()" class="btn-black" style="padding: 8px; font-size: 0.8rem; margin:0;">등록</button>
-                </div>
-
-                <div style="font-size:0.8rem; font-weight:bold; margin-bottom:5px; color:#ff7619;">⚽ K리그 경기 일정 추가 (캘린더 ⚽ 표시)</div>
-                <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 5px;">
-                    <input type="date" id="match-date">
-                    <input type="text" id="match-team" placeholder="예: 강원 vs 전북 (송암)">
-                    <input type="time" id="v43-match-time" title="킥오프 시간">
-<input list="v43-stadium-list" id="v43-match-stadium" placeholder="경기장 선택 또는 직접 입력">
-<datalist id="v43-stadium-list"><option value="춘천송암스포츠타운"><option value="강릉하이원아레나"><option value="수원월드컵경기장"><option value="수원종합운동장"><option value="서울월드컵경기장"><option value="전주월드컵경기장"><option value="포항스틸야드"><option value="울산문수축구경기장"></datalist>
-<input type="text" id="v43-match-memo" placeholder="경기 메모 (선택)">
-<select id="match-crew">
-                        <option value="강원">강원 🧡</option>
-                        <option value="수원">수원 💙</option>
-                        <option value="기타">기타 🤍</option>
-                    </select>
-                </div>
-                <button onclick="addKleagueMatch()" class="btn-black" style="padding: 8px; font-size: 0.85rem; margin-top: 5px;">K리그 일정 추가</button>
-                
-                <div class="match-list" id="kleague-match-box"></div>
-<details style="margin-top:10px"><summary style="cursor:pointer;font-size:.85rem;font-weight:700;">🗃️ 지난 경기 보기</summary>
-<div class="v43-archive-controls"><select id="v43-match-year" onchange="v43RenderSchedules()"></select></div>
-<div id="v43-past-matches" class="match-list"></div></details>
+            <div class="card-box" id="v45-schedule-card">
+                <div class="section-title">📅 일정 관리</div>
+                <div class="tabs"><button class="tab-btn active" onclick="v45ScheduleTab('personal',this)">💗 개인·데이트 일정</button><button class="tab-btn" onclick="v45ScheduleTab('football',this)">⚽ 축구 일정</button></div>
+                <section id="v45-personal-panel"><div class="section-title" style="font-size:.95rem">다가오는 개인·데이트 일정</div><div id="v45-personal-list"></div><details><summary>＋ 일정 추가</summary><div class="v45-form"><select id="date-schedule-type"><option value="데이트">❤️ 같이 일정</option><option value="현진">💙 현진 일정</option><option value="서형">💛 서형 일정</option></select><input type="date" id="date-schedule-date"><input type="text" id="date-schedule-text" placeholder="일정 이름"><input type="time" id="v43-general-start"><input type="time" id="v43-general-end"><input type="text" id="v43-general-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addGeneralSchedule()">등록</button></div></details></section>
+                <section id="v45-football-panel" style="display:none"><div class="section-title" style="font-size:.95rem">다가오는 경기 일정</div><div id="v45-football-list"></div><details><summary>＋ 경기 일정 등록</summary><div class="v45-form"><input type="date" id="match-date"><input type="text" id="match-team" placeholder="예: 강원 FC vs 수원 삼성"><input type="time" id="v43-match-time"><input list="v43-stadium-list" id="v43-match-stadium" placeholder="경기장 선택 또는 직접 입력"><datalist id="v43-stadium-list"></datalist><label><input type="checkbox" id="v45-save-stadium"> 경기장 목록에 저장</label><select id="match-crew"><option value="강원">강원 🧡</option><option value="수원">수원 💙</option><option value="기타">기타 ⚽</option></select><label><input type="checkbox" id="v45-work"> 💼 서형 근무</label><input type="text" id="v43-match-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addKleagueMatch()">경기 일정 추가</button></div></details><details><summary>🗃️ 지난 경기 보기</summary><div id="v43-past-matches"></div></details></section>
+                <div id="v43-upcoming" style="display:none"></div><div id="kleague-match-box" style="display:none"></div><select id="v43-match-year" style="display:none"></select>
             </div>
 
             <div class="card-box" style="background: #fffdf0;">
@@ -308,7 +278,7 @@
                         🔎 지역 필터: 
                         <select id="filter-location" onchange="renderBucketList()" style="width:auto; padding:3px; margin:0; font-size:0.75rem;">
                             <option value="전체">🌍 전체 보기</option>
-                            <option value="강원">강원도</option><option value="서울">서울특별시</option><option value="경기">경기도</option><option value="인천">인천광역시</option>
+                            
                         </select>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -338,9 +308,7 @@
                         <option value="티빙/웨이브">📺 국내 OTT (티빙/웨이브)</option>
                         <option value="극장">🎞️ 영화관 스크린 데이트</option>
                     </select>
-                    <div style="display:flex; gap:5px;">
-                        <input type="text" id="new-item-input" placeholder="하고 싶은 위시리스트 입력..." style="margin:0; flex:1;">
-                    </div>
+                    <div id="v45-food-fields" style="display:none;gap:5px"><select id="v45-food-type"><option>한식</option><option>일식</option><option>양식</option><option>중식</option><option>분식</option><option>아시아</option><option>패스트푸드</option><option>카페</option><option>디저트</option><option>기타</option></select><input type="url" id="v45-wish-link" placeholder="링크 (선택)"></div><div style="display:flex; gap:5px;"><input type="text" id="new-item-input" placeholder="하고 싶은 위시리스트 입력..." style="margin:0; flex:1;"></div>
                     <button onclick="addItem()" class="btn-black" style="padding:8px; margin-top:5px;">리스트에 추가</button>
                 </div>
             </div>
@@ -1311,6 +1279,122 @@ const v44OldIsVisited=window.isMunicipalityVisited;window.isMunicipalityVisited=
 window.exportArchive=function(){saveState();v42Save();const payload={version:'4.4',exportedAt:new Date().toISOString(),allSchedules,diaryFeeds,bucketData,visitedNodes,visitedRegionIds:[...v44VisitedRegionIds()],places:v42.places,movies:v42.movies,comments:v42.comments,profiles:v42.profiles,settings:v42.settings};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='date-archive-v4.4-backup.json';a.click();URL.revokeObjectURL(a.href);};
 window.importArchive=function(event){const file=event.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const o=JSON.parse(reader.result);if(!o||!Array.isArray(o.allSchedules)||!Array.isArray(o.diaryFeeds)||!o.bucketData||!Array.isArray(o.places)||!Array.isArray(o.movies)||typeof o.comments!=='object')throw new Error('필수 데이터 구조 없음');if(!confirm('현재 데이터를 백업 파일 내용으로 복구할까요?'))return;const state={allSchedules:o.allSchedules,diaryFeeds:o.diaryFeeds,bucketData:o.bucketData,visitedNodes:o.visitedNodes||[],currentDate:new Date().toISOString()};localStorage.setItem(STORAGE_KEY_V2,JSON.stringify(state));localStorage.setItem(V42_KEY,JSON.stringify({settings:o.settings||v42.settings,profiles:o.profiles||{},places:o.places,movies:o.movies,comments:o.comments}));location.reload();}catch(e){alert('올바른 V4.4 백업 JSON이 아니어서 기존 데이터를 변경하지 않았습니다.');}};reader.readAsText(file);event.target.value='';};
 window.addEventListener('load',()=>{v44EnhanceDiary();v42Load();v43RenderSchedules();setTimeout(()=>{recalculateStatsAndFeeds();v42Render();v44RenderAnnualSummary();},180);});
+</script>
+<style id="v45-complete-css">.v45-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}.v45-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.v45-actions button,.v45-inline button{border:0;border-radius:999px;padding:6px 10px;cursor:pointer}.v45-inline{display:grid;gap:6px;padding:10px;background:#fff8f9;border-radius:12px;margin-top:8px}.v45-badges{display:flex;gap:4px;flex-wrap:wrap}.v45-link{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f2f6;text-decoration:none;color:#57606f}@media(max-width:768px){.v45-form{grid-template-columns:1fr}input,select,textarea{min-width:0;max-width:100%;box-sizing:border-box}}</style>
+<script id="v45-complete-js">
+const V45_PROVINCES=['서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시','경기도','강원특별자치도','충청북도','충청남도','전북특별자치도','전라남도','경상북도','경상남도','제주특별자치도'];
+const V45_REGION_ALIAS={'서울':'서울특별시','부산':'부산광역시','대구':'대구광역시','인천':'인천광역시','광주':'광주광역시','대전':'대전광역시','울산':'울산광역시','세종':'세종특별자치시','경기':'경기도','강원':'강원특별자치도','강원도':'강원특별자치도','충북':'충청북도','충남':'충청남도','전북':'전북특별자치도','전라북도':'전북특별자치도','전남':'전라남도','경북':'경상북도','경남':'경상남도','제주':'제주특별자치도'};
+const v45NormRegion=x=>V45_REGION_ALIAS[x]||x||''; const v45Esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function v45Persist(){saveState();v42Save();}
+function v45ScheduleTab(t,b){document.querySelectorAll('#v45-schedule-card .tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('v45-personal-panel').style.display=t==='personal'?'block':'none';document.getElementById('v45-football-panel').style.display=t==='football'?'block':'none';}
+function v45Stadiums(){return JSON.parse(localStorage.getItem('v45_custom_stadiums')||'[]')}
+function v45RenderStadiums(){const base=['춘천송암스포츠타운','강릉하이원아레나','수원월드컵경기장','수원종합운동장','서울월드컵경기장','전주월드컵경기장','포항스틸야드','울산문수축구경기장'];document.getElementById('v43-stadium-list').innerHTML=[...new Set([...base,...v45Stadiums()])].map(x=>`<option value="${v45Esc(x)}">`).join('')}
+function v45ScheduleEdit(id){const s=allSchedules.find(x=>x.id===id);if(!s)return;s._editing=true;v45RenderSchedules()}
+function v45ScheduleCancel(id){const s=allSchedules.find(x=>x.id===id);if(s)delete s._editing;v45RenderSchedules()}
+function v45ScheduleSave(id){const s=allSchedules.find(x=>x.id===id),box=document.querySelector(`[data-schedule-edit="${id}"]`);if(!s||!box)return;s.date=box.querySelector('[data-k=date]').value;s.content=box.querySelector('[data-k=content]').value.trim();s.startTime=box.querySelector('[data-k=time]')?.value||s.startTime;s.kickoff=s.startTime;s.memo=box.querySelector('[data-k=memo]').value.trim();if(s.type==='K리그'){s.stadium=box.querySelector('[data-k=stadium]').value.trim();s.detail=box.querySelector('[data-k=detail]').value;s.work=box.querySelector('[data-k=work]').checked;}delete s._editing;v45Persist();v45RenderSchedules();renderCalendar()}
+function v45ScheduleDelete(id){if(!confirm('이 일정을 삭제할까요?'))return;allSchedules=allSchedules.filter(x=>x.id!==id);v45Persist();v45RenderSchedules();renderCalendar()}
+function v45RenderSchedules(){const today=new Date().toISOString().slice(0,10);const render=(s,football)=>s._editing?`<div class="v45-inline" data-schedule-edit="${s.id}"><input data-k="date" type="date" value="${s.date}"><input data-k="content" value="${v45Esc(s.content)}"><input data-k="time" type="time" value="${s.startTime||s.kickoff||''}">${football?`<input data-k="stadium" value="${v45Esc(s.stadium||'')}"><select data-k="detail"><option ${s.detail==='강원'?'selected':''}>강원</option><option ${s.detail==='수원'?'selected':''}>수원</option><option ${s.detail==='기타'?'selected':''}>기타</option></select><label><input data-k="work" type="checkbox" ${s.work?'checked':''}> 서형 근무</label>`:''}<input data-k="memo" value="${v45Esc(s.memo||'')}" placeholder="메모"><div><button onclick="v45ScheduleSave(${s.id})">💾 저장</button><button onclick="v45ScheduleCancel(${s.id})">취소</button></div></div>`:`<div class="match-item"><div><b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${v45Esc(s.content)}${s.stadium?' · 🏟️ '+v45Esc(s.stadium):''}<div class="v45-badges">${football?`<span>${s.detail==='강원'?'강원 🧡':s.detail==='수원'?'수원 💙':'기타 ⚽'}</span>${s.work?'<span>💼 서형 근무</span>':''}`:`<span>${s.type==='현진'?'💙 현진':s.type==='서형'?'💛 서형':'❤️ 같이'}</span>`}</div>${s.memo?`<small>${v45Esc(s.memo)}</small>`:''}</div><div class="v45-actions"><button onclick="v45ScheduleEdit(${s.id})">✏️ 수정</button><button onclick="v45ScheduleDelete(${s.id})">🗑️ 삭제</button></div></div>`;document.getElementById('v45-personal-list').innerHTML=allSchedules.filter(s=>s.type!=='K리그'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).map(s=>render(s,false)).join('')||'예정된 일정이 없습니다.';document.getElementById('v45-football-list').innerHTML=allSchedules.filter(s=>s.type==='K리그'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).map(s=>render(s,true)).join('')||'예정된 경기가 없습니다.';document.getElementById('v43-past-matches').innerHTML=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)).map(s=>render(s,true)).join('')||'지난 경기가 없습니다.'}
+const v45OldGeneral=addGeneralSchedule;addGeneralSchedule=function(){const d=document.getElementById('date-schedule-date').value,t=document.getElementById('date-schedule-text').value.trim();if(!d||!t)return alert('날짜와 일정 내용을 입력해주세요!');allSchedules.push({id:Date.now(),type:document.getElementById('date-schedule-type').value,date:d,content:t,startTime:document.getElementById('v43-general-start').value,endTime:document.getElementById('v43-general-end').value,memo:document.getElementById('v43-general-memo').value});document.getElementById('date-schedule-text').value='';v45Persist();v45RenderSchedules();renderCalendar()}
+addKleagueMatch=function(){const d=document.getElementById('match-date').value,t=document.getElementById('match-team').value.trim(),stad=document.getElementById('v43-match-stadium').value.trim();if(!d||!t)return alert('날짜와 경기 스케줄을 입력해주세요!');if(stad&&document.getElementById('v45-save-stadium').checked){const a=v45Stadiums();if(!a.includes(stad)){a.push(stad);localStorage.setItem('v45_custom_stadiums',JSON.stringify(a));v45RenderStadiums()}}allSchedules.push({id:Date.now(),type:'K리그',date:d,content:t,detail:document.getElementById('match-crew').value,kickoff:document.getElementById('v43-match-time').value,startTime:document.getElementById('v43-match-time').value,stadium:stad,memo:document.getElementById('v43-match-memo').value,work:document.getElementById('v45-work').checked});document.getElementById('match-team').value='';v45Persist();v45RenderSchedules();renderCalendar()}
+function v45InitWish(){const f=document.getElementById('filter-location');f.innerHTML='<option value="전체">🌍 전체 보기</option>'+V45_PROVINCES.map(x=>`<option value="${x}">${x}</option>`).join('');bucketData.restaurant=(bucketData.restaurant||[]).map(x=>({...x,sido:v45NormRegion(x.sido)}));bucketData.activity=(bucketData.activity||[]).map(x=>({...x,sido:v45NormRegion(x.sido)}));bucketData.travel=(bucketData.travel||[]).map(x=>({...x,sido:v45NormRegion(x.sido)}));}
+const v45OldSwitch=switchTab;switchTab=function(tabName){v45OldSwitch(tabName);document.getElementById('v45-food-fields').style.display=tabName==='restaurant'?'flex':'none'}
+const v45OldAddItem=addItem;addItem=function(){const input=document.getElementById('new-item-input');if(!input.value.trim())return;const before=bucketData[currentTab].length;v45OldAddItem();if(bucketData[currentTab].length>before&&currentTab==='restaurant'){const x=bucketData[currentTab][bucketData[currentTab].length-1];x.foodType=document.getElementById('v45-food-type').value;x.link=document.getElementById('v45-wish-link').value.trim();document.getElementById('v45-wish-link').value='';saveState();renderBucketList()}}
+const v45OldBucketRender=renderBucketList;renderBucketList=function(){v45OldBucketRender();if(currentTab==='restaurant')document.querySelectorAll('#list-content .list-item').forEach((el,i)=>{const filter=document.getElementById('filter-location').value,status=document.querySelector('input[name="filter-status"]:checked').value;let arr=bucketData.restaurant.map((x,j)=>({...x,originalIndex:j})).sort((a,b)=>a.done-b.done).filter(x=>(filter==='전체'||v45NormRegion(x.sido)===filter)&&(status==='all'||status==='todo'&&!x.done||status==='done'&&x.done));const x=arr[i];if(x&&!el.querySelector('.v45-food-meta'))el.querySelector('.item-text').insertAdjacentHTML('afterend',`<span class="v45-food-meta">🍽️ ${v45Esc(x.foodType||'기타')} ${x.link?`<a class="v45-link" href="${v45Esc(x.link)}" target="_blank" rel="noopener">🔗 링크 보기</a>`:''}</span>`)})}
+// Place filters: nationwide/province/city all views; adding still requires actual region.
+v44InitPlaceUI=function(){const sr=document.getElementById('v44-place-sido-ribbons'),cr=document.getElementById('v44-place-category-ribbons');if(!sr||!cr)return;sr.innerHTML=`<button class="v44-ribbon ${!v44PlaceFilter.sido?'active':''}" onclick="v44SelectSido('')">🌏 전국 전체보기</button>`+Object.keys(koreaMapData).map(x=>`<button class="v44-ribbon ${x===v44PlaceFilter.sido?'active':''}" onclick="v44SelectSido('${x}')">${x}</button>`).join('');cr.innerHTML=V44_CATEGORIES.map(c=>`<button class="v44-ribbon ${c===v44PlaceFilter.category?'active':''}" onclick="v44SelectCategory('${c}')">${c}</button>`).join('');v44RenderSggRibbons();const d=document.getElementById('v44-place-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10)}
+v44RenderSggRibbons=function(){const box=document.getElementById('v44-place-sgg-ribbons');if(!box)return;if(!v44PlaceFilter.sido){v44PlaceFilter.sgg='';box.innerHTML='';return}const list=Object.keys(koreaMapData[v44PlaceFilter.sido]||{});box.innerHTML=`<button class="v44-ribbon ${!v44PlaceFilter.sgg?'active':''}" onclick="v44SelectSgg('')">${v44PlaceFilter.sido} 전체보기</button>`+list.map(g=>`<button class="v44-ribbon ${g===v44PlaceFilter.sgg?'active':''}" onclick="v44SelectSgg('${g}')">${g}</button>`).join('')}
+v44SelectSido=function(s){v44PlaceFilter.sido=s;v44PlaceFilter.sgg='';v44InitPlaceUI();v42Render()};v44SelectSgg=function(g){v44PlaceFilter.sgg=g;v44RenderSggRibbons();v42Render()}
+// Inline CRUD for places, movies, comments and diary.
+let v45Edit={};function v45StartEdit(kind,id){v45Edit={kind,id};v42Render();recalculateStatsAndFeeds()}function v45CancelEdit(){v45Edit={};v42Render();recalculateStatsAndFeeds()}
+function v45DeletePlace(id){if(confirm('장소 기록을 삭제할까요?')){v42.places=v42.places.filter(x=>x.id!==id);delete v42.comments['place:'+id];v42Save()}}
+function v45SavePlace(id){const p=v42.places.find(x=>x.id===id),b=document.querySelector(`[data-edit-place="${id}"]`),v=v44LatestVisit(p);p.name=b.querySelector('[data-k=name]').value.trim();v.date=b.querySelector('[data-k=date]').value;v.rating=+b.querySelector('[data-k=rating]').value;v.revisit=b.querySelector('[data-k=revisit]').value;v.review=b.querySelector('[data-k=review]').value.trim();v45Edit={};v42Save()}
+function v45DeleteMovie(id){if(confirm('영화 기록을 삭제할까요?')){v42.movies=v42.movies.filter(x=>x.id!==id);delete v42.comments['movie:'+id];v42Save()}}
+function v45SaveMovie(id){const m=v42.movies.find(x=>x.id===id),b=document.querySelector(`[data-edit-movie="${id}"]`);['title','watchedDate','posterUrl','releaseDate','review'].forEach(k=>m[k]=b.querySelector(`[data-k=${k}]`).value);m.ratingUser1=+b.querySelector('[data-k=ratingUser1]').value;m.ratingUser2=+b.querySelector('[data-k=ratingUser2]').value;v45Edit={};v42Save()}
+function v45AddComment(kind,id){const key=kind+':'+id;v42.comments[key]=v42.comments[key]||[];v42.comments[key].push({id:Date.now(),uid:v42Uid(),author:v42Author(),text:'',createdAt:new Date().toISOString(),_editing:true});v42Save();v45Edit={kind:'comment',id:key}}
+function v45EditComment(kind,id,cid){v45Edit={kind:'comment',id:kind+':'+id,cid};v42Render();recalculateStatsAndFeeds()}
+function v45SaveComment(key,cid){const c=(v42.comments[key]||[]).find(x=>x.id===cid),b=document.querySelector(`[data-comment="${cid}"] textarea`);if(!c||!b.value.trim())return;c.text=b.value.trim();delete c._editing;v45Edit={};v42Save()}
+function v45DeleteComment(key,cid){if(confirm('댓글을 삭제할까요?')){v42.comments[key]=(v42.comments[key]||[]).filter(x=>x.id!==cid);v42Save()}}
+v42Comments=function(kind,id){const key=kind+':'+id;return(v42.comments[key]||[]).map(c=>(v45Edit.kind==='comment'&&v45Edit.id===key&&v45Edit.cid===c.id)||c._editing?`<div class="v45-inline" data-comment="${c.id}"><textarea>${v45Esc(c.text)}</textarea><button onclick="v45SaveComment('${key}',${c.id})">💾 저장</button><button onclick="v45DeleteComment('${key}',${c.id})">🗑️ 삭제</button></div>`:`<div class="v42-comment"><b>${v45Esc(c.author)}</b> · ${v45Esc(c.text)} <button onclick="v45EditComment('${kind}',${id},${c.id})">✏️ 수정</button><button onclick="v45DeleteComment('${key}',${c.id})">🗑️ 삭제</button></div>`).join('')}
+const v45BaseRender=v42Render;v42Render=function(){v45BaseRender();document.querySelectorAll('#v42-place-list .v42-item').forEach(el=>{const name=el.querySelector('b')?.textContent,p=v42.places.find(x=>x.name===name);if(!p)return;if(v45Edit.kind==='place'&&v45Edit.id===p.id){const v=v44LatestVisit(p);el.innerHTML=`<div class="v45-inline" data-edit-place="${p.id}"><input data-k="name" value="${v45Esc(p.name)}"><input data-k="date" type="date" value="${v.date}"><input data-k="rating" type="number" min="0" max="5" step=".5" value="${v.rating}"><select data-k="revisit"><option ${v.revisit==='꼭 다시'?'selected':''}>꼭 다시</option><option ${v.revisit==='기회 되면'?'selected':''}>기회 되면</option><option ${v.revisit==='한 번이면 충분'?'selected':''}>한 번이면 충분</option></select><textarea data-k="review">${v45Esc(v.review)}</textarea><button onclick="v45SavePlace(${p.id})">💾 저장</button><button onclick="v45CancelEdit()">취소</button></div>`}else el.insertAdjacentHTML('beforeend',`<div class="v45-actions"><button onclick="v45StartEdit('place',${p.id})">✏️ 수정</button><button onclick="v45DeletePlace(${p.id})">🗑️ 삭제</button><button onclick="v45AddComment('place',${p.id})">💬 댓글</button></div>`)});document.querySelectorAll('#v42-movie-list .v42-item').forEach(el=>{const title=el.querySelector('b')?.textContent,m=v42.movies.find(x=>x.title===title);if(!m)return;if(v45Edit.kind==='movie'&&v45Edit.id===m.id)el.innerHTML=`<div class="v45-inline" data-edit-movie="${m.id}"><input data-k="title" value="${v45Esc(m.title)}"><input data-k="watchedDate" type="date" value="${m.watchedDate||''}"><input data-k="posterUrl" value="${v45Esc(m.posterUrl||'')}"><input data-k="releaseDate" type="date" value="${m.releaseDate||''}"><input data-k="ratingUser1" type="number" step=".5" value="${m.ratingUser1||0}"><input data-k="ratingUser2" type="number" step=".5" value="${m.ratingUser2||0}"><textarea data-k="review">${v45Esc(m.review||'')}</textarea><button onclick="v45SaveMovie(${m.id})">💾 저장</button><button onclick="v45CancelEdit()">취소</button></div>`;else el.insertAdjacentHTML('beforeend',`<div class="v45-actions"><button onclick="v45StartEdit('movie',${m.id})">✏️ 수정</button><button onclick="v45DeleteMovie(${m.id})">🗑️ 삭제</button><button onclick="v45AddComment('movie',${m.id})">💬 댓글</button></div>`)});}
+function v45EditDiary(id){const f=diaryFeeds.find(x=>x.id===id);if(f){f._editing=true;recalculateStatsAndFeeds()}}function v45CancelDiary(id){const f=diaryFeeds.find(x=>x.id===id);if(f)delete f._editing;recalculateStatsAndFeeds()}function v45SaveDiary(id){const f=diaryFeeds.find(x=>x.id===id),b=document.querySelector(`[data-edit-diary="${id}"]`);f.startDate=b.querySelector('[data-k=startDate]').value;f.endDate=b.querySelector('[data-k=endDate]').value||null;f.comment=b.querySelector('[data-k=comment]').value;f.tags=b.querySelector('[data-k=tags]').value;['food','cafe','play','etc'].forEach(k=>f.cost[k]=+b.querySelector(`[data-k=${k}]`).value||0);f.cost.total=f.cost.food+f.cost.cafe+f.cost.play+f.cost.etc;delete f._editing;saveState();recalculateStatsAndFeeds()}
+const v45BaseRecalc=recalculateStatsAndFeeds;recalculateStatsAndFeeds=function(){v45BaseRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;if(f._editing){card.innerHTML=`<div class="v45-inline" data-edit-diary="${f.id}"><input data-k="startDate" type="date" value="${f.startDate}"><input data-k="endDate" type="date" value="${f.endDate||''}"><textarea data-k="comment">${v45Esc(f.comment)}</textarea><input data-k="tags" value="${v45Esc(f.tags||'')}">${['food','cafe','play','etc'].map(k=>`<input data-k="${k}" type="number" value="${f.cost[k]||0}">`).join('')}<button onclick="v45SaveDiary(${f.id})">💾 저장</button><button onclick="v45CancelDiary(${f.id})">취소</button></div>`}else{card.insertAdjacentHTML('beforeend',`<div class="v45-actions"><button onclick="v45EditDiary(${f.id})">✏️ 수정</button><button onclick="v45AddComment('diary',${f.id})">💬 댓글</button></div>`)}})}
+window.addEventListener('load',()=>setTimeout(()=>{v45InitWish();v45RenderStadiums();v45RenderSchedules();v44InitPlaceUI();v42Render();recalculateStatsAndFeeds();},500));
+</script>
+
+<style id="v46-polish-css">
+.v46-ribbon-wrap{display:flex;gap:6px;overflow-x:auto;padding:3px 0 7px;scrollbar-width:thin}.v46-ribbon{flex:0 0 auto;border:0;border-radius:999px;padding:7px 11px;background:#f1f2f6;color:#57606f;font-weight:700;cursor:pointer}.v46-ribbon.active{background:var(--point-pink);color:#fff}.v46-filter-block{background:#fafafa;padding:9px;border-radius:12px;margin-bottom:10px}.v46-filter-label{font-size:.75rem;font-weight:800;color:#747d8c;margin:2px 0 4px}.v46-comment-actions button,.v42-comment button{border:0;border-radius:999px;padding:4px 8px;margin-left:3px;background:#fff0f2;color:#ff788e;cursor:pointer;font-size:.72rem}.v42-comment button:last-child{background:#fff1f1;color:#ff4757}
+.v46-football-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.v46-football-form .v46-full{grid-column:1/-1}.v46-team-ribbons{display:flex;gap:6px;flex-wrap:wrap}.v46-option-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v46-option{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;background:#fafafa;font-weight:700;cursor:pointer}.v46-option.active{background:#fff0f2;color:#ff788e}.v46-add-btn{width:100%}.v46-calendar-icons{position:absolute;left:2px;right:2px;bottom:3px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;font-size:.58rem;line-height:1.05;text-align:center}.calendar-day{position:relative;padding-bottom:25px!important}.calendar-day.has-heart::after,.calendar-day.has-match::before{content:none!important}
+@media(max-width:600px){.v46-football-form{grid-template-columns:1fr}.v46-football-form .v46-full{grid-column:auto}.v46-option-row{grid-template-columns:1fr 1fr}.v46-calendar-icons{font-size:.52rem}.calendar-day{padding-bottom:24px!important}}
+</style>
+<script id="v46-polish-js">
+(function(){
+const esc46=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+// Wish filters -> ribbon UI while preserving original filtering engine.
+function v46SetWishRegion(v){document.getElementById('filter-location').value=v;v46PaintWishRibbons();renderBucketList()}
+function v46SetWishStatus(v){const r=document.querySelector(`input[name="filter-status"][value="${v}"]`);if(r)r.checked=true;v46PaintWishRibbons();renderBucketList()}
+function v46PaintWishRibbons(){document.querySelectorAll('[data-wish-region]').forEach(b=>b.classList.toggle('active',b.dataset.wishRegion===document.getElementById('filter-location').value));const st=document.querySelector('input[name="filter-status"]:checked')?.value||'all';document.querySelectorAll('[data-wish-status]').forEach(b=>b.classList.toggle('active',b.dataset.wishStatus===st))}
+function v46BuildWishRibbons(){const old=document.getElementById('filter-location-row')?.parentElement;if(!old||document.getElementById('v46-wish-filters'))return;old.style.display='none';const box=document.createElement('div');box.id='v46-wish-filters';box.className='v46-filter-block';const regions=[['전체','🌏 전체'],...V45_PROVINCES.map(x=>[x,x.replace('특별자치도','').replace('특별자치시','').replace('광역시','').replace('특별시','').replace('도','')])];box.innerHTML=`<div class="v46-filter-label">🔎 지역</div><div class="v46-ribbon-wrap">${regions.map(([v,l])=>`<button class="v46-ribbon" data-wish-region="${v}" onclick="v46SetWishRegion('${v}')">${l}</button>`).join('')}</div><div class="v46-filter-label">📋 상태</div><div class="v46-ribbon-wrap"><button class="v46-ribbon" data-wish-status="all" onclick="v46SetWishStatus('all')">📋 전체</button><button class="v46-ribbon" data-wish-status="todo" onclick="v46SetWishStatus('todo')">💗 미달성</button><button class="v46-ribbon" data-wish-status="done" onclick="v46SetWishStatus('done')">✅ 달성</button></div>`;old.after(box);v46PaintWishRibbons()}
+window.v46SetWishRegion=v46SetWishRegion;window.v46SetWishStatus=v46SetWishStatus;
+// Remove duplicate legacy comment buttons, keep only action-row comment button. Style comment CRUD.
+const render46=window.v42Render;window.v42Render=function(){render46();document.querySelectorAll('#v42-place-list .v42-item,#v42-movie-list .v42-item').forEach(card=>{Array.from(card.children).filter(x=>x.tagName==='BUTTON'&&x.textContent.trim()==='댓글').forEach(x=>x.remove())});};
+// Football form: clearer layout, team ribbons, conditional stadium-save option, work toggle.
+function v46BuildFootballForm(){const panel=document.querySelector('#v45-football-panel details .v45-form');if(!panel||panel.classList.contains('v46-football-form'))return;panel.className='v46-football-form';panel.innerHTML=`<input type="date" id="match-date"><input type="text" id="match-team" placeholder="경기명 (예: 강원 FC vs 수원 삼성)"><input type="time" id="v43-match-time"><input list="v43-stadium-list" id="v43-match-stadium" placeholder="경기장 선택 또는 직접 입력" oninput="v46StadiumInput()"><datalist id="v43-stadium-list"></datalist><div class="v46-full"><div class="v46-filter-label">팀 구분</div><div class="v46-team-ribbons"><button type="button" class="v46-ribbon active" data-team="강원" onclick="v46PickTeam('강원')">강원 🧡</button><button type="button" class="v46-ribbon" data-team="수원" onclick="v46PickTeam('수원')">수원 💙</button><button type="button" class="v46-ribbon" data-team="기타" onclick="v46PickTeam('기타')">기타 ⚽</button></div><select id="match-crew" hidden><option value="강원" selected>강원</option><option value="수원">수원</option><option value="기타">기타</option></select></div><div class="v46-option-row v46-full"><label class="v46-option" id="v46-save-stadium-wrap" style="display:none"><input type="checkbox" id="v45-save-stadium"> 경기장 목록에 저장</label><label class="v46-option" id="v46-work-wrap"><input type="checkbox" id="v45-work" onchange="this.parentElement.classList.toggle('active',this.checked)"> 💼 서형 근무</label></div><input class="v46-full" type="text" id="v43-match-memo" placeholder="메모 (선택)"><button class="btn-black v46-full v46-add-btn" onclick="addKleagueMatch()">⚽ 경기 일정 추가</button>`;v45RenderStadiums()}
+function v46PickTeam(v){document.getElementById('match-crew').value=v;document.querySelectorAll('[data-team]').forEach(b=>b.classList.toggle('active',b.dataset.team===v))}
+function v46StadiumInput(){const val=document.getElementById('v43-match-stadium').value.trim();const known=[...document.querySelectorAll('#v43-stadium-list option')].some(o=>o.value===val);const wrap=document.getElementById('v46-save-stadium-wrap');wrap.style.display=val&&!known?'flex':'none';if(known||!val)document.getElementById('v45-save-stadium').checked=false}
+window.v46PickTeam=v46PickTeam;window.v46StadiumInput=v46StadiumInput;
+// Calendar: one icon per schedule TYPE per day, regardless of number of items; diary ranges count as date/heart.
+window.renderCalendar=function(){const grid=document.getElementById('calendar-grid');if(!grid)return;grid.innerHTML='';const year=currentDate.getFullYear(),month=currentDate.getMonth();document.getElementById('calendar-title').innerText=`${year}년 ${month+1}월`;['일','월','화','수','목','금','토'].forEach(d=>{const e=document.createElement('div');e.className='calendar-day-label';e.innerText=d;grid.appendChild(e)});for(let i=0;i<new Date(year,month,1).getDay();i++)grid.appendChild(document.createElement('div'));const last=new Date(year,month+1,0).getDate(),today=new Date();for(let d=1;d<=last;d++){const box=document.createElement('div');box.className='calendar-day';const num=document.createElement('span');num.textContent=d;box.appendChild(num);const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const icons=new Set();allSchedules.filter(s=>s.date===ds).forEach(s=>{if(s.type==='서형')icons.add('💛');else if(s.type==='현진')icons.add('💙');else if(s.type==='데이트'||s.type==='같이')icons.add('❤️');else if(s.type==='K리그'){if(s.detail==='강원')icons.add('🧡');else if(s.detail==='수원')icons.add('⚽');else icons.add('🏟️')}});diaryFeeds.forEach(f=>{const start=f.startDate||'',end=f.endDate||f.startDate||'';if(start&&ds>=start&&ds<=end)icons.add('❤️')});if(icons.size){const ic=document.createElement('span');ic.className='v46-calendar-icons';ic.innerHTML=[...icons].map(x=>`<span>${x}</span>`).join('');box.appendChild(ic)}if(year===today.getFullYear()&&month===today.getMonth()&&d===today.getDate())box.classList.add('today');grid.appendChild(box)}};
+// Ensure every schedule mutation refreshes calendar and visible schedule lists.
+const addG46=window.addGeneralSchedule;window.addGeneralSchedule=function(){const r=addG46.apply(this,arguments);renderCalendar();v45RenderSchedules();return r};const addK46=window.addKleagueMatch;window.addKleagueMatch=function(){const r=addK46.apply(this,arguments);renderCalendar();v45RenderSchedules();return r};
+window.addEventListener('load',()=>setTimeout(()=>{v46BuildWishRibbons();v46BuildFootballForm();v42Render();renderCalendar();},800));
+})();
+</script>
+
+
+<style id="v47-layout-css">
+@media (min-width:1025px){
+  .main-content{grid-template-columns:minmax(250px,.85fr) minmax(330px,1.08fr) minmax(330px,1.08fr);align-items:start}
+  .v47-timeline-wide{grid-column:1/-1;width:100%}
+  .v47-timeline-wide .diary-feed{display:flex!important;flex-direction:row!important;gap:14px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 12px;scroll-snap-type:x proximity}
+  .v47-timeline-wide .diary-feed>*,.v47-timeline-wide #diary-feed-container>*{flex:0 0 clamp(300px,31%,390px);scroll-snap-align:start;max-width:390px}
+  .v47-summary-wide{width:100%}
+}
+#v47-lower-content{max-width:1300px;margin:0 auto;padding:0 20px 20px}
+#v47-lower-content .visual-map-card{margin-top:20px}
+#v47-map-bottom{margin-top:20px}
+@media(max-width:768px){#v47-lower-content{padding:0 10px 90px}.v47-timeline-wide .diary-feed{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px}.v47-timeline-wide .diary-feed>*{flex:0 0 88%;min-width:88%}}
+</style>
+<script id="v47-layout-js">
+(function(){
+function v47ApplyMovieWishUI(){
+ const filters=document.getElementById('v46-wish-filters');
+ const regionLabel=filters?.querySelector('.v46-filter-label');
+ const regionRibbon=filters?.querySelector('.v46-ribbon-wrap');
+ const isMovie=window.currentTab==='movie';
+ if(regionLabel)regionLabel.style.display=isMovie?'none':'';
+ if(regionRibbon)regionRibbon.style.display=isMovie?'none':'';
+ const locGroup=document.getElementById('bucket-loc-group');if(locGroup)locGroup.style.display=isMovie?'none':'grid';
+ const platform=document.getElementById('bucket-movie-platform');if(platform)platform.style.display='none';
+}
+function v47Reflow(){
+ const main=document.querySelector('.main-content');if(!main)return;
+ const diarySection=document.querySelector('[data-mobile-section="diary"]');
+ const timelineCard=Array.from(diarySection?.children||[]).find(x=>x.textContent.includes('우리들의 타임라인 피드'));
+ if(timelineCard){timelineCard.classList.add('v47-timeline-wide');main.insertAdjacentElement('afterend',timelineCard)}
+ let lower=document.getElementById('v47-lower-content');if(!lower){lower=document.createElement('div');lower.id='v47-lower-content';main.parentElement.insertBefore(lower,main.nextSibling)}
+ if(timelineCard)lower.appendChild(timelineCard);
+ const places=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('방문 장소 리뷰'));
+ const summary=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('연도별 결산'));
+ const map=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('대한민국 시·군·구 방문 지도'));
+ if(places){places.classList.add('v47-places-wide');lower.appendChild(places)}
+ if(summary){summary.classList.add('v47-summary-wide');lower.appendChild(summary)}
+ if(map){map.id='v47-map-bottom';lower.appendChild(map)}
+ v47ApplyMovieWishUI();
+}
+const oldSwitch47=window.switchTab;window.switchTab=function(tabName){const r=oldSwitch47.apply(this,arguments);if(tabName==='movie'){const f=document.getElementById('filter-location');if(f)f.value='전체'}setTimeout(v47ApplyMovieWishUI,0);return r};
+const oldRenderBucket47=window.renderBucketList;window.renderBucketList=function(){if(window.currentTab==='movie'){const f=document.getElementById('filter-location');if(f)f.value='전체'}return oldRenderBucket47.apply(this,arguments)};
+window.addEventListener('load',()=>setTimeout(v47Reflow,1000));
+})();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
