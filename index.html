@@ -157,7 +157,28 @@
 @media(max-width:768px){.v43-region-row{grid-template-columns:1fr 1fr}}
 </style><style>
 .v44-search-card{position:sticky;top:0;z-index:900;margin-bottom:16px}.v44-search-results{max-height:360px;overflow:auto;background:#fff;border:1px solid var(--light-pink);border-radius:14px;padding:10px}.v44-search-group{margin-bottom:10px}.v44-search-hit{padding:8px;border-bottom:1px dashed var(--light-pink);cursor:pointer}.v44-ribbons{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:thin}.v44-ribbon{border:1px solid var(--light-pink);background:#fff8f9;border-radius:999px;padding:8px 12px;white-space:nowrap;cursor:pointer;font-weight:700}.v44-ribbon.active{background:var(--point-pink);color:#fff}.v44-label{font-size:.78rem;font-weight:800;color:var(--gray-sub)}.v44-place-layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,1.3fr);gap:18px}.v44-filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.v44-filter-row select{width:auto;margin:0}.v44-filter-row input{width:auto;margin:0}.v44-scroll-list{max-height:620px;overflow:auto}.v44-history{margin-top:8px;padding-top:8px;border-top:1px dashed var(--light-pink)}.v44-link-selects{background:#fff8f9;padding:10px;border-radius:12px;margin-bottom:10px}.v44-link-selects select{min-height:42px}.v44-fav{border:0;background:none;font-size:1.2rem;cursor:pointer}.v44-summary-card{background:#fff8f9;padding:12px;border-radius:14px;text-align:center}.v44-summary-card b{display:block;font-size:1.1rem;margin-top:4px}@media(max-width:768px){.v44-search-card{top:0}.v44-place-layout{grid-template-columns:1fr}.v44-ribbon{min-height:42px}.v44-scroll-list{max-height:52vh}.v44-filter-row{align-items:stretch}.v44-filter-row select{width:100%}}
-</style></head>
+</style>
+<style id="v481-mobile-hotfix">
+/* v4.8.1 mobile hotfix */
+*,*::before,*::after{box-sizing:border-box}
+@media (max-width: 768px){
+ html,body{max-width:100%;overflow-x:hidden}
+ .container,.main-container,.dashboard,.dashboard-grid,.content-grid,main,section{min-width:0;max-width:100%}
+ .dashboard-grid,.content-grid{grid-template-columns:minmax(0,1fr)!important}
+ section,.card,.panel{width:100%;max-width:100%;min-width:0}
+ input,select,textarea,button{max-width:100%;min-width:0}
+ input[type="date"]{min-height:44px!important;height:44px!important;padding:8px 12px!important;font-size:16px!important}
+ .timeline-scroll,.timeline-feed,.timeline-track{padding-left:16px!important;padding-right:16px!important;scroll-padding-inline:16px;max-width:100%;overflow-x:auto}
+ .timeline-card{max-width:calc(100vw - 64px)!important;min-width:calc(100vw - 64px)!important}
+ .place-ribbon,.sido-ribbon,.sgg-ribbon,.filter-ribbon{max-width:100%;overflow-x:auto;white-space:nowrap}
+ .place-review-section,.place-review-section *{min-width:0}
+ .place-review-section input,.place-review-section select,.place-review-section textarea,.place-review-section .review-card{max-width:100%;width:100%}
+}
+/* annual summary label typography */
+.year-summary-card .label,.annual-summary-card .label,.summary-card .label,.stat-card .label{font-size:.88em!important;line-height:1.25}
+@media (min-width:769px){.year-summary-card .label,.annual-summary-card .label,.summary-card .label,.stat-card .label{font-size:.9em!important}}
+</style>
+</head>
 <body>
 
 <div class="container">
