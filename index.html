@@ -264,6 +264,81 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
 }
 </style>
 
+
+<style id="v49-schedule-mobile-fix">
+/* 일정 목록: 정보 영역 확대, 액션은 이모지만 */
+.v49-schedule-item{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:10px!important;align-items:center!important}
+.v49-schedule-info{min-width:0!important;overflow-wrap:anywhere}
+.v49-icon-actions{display:flex!important;gap:6px!important;flex:0 0 auto!important}
+.v49-icon-actions button{width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;font-size:1rem!important}
+.v49-football-item{padding-top:13px!important;padding-bottom:13px!important;margin-bottom:5px!important}
+.v49-more-btn{width:100%;margin:10px 0 4px;padding:10px 12px;border:0;border-radius:14px;background:#f1f2f4;font-weight:700;cursor:pointer}
+#v45-personal-panel details,#v45-football-panel details{margin-top:12px!important}
+#v45-personal-panel details>summary,#v45-football-panel details>summary{padding-top:7px!important;padding-bottom:7px!important}
+#v45-personal-panel details[open]>.v45-form,#v45-football-panel details[open]>.v45-form,
+#v45-football-panel details[open]>.v46-football-form{margin-top:12px!important}
+#v46-work-wrap{width:auto!important;min-width:170px!important;white-space:nowrap!important;display:inline-flex!important;align-items:center!important}
+#v46-work-wrap input{flex:0 0 auto!important}
+
+@media(max-width:768px){
+  /* iOS date/time intrinsic width overflow fix */
+  #v45-personal-panel,#v45-football-panel,
+  #v45-personal-panel details,#v45-football-panel details,
+  #v45-personal-panel .v45-form,#v45-football-panel .v45-form,
+  #v45-football-panel .v46-football-form,
+  [data-mobile-section="diary"],[data-mobile-section="diary"] section,
+  [data-mobile-section="diary"] form{
+    min-width:0!important;max-width:100%!important;width:100%!important;box-sizing:border-box!important;overflow-x:hidden!important;
+  }
+  #v45-personal-panel .v45-form,#v45-football-panel .v45-form,
+  #v45-football-panel .v46-football-form{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  #v45-personal-panel input,#v45-personal-panel select,#v45-personal-panel textarea,
+  #v45-football-panel input,#v45-football-panel select,#v45-football-panel textarea,
+  [data-mobile-section="diary"] input[type="date"],
+  [data-mobile-section="diary"] input[type="time"]{
+    width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+  }
+  input[type="date"],input[type="time"]{
+    min-width:0!important;max-width:100%!important;box-sizing:border-box!important;
+  }
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="time"]::-webkit-date-and-time-value{
+    text-align:left!important;min-width:0!important;
+  }
+  .v49-schedule-item{grid-template-columns:minmax(0,1fr) 86px!important}
+  .v49-icon-actions{width:86px!important}
+  .v49-icon-actions button{width:40px!important;min-width:40px!important}
+  #v46-work-wrap{min-width:190px!important;width:max-content!important;max-width:100%!important}
+}
+</style>
+
+
+<style id="v491-ui-cleanup">
+.v47-timeline-wide #diary-feed-container .v45-actions,
+.v47-timeline-wide .diary-feed .v45-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  margin:14px 12px 4px!important;
+  padding-top:10px!important;
+  border-top:1px solid rgba(0,0,0,.06);
+}
+.v47-timeline-wide #diary-feed-container .v45-actions button,
+.v47-timeline-wide .diary-feed .v45-actions button{
+  margin:0!important;
+}
+@media(max-width:768px){
+  .v47-timeline-wide #diary-feed-container .v45-actions,
+  .v47-timeline-wide .diary-feed .v45-actions{
+    margin:14px 10px 4px!important;
+    gap:8px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -314,7 +389,7 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
             <div class="card-box" id="v45-schedule-card">
                 <div class="section-title">📅 일정 관리</div>
                 <div class="tabs"><button class="tab-btn active" onclick="v45ScheduleTab('personal',this)">💗 개인·데이트 일정</button><button class="tab-btn" onclick="v45ScheduleTab('football',this)">⚽ 축구 일정</button></div>
-                <section id="v45-personal-panel"><div class="section-title" style="font-size:.95rem">다가오는 개인·데이트 일정</div><div id="v45-personal-list"></div><details><summary>＋ 일정 추가</summary><div class="v45-form"><select id="date-schedule-type"><option value="데이트">❤️ 같이 일정</option><option value="현진">💙 현진 일정</option><option value="서형">💛 서형 일정</option></select><input type="date" id="date-schedule-date"><input type="text" id="date-schedule-text" placeholder="일정 이름"><input type="time" id="v43-general-start"><input type="time" id="v43-general-end"><input type="text" id="v43-general-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addGeneralSchedule()">등록</button></div></details></section>
+                <section id="v45-personal-panel"><div class="section-title" style="font-size:.95rem">다가오는 개인·데이트 일정</div><div id="v45-personal-list"></div><details><summary>＋ 일정 추가</summary><div class="v45-form"><select id="date-schedule-type"><option value="데이트">❤️ 같이 일정</option><option value="현진">🖤 현진 일정</option><option value="서형">💛 서형 일정</option></select><input type="date" id="date-schedule-date"><input type="text" id="date-schedule-text" placeholder="일정 이름"><input type="time" id="v43-general-start"><input type="time" id="v43-general-end"><input type="text" id="v43-general-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addGeneralSchedule()">등록</button></div></details></section>
                 <section id="v45-football-panel" style="display:none"><div class="section-title" style="font-size:.95rem">다가오는 경기 일정</div><div id="v45-football-list"></div><details><summary>＋ 경기 일정 등록</summary><div class="v45-form"><input type="date" id="match-date"><input type="text" id="match-team" placeholder="예: 강원 FC vs 수원 삼성"><input type="time" id="v43-match-time"><input list="v43-stadium-list" id="v43-match-stadium" placeholder="경기장 선택 또는 직접 입력"><datalist id="v43-stadium-list"></datalist><label><input type="checkbox" id="v45-save-stadium"> 경기장 목록에 저장</label><select id="match-crew"><option value="강원">강원 🧡</option><option value="수원">수원 💙</option><option value="기타">기타 ⚽</option></select><label><input type="checkbox" id="v45-work"> 💼 서형 근무</label><input type="text" id="v43-match-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addKleagueMatch()">경기 일정 추가</button></div></details><details><summary>🗃️ 지난 경기 보기</summary><div id="v43-past-matches"></div></details></section>
                 <div id="v43-upcoming" style="display:none"></div><div id="kleague-match-box" style="display:none"></div><select id="v43-match-year" style="display:none"></select>
             </div>
@@ -1364,7 +1439,7 @@ function v44ToggleMovieFavorite(id){const m=v42.movies.find(x=>x.id===id);if(m){
 function v42AddComment(kind,id){const text=prompt("댓글을 입력해줘.");if(!text)return;const key=kind+":"+id;v42.comments[key]=v42.comments[key]||[];v42.comments[key].push({id:Date.now(),uid:v42Uid(),author:v42Author(),text,createdAt:new Date().toISOString()});v42Save();}function v42Comments(kind,id){return (v42.comments[kind+":"+id]||[]).map(c=>`<div class="v42-comment"><b>${c.author}</b> · ${c.text}</div>`).join("");}
 function v44LinkedDiaryCount(kind,id){return diaryFeeds.filter(f=>(kind==="place"?(f.placeIds||[]):(f.movieIds||[])).includes(id)).length;}
 function v42Render(){const pl=document.getElementById("v42-place-list");if(pl){let arr=v42.places.filter(p=>(!v44PlaceFilter.sido||p.sido===v44PlaceFilter.sido)&&(!v44PlaceFilter.sgg||p.sgg===v44PlaceFilter.sgg)&&(!v44PlaceFilter.category||p.category===v44PlaceFilter.category));if(document.getElementById("v44-favorite-only")?.checked)arr=arr.filter(p=>p.favorite);const sort=document.getElementById("v44-place-sort")?.value||"rating";const rank={"꼭 다시":3,"기회 되면":2,"한 번이면 충분":1};arr.sort((a,b)=>sort==="recent"?String(v44LatestVisit(b).date).localeCompare(String(v44LatestVisit(a).date)):sort==="revisit"?(rank[v44LatestVisit(b).revisit]||0)-(rank[v44LatestVisit(a).revisit]||0):(v44LatestVisit(b).rating||0)-(v44LatestVisit(a).rating||0));pl.innerHTML=arr.map(p=>{const last=v44LatestVisit(p);return `<div class="v42-item"><button class="v44-fav" onclick="v44ToggleFavorite(${p.id})">${p.favorite?'❤️':'🤍'}</button> <b>${p.name}</b> <span class="v42-stars">★ ${last.rating||0}</span><div>${p.sido} ${p.sgg} · ${p.category} · 총 ${p.visits.length}회 방문 · 연결 데이트 ${v44LinkedDiaryCount('place',p.id)}건</div><div class="v44-history">${[...p.visits].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(v=>`<div><b>${v.date}</b> ★${v.rating} “${v.review||''}” · ${v.author}</div>`).join('')}</div><button onclick="v42AddComment('place',${p.id})">댓글</button><div class="v42-comments">${v42Comments('place',p.id)}</div></div>`}).join("")||"조건에 맞는 장소가 없어.";}
-const ml=document.getElementById("v42-movie-list");if(ml)ml.innerHTML=v42.movies.map(m=>`<div class="v42-item">${m.posterUrl?`<img src="${m.posterUrl}" style="width:70px;border-radius:8px;float:right" onerror="this.style.display='none'">`:''}<button class="v44-fav" onclick="v44ToggleMovieFavorite(${m.id})">${m.favorite?'❤️':'🤍'}</button> <b>${m.title}</b><div>${m.releaseDate?`개봉 ${m.releaseDate} · `:''}관람 ${m.watchedDate||'-'} · 연결 데이트 ${v44LinkedDiaryCount('movie',m.id)}건</div><div><span class="v42-stars">서형 ★${m.ratingUser1||0}</span> · <span class="v42-stars">현진 ★${m.ratingUser2||0}</span></div><div>${m.review||''}</div><button onclick="v42AddComment('movie',${m.id})">댓글</button><div class="v42-comments">${v42Comments('movie',m.id)}</div></div>`).join("")||"아직 같이 본 영화가 없어.";}
+const ml=document.getElementById("v42-movie-list");if(ml)ml.innerHTML=v42.movies.map(m=>`<div class="v42-item">${m.posterUrl?`<img src="${m.posterUrl}" style="width:70px;border-radius:8px;float:right" onerror="this.style.display='none'">`:''}<button class="v44-fav" onclick="v44ToggleMovieFavorite(${m.id})">${m.favorite?'❤️':'🤍'}</button> <b>${m.title}</b><div>${m.releaseDate?`개봉 ${m.releaseDate} · `:''}관람 ${m.watchedDate||'-'} · 연결 데이트 ${v44LinkedDiaryCount('movie',m.id)}건</div><div><span class="v42-stars">서형 ★${m.ratingUser1||0}</span> · <span class="v42-stars">현진 ★${m.ratingUser2||0}</span></div><div>${m.review||''}</div></div>`).join("")||"아직 같이 본 영화가 없어.";}
 function v42CloseHistory(){document.getElementById("v42-history-modal").classList.remove("open");}
 function v43RegionRows(){const box=document.getElementById("v43-diary-regions");if(!box)return;box.innerHTML="";for(let i=1;i<=3;i++)box.insertAdjacentHTML('beforeend',`<div class="v43-region-row"><select id="v43-sido-${i}" onchange="v43FillSgg(${i})"><option value="">${i}지역 시·도</option>${Object.keys(koreaMapData).map(s=>`<option value="${s}">${s}</option>`).join('')}</select><select id="v43-sgg-${i}"><option value="">시·군·구</option></select></div>`);}
 function v43FillSgg(i){const s=document.getElementById(`v43-sido-${i}`)?.value,g=document.getElementById(`v43-sgg-${i}`);if(g)g.innerHTML='<option value="">시·군·구</option>'+Object.keys(koreaMapData[s]||{}).map(x=>`<option value="${x}">${x}</option>`).join('');}
@@ -1400,7 +1475,21 @@ function v45ScheduleEdit(id){const s=allSchedules.find(x=>x.id===id);if(!s)retur
 function v45ScheduleCancel(id){const s=allSchedules.find(x=>x.id===id);if(s)delete s._editing;v45RenderSchedules()}
 function v45ScheduleSave(id){const s=allSchedules.find(x=>x.id===id),box=document.querySelector(`[data-schedule-edit="${id}"]`);if(!s||!box)return;s.date=box.querySelector('[data-k=date]').value;s.content=box.querySelector('[data-k=content]').value.trim();s.startTime=box.querySelector('[data-k=time]')?.value||s.startTime;s.kickoff=s.startTime;s.memo=box.querySelector('[data-k=memo]').value.trim();if(s.type==='K리그'){s.stadium=box.querySelector('[data-k=stadium]').value.trim();s.detail=box.querySelector('[data-k=detail]').value;s.work=box.querySelector('[data-k=work]').checked;}delete s._editing;v45Persist();v45RenderSchedules();renderCalendar()}
 function v45ScheduleDelete(id){if(!confirm('이 일정을 삭제할까요?'))return;allSchedules=allSchedules.filter(x=>x.id!==id);v45Persist();v45RenderSchedules();renderCalendar()}
-function v45RenderSchedules(){const today=new Date().toISOString().slice(0,10);const render=(s,football)=>s._editing?`<div class="v45-inline" data-schedule-edit="${s.id}"><input data-k="date" type="date" value="${s.date}"><input data-k="content" value="${v45Esc(s.content)}"><input data-k="time" type="time" value="${s.startTime||s.kickoff||''}">${football?`<input data-k="stadium" value="${v45Esc(s.stadium||'')}"><select data-k="detail"><option ${s.detail==='강원'?'selected':''}>강원</option><option ${s.detail==='수원'?'selected':''}>수원</option><option ${s.detail==='기타'?'selected':''}>기타</option></select><label><input data-k="work" type="checkbox" ${s.work?'checked':''}> 서형 근무</label>`:''}<input data-k="memo" value="${v45Esc(s.memo||'')}" placeholder="메모"><div><button onclick="v45ScheduleSave(${s.id})">💾 저장</button><button onclick="v45ScheduleCancel(${s.id})">취소</button></div></div>`:`<div class="match-item"><div><b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${v45Esc(s.content)}${s.stadium?' · 🏟️ '+v45Esc(s.stadium):''}<div class="v45-badges">${football?`<span>${s.detail==='강원'?'강원 🧡':s.detail==='수원'?'수원 💙':'기타 ⚽'}</span>${s.work?'<span>💼 서형 근무</span>':''}`:`<span>${s.type==='현진'?'💙 현진':s.type==='서형'?'💛 서형':'❤️ 같이'}</span>`}</div>${s.memo?`<small>${v45Esc(s.memo)}</small>`:''}</div><div class="v45-actions"><button onclick="v45ScheduleEdit(${s.id})">✏️ 수정</button><button onclick="v45ScheduleDelete(${s.id})">🗑️ 삭제</button></div></div>`;document.getElementById('v45-personal-list').innerHTML=allSchedules.filter(s=>s.type!=='K리그'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).map(s=>render(s,false)).join('')||'예정된 일정이 없습니다.';document.getElementById('v45-football-list').innerHTML=allSchedules.filter(s=>s.type==='K리그'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).map(s=>render(s,true)).join('')||'예정된 경기가 없습니다.';document.getElementById('v43-past-matches').innerHTML=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)).map(s=>render(s,true)).join('')||'지난 경기가 없습니다.'}
+let v49ShowAllPersonal=false,v49ShowAllFootball=false;
+function v49ToggleSchedules(kind){if(kind==='personal')v49ShowAllPersonal=!v49ShowAllPersonal;else v49ShowAllFootball=!v49ShowAllFootball;v45RenderSchedules()}
+function v45RenderSchedules(){
+ const today=new Date().toISOString().slice(0,10);
+ const render=(s,football)=>s._editing?
+ `<div class="v45-inline" data-schedule-edit="${s.id}"><input data-k="date" type="date" value="${s.date}"><input data-k="content" value="${v45Esc(s.content)}"><input data-k="time" type="time" value="${s.startTime||s.kickoff||''}">${football?`<input data-k="stadium" value="${v45Esc(s.stadium||'')}"><select data-k="detail"><option ${s.detail==='강원'?'selected':''}>강원</option><option ${s.detail==='수원'?'selected':''}>수원</option><option ${s.detail==='기타'?'selected':''}>기타</option></select><label><input data-k="work" type="checkbox" ${s.work?'checked':''}> 서형 근무</label>`:''}<input data-k="memo" value="${v45Esc(s.memo||'')}" placeholder="메모"><div><button onclick="v45ScheduleSave(${s.id})">💾 저장</button><button onclick="v45ScheduleCancel(${s.id})">취소</button></div></div>`:
+ `<div class="match-item v49-schedule-item ${football?'v49-football-item':'v49-personal-item'}"><div class="v49-schedule-info"><b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${v45Esc(s.content)}${s.stadium?' · 🏟️ '+v45Esc(s.stadium):''}<div class="v45-badges">${football?`<span>${s.detail==='강원'?'강원 🧡':s.detail==='수원'?'수원 💙':'기타 ⚽'}</span>${s.work?'<span>💼 서형 근무</span>':''}`:`<span>${s.type==='현진'?'🖤 현진':s.type==='서형'?'💛 서형':'❤️ 같이'}</span>`}</div>${s.memo?`<small>${v45Esc(s.memo)}</small>`:''}</div><div class="v45-actions v49-icon-actions"><button aria-label="수정" title="수정" onclick="v45ScheduleEdit(${s.id})">✏️</button><button aria-label="삭제" title="삭제" onclick="v45ScheduleDelete(${s.id})">🗑️</button></div></div>`;
+
+ const personal=allSchedules.filter(s=>s.type!=='K리그'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
+ const football=allSchedules.filter(s=>s.type==='K리그'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
+ const pShow=v49ShowAllPersonal?personal:personal.slice(0,5), fShow=v49ShowAllFootball?football:football.slice(0,5);
+ document.getElementById('v45-personal-list').innerHTML=(pShow.map(s=>render(s,false)).join('')||'예정된 일정이 없습니다.')+(personal.length>5?`<button class="v49-more-btn" onclick="v49ToggleSchedules('personal')">${v49ShowAllPersonal?'접기':'전체 일정 보기 ('+personal.length+'개)'}</button>`:'');
+ document.getElementById('v45-football-list').innerHTML=(fShow.map(s=>render(s,true)).join('')||'예정된 경기가 없습니다.')+(football.length>5?`<button class="v49-more-btn" onclick="v49ToggleSchedules('football')">${v49ShowAllFootball?'접기':'전체 일정 보기 ('+football.length+'개)'}</button>`:'');
+ document.getElementById('v43-past-matches').innerHTML=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)).map(s=>render(s,true)).join('')||'지난 경기가 없습니다.';
+}
 const v45OldGeneral=addGeneralSchedule;addGeneralSchedule=function(){const d=document.getElementById('date-schedule-date').value,t=document.getElementById('date-schedule-text').value.trim();if(!d||!t)return alert('날짜와 일정 내용을 입력해주세요!');allSchedules.push({id:Date.now(),type:document.getElementById('date-schedule-type').value,date:d,content:t,startTime:document.getElementById('v43-general-start').value,endTime:document.getElementById('v43-general-end').value,memo:document.getElementById('v43-general-memo').value});document.getElementById('date-schedule-text').value='';v45Persist();v45RenderSchedules();renderCalendar()}
 addKleagueMatch=function(){const d=document.getElementById('match-date').value,t=document.getElementById('match-team').value.trim(),stad=document.getElementById('v43-match-stadium').value.trim();if(!d||!t)return alert('날짜와 경기 스케줄을 입력해주세요!');if(stad&&document.getElementById('v45-save-stadium').checked){const a=v45Stadiums();if(!a.includes(stad)){a.push(stad);localStorage.setItem('v45_custom_stadiums',JSON.stringify(a));v45RenderStadiums()}}allSchedules.push({id:Date.now(),type:'K리그',date:d,content:t,detail:document.getElementById('match-crew').value,kickoff:document.getElementById('v43-match-time').value,startTime:document.getElementById('v43-match-time').value,stadium:stad,memo:document.getElementById('v43-match-memo').value,work:document.getElementById('v45-work').checked});document.getElementById('match-team').value='';v45Persist();v45RenderSchedules();renderCalendar()}
 function v45InitWish(){const f=document.getElementById('filter-location');f.innerHTML='<option value="전체">🌍 전체 보기</option>'+V45_PROVINCES.map(x=>`<option value="${x}">${x}</option>`).join('');bucketData.restaurant=(bucketData.restaurant||[]).map(x=>({...x,sido:v45NormRegion(x.sido)}));bucketData.activity=(bucketData.activity||[]).map(x=>({...x,sido:v45NormRegion(x.sido)}));bucketData.travel=(bucketData.travel||[]).map(x=>({...x,sido:v45NormRegion(x.sido)}));}
@@ -1450,7 +1539,7 @@ function v46PickTeam(v){document.getElementById('match-crew').value=v;document.q
 function v46StadiumInput(){const val=document.getElementById('v43-match-stadium').value.trim();const known=[...document.querySelectorAll('#v43-stadium-list option')].some(o=>o.value===val);const wrap=document.getElementById('v46-save-stadium-wrap');wrap.style.display=val&&!known?'flex':'none';if(known||!val)document.getElementById('v45-save-stadium').checked=false}
 window.v46PickTeam=v46PickTeam;window.v46StadiumInput=v46StadiumInput;
 // Calendar: one icon per schedule TYPE per day, regardless of number of items; diary ranges count as date/heart.
-window.renderCalendar=function(){const grid=document.getElementById('calendar-grid');if(!grid)return;grid.innerHTML='';const year=currentDate.getFullYear(),month=currentDate.getMonth();document.getElementById('calendar-title').innerText=`${year}년 ${month+1}월`;['일','월','화','수','목','금','토'].forEach(d=>{const e=document.createElement('div');e.className='calendar-day-label';e.innerText=d;grid.appendChild(e)});for(let i=0;i<new Date(year,month,1).getDay();i++)grid.appendChild(document.createElement('div'));const last=new Date(year,month+1,0).getDate(),today=new Date();for(let d=1;d<=last;d++){const box=document.createElement('div');box.className='calendar-day';const num=document.createElement('span');num.textContent=d;box.appendChild(num);const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const icons=new Set();allSchedules.filter(s=>s.date===ds).forEach(s=>{if(s.type==='서형')icons.add('💛');else if(s.type==='현진')icons.add('💙');else if(s.type==='데이트'||s.type==='같이')icons.add('❤️');else if(s.type==='K리그'){if(s.detail==='강원')icons.add('🧡');else if(s.detail==='수원')icons.add('⚽');else icons.add('🏟️')}});diaryFeeds.forEach(f=>{const start=f.startDate||'',end=f.endDate||f.startDate||'';if(start&&ds>=start&&ds<=end)icons.add('❤️')});if(icons.size){const ic=document.createElement('span');ic.className='v46-calendar-icons';ic.innerHTML=[...icons].map(x=>`<span>${x}</span>`).join('');box.appendChild(ic)}if(year===today.getFullYear()&&month===today.getMonth()&&d===today.getDate())box.classList.add('today');grid.appendChild(box)}};
+window.renderCalendar=function(){const grid=document.getElementById('calendar-grid');if(!grid)return;grid.innerHTML='';const year=currentDate.getFullYear(),month=currentDate.getMonth();document.getElementById('calendar-title').innerText=`${year}년 ${month+1}월`;['일','월','화','수','목','금','토'].forEach(d=>{const e=document.createElement('div');e.className='calendar-day-label';e.innerText=d;grid.appendChild(e)});for(let i=0;i<new Date(year,month,1).getDay();i++)grid.appendChild(document.createElement('div'));const last=new Date(year,month+1,0).getDate(),today=new Date();for(let d=1;d<=last;d++){const box=document.createElement('div');box.className='calendar-day';const num=document.createElement('span');num.textContent=d;box.appendChild(num);const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const icons=new Set();allSchedules.filter(s=>s.date===ds).forEach(s=>{if(s.type==='서형')icons.add('💛');else if(s.type==='현진')icons.add('🖤');else if(s.type==='데이트'||s.type==='같이')icons.add('❤️');else if(s.type==='K리그'){if(s.detail==='강원')icons.add('🧡');else if(s.detail==='수원')icons.add('💙');else icons.add('⚽')}});diaryFeeds.forEach(f=>{const start=f.startDate||'',end=f.endDate||f.startDate||'';if(start&&ds>=start&&ds<=end)icons.add('❤️')});if(icons.size){const ic=document.createElement('span');ic.className='v46-calendar-icons';ic.innerHTML=[...icons].map(x=>`<span>${x}</span>`).join('');box.appendChild(ic)}if(year===today.getFullYear()&&month===today.getMonth()&&d===today.getDate())box.classList.add('today');grid.appendChild(box)}};
 // Ensure every schedule mutation refreshes calendar and visible schedule lists.
 const addG46=window.addGeneralSchedule;window.addGeneralSchedule=function(){const r=addG46.apply(this,arguments);renderCalendar();v45RenderSchedules();return r};const addK46=window.addKleagueMatch;window.addKleagueMatch=function(){const r=addK46.apply(this,arguments);renderCalendar();v45RenderSchedules();return r};
 window.addEventListener('load',()=>setTimeout(()=>{v46BuildWishRibbons();v46BuildFootballForm();v42Render();renderCalendar();},800));
