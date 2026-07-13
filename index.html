@@ -1491,9 +1491,11 @@ function v47Reflow(){
  let lower=document.getElementById('v47-lower-content');if(!lower){lower=document.createElement('div');lower.id='v47-lower-content';main.parentElement.insertBefore(lower,main.nextSibling)}
  if(timelineCard)lower.appendChild(timelineCard);
  const places=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('방문 장소 리뷰'));
+ const movies=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('같이 본 영화 아카이브'));
  const summary=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('연도별 결산'));
  const map=Array.from(document.querySelectorAll('section.visual-map-card')).find(x=>x.textContent.includes('대한민국 시·군·구 방문 지도'));
  if(places){places.classList.add('v47-places-wide');lower.appendChild(places)}
+ if(movies){movies.classList.add('v47-movies-wide');lower.appendChild(movies)}
  if(summary){summary.classList.add('v47-summary-wide');lower.appendChild(summary)}
  if(map){map.id='v47-map-bottom';lower.appendChild(map)}
  v47ApplyMovieWishUI();
