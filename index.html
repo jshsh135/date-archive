@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리들의 러블리 아카이브 🎀</title>
+    <style>
+        :root {
+            --bg-pink: #fff0f2;
+            --point-pink: #ff788e;
+            --light-pink: #ffe3e7;
+            --dark-black: #2f3542;
+            --card-color: #ffffff;
+            --gray-sub: #747d8c;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+            background-color: var(--bg-pink); color: var(--dark-black);
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 15px 0; }
+        header h1 { color: var(--point-pink); font-size: 2.2rem; margin-bottom: 5px; }
+        header p { opacity: 0.8; font-weight: 500; margin: 0; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .stat-card { background-color: var(--card-color); padding: 15px; border-radius: 20px; text-align: center; box-shadow: 0 8px 16px rgba(255, 120, 142, 0.05); }
+        .stat-card .value { font-size: 1.3rem; font-weight: 800; margin: 3px 0; }
+        .stat-card .label { font-size: 0.75rem; color: var(--gray-sub); font-weight: 600; }
+
+        .main-content { display: grid; grid-template-columns: 1fr 1.2fr 1.1fr; gap: 20px; }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } }
+
+        .card-box { background: var(--card-color); padding: 20px; border-radius: 24px; box-shadow: 0 8px 16px rgba(255, 120, 142, 0.05); margin-bottom: 20px; }
+        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
+
+        input, textarea, select { width: 100%; padding: 11px; margin-bottom: 10px; border: 2px solid var(--light-pink); border-radius: 12px; box-sizing: border-box; font-size: 0.9rem; font-family: inherit; }
+        input:focus, textarea:focus, select:focus { border-color: var(--point-pink); outline: none; }
+        .btn-black { background: var(--dark-black); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; }
+
+        /* 캘린더 */
+        .calendar-wrapper { text-align: center; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: bold; }
+        .calendar-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--point-pink); padding: 0 10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .calendar-day-label { font-weight: bold; font-size: 0.75rem; color: var(--gray-sub); }
+        .calendar-day { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; border-radius: 10px; background: #fff8f9; cursor: pointer; }
+        .calendar-day.has-heart::after { content: '❤️'; position: absolute; bottom: 1px; font-size: 0.55rem; }
+        .calendar-day.has-match::after { content: '⚽'; position: absolute; top: 1px; right: 1px; font-size: 0.55rem; }
+        .calendar-day.today { border: 2px solid var(--point-pink); font-weight: bold; }
+
+        /* 위시리스트 및 삭제 */
+        .tabs { display: flex; gap: 4px; background: var(--bg-pink); padding: 4px; border-radius: 12px; margin-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 8px 0; border: none; background: none; border-radius: 8px; cursor: pointer; font-weight: 700; color: #a4b0be; font-size: 0.8rem; }
+        .tab-btn.active { background-color: var(--point-pink); color: white; }
+        .list-container { max-height: 280px; overflow-y: auto; }
+        .list-item { display: flex; align-items: center; gap: 10px; padding: 10px 5px; border-bottom: 1px dashed var(--light-pink); }
+        .list-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var(--point-pink); flex-shrink: 0; cursor: pointer; }
+        .item-loc-badge { font-size: 0.75rem; background: var(--light-pink); color: var(--point-pink); padding: 2px 6px; border-radius: 6px; font-weight: bold; white-space: nowrap; }
+        .item-text { font-size: 0.9rem; line-height: 1.4; flex: 1; word-break: break-all; }
+        .item-text.done { text-decoration: line-through; color: #ced6e0; }
+        .bucket-select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
+        .btn-del { background: none; border: none; color: #ff4757; font-size: 0.85rem; cursor: pointer; font-weight: bold; padding: 2px 5px; opacity: 0.7; }
+        .btn-del:hover { opacity: 1; }
+
+        /* 데이트 기록 피드 */
+        .cost-split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .cost-split-grid input { margin-bottom: 5px; }
+        .preview-thumbs { display: flex; gap: 6px; overflow-x: auto; padding: 5px 0; }
+        .preview-thumbs img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+        .feed-gallery { display: flex; gap: 4px; overflow-x: auto; }
+        .feed-gallery img { width: 85%; height: 180px; object-fit: cover; border-radius: 12px; flex-shrink: 0; }
+        .feed-card { background: var(--bg-pink); border-radius: 16px; overflow: hidden; border: 1px solid var(--light-pink); margin-bottom: 15px; position: relative; }
+        .feed-content { padding: 15px; }
+        .feed-del-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.8); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* 일정 스케줄 목록 */
+        .match-list { max-height: 180px; overflow-y: auto; font-size: 0.85rem; margin-top: 10px; }
+        .match-item { padding: 8px; border-bottom: 1px dashed #f1f2f6; display: flex; justify-content: space-between; align-items: center; }
+        .match-badge { padding: 3px 7px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; color: white; white-space: nowrap; }
+        .bg-gangwon { background-color: #ff7619; }
+        .bg-suwon { background-color: #1e3799; }
+        .bg-etc { background-color: #747d8c; }
+        .bg-date { background-color: var(--point-pink); }
+
+        /* 도장깨기 레이아웃 */
+        .map-3step-wrapper { display: flex; flex-direction: column; gap: 12px; }
+        .map-row { background: #fbfbfb; padding: 12px; border-radius: 16px; border: 1px solid #f1f2f6; }
+        .map-row-title { font-size: 0.8rem; font-weight: bold; color: var(--gray-sub); margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .chips-container { display: flex; flex-wrap: wrap; gap: 6px; max-height: 180px; overflow-y: auto; padding: 2px; }
+        .step-chip { padding: 6px 11px; background-color: #f1f2f6; color: #57606f; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+        .step-chip.active { background-color: var(--point-pink); color: white; border-color: var(--point-pink); }
+        .step-chip.visited { background-color: var(--light-pink); color: var(--point-pink); border: 1px dashed var(--point-pink); }
+
+        /* 하단 시각화 지도 그래픽 */
+        .visual-map-card { grid-column: 1 / -1; background: var(--card-color); padding: 25px; border-radius: 24px; box-shadow: 0 8px 16px rgba(255, 120, 142, 0.05); }
+        .visual-map-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; margin-top: 15px; }
+        .map-geo-block { background: #f5f6fa; border: 1px solid #e4e7eb; padding: 10px 5px; border-radius: 14px; text-align: center; font-size: 0.78rem; font-weight: bold; transition: all 0.3s; color: #a4b0be; }
+        .map-geo-block.highlight { background: var(--light-pink); border-color: var(--point-pink); color: var(--point-pink); transform: scale(1.03); box-shadow: 0 4px 8px rgba(255,120,142,0.15); }
+        .map-geo-block .sgg-subtext { font-size: 0.65rem; display: block; margin-top: 2px; opacity: 0.8; }
+    </style>
+
+<style>
+.v2-toolbar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.v2-toolbar button{width:auto;padding:9px 12px}
+.mobile-nav{display:none}
+.v2-map-layout{display:grid;grid-template-columns:minmax(280px,520px) 1fr;gap:22px;align-items:center}
+.korea-svg{width:100%;height:auto;filter:drop-shadow(0 8px 16px rgba(255,120,142,.08))}
+.korea-region{fill:#f1f2f6;stroke:#fff;stroke-width:4;cursor:pointer;transition:.2s}
+.korea-region:hover{fill:#ffe3e7}
+.korea-region.visited{fill:var(--point-pink)}
+.korea-region.selected{stroke:#2f3542;stroke-width:7}
+.map-legend{font-size:.8rem;color:var(--gray-sub);line-height:1.7}
+.map-region-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.map-region-pill{padding:7px 10px;border-radius:999px;background:#f1f2f6;font-size:.78rem;font-weight:700}
+.map-region-pill.visited{background:var(--light-pink);color:var(--point-pink)}
+.storage-note{font-size:.72rem;color:var(--gray-sub);margin-top:8px;line-height:1.5}
+@media(max-width:768px){
+ body{padding-bottom:78px}.container{padding:10px}.dashboard{grid-template-columns:repeat(2,1fr);gap:8px}
+ header h1{font-size:1.65rem}.main-content{display:block}
+ .mobile-section{display:none}.mobile-section.mobile-active{display:block}
+ .visual-map-card.mobile-section{display:none}.visual-map-card.mobile-section.mobile-active{display:block}
+ .mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);bottom:0;left:0;right:0;z-index:999;background:#fff;border-top:1px solid var(--light-pink);box-shadow:0 -5px 20px rgba(0,0,0,.08);padding:7px 4px calc(7px + env(safe-area-inset-bottom))}
+ .mobile-nav button{border:0;background:none;font-size:.68rem;color:#747d8c;font-weight:700;padding:5px 2px}.mobile-nav button span{display:block;font-size:1.2rem;margin-bottom:2px}.mobile-nav button.active{color:var(--point-pink)}
+ .v2-map-layout{grid-template-columns:1fr}.v2-toolbar{justify-content:center}
+ .feed-gallery img{width:92%;height:220px}
+}
+</style>
+
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+#real-korea-map{height:650px;border-radius:18px;overflow:hidden;background:#eef2f3}
+.map-status{font-size:.78rem;color:var(--gray-sub);margin:8px 0 12px}
+@media(max-width:768px){#real-korea-map{height:68vh;min-height:460px}}
+</style>
+</head>
+<body>
+
+<div class="container">
+    
+<div class="v2-toolbar">
+  <button class="btn-black" onclick="exportArchive()">💾 데이터 백업</button>
+  <button class="btn-black" onclick="document.getElementById('restore-file').click()">📂 데이터 복원</button>
+  <input id="restore-file" type="file" accept=".json" style="display:none" onchange="importArchive(event)">
+</div>
+
+<header>
+        <h1>우리들의 러블리 아카이브 🎀</h1>
+        <p>우리만의 소중한 발자국과 타임라인 관리창</p>
+    </header>
+
+    <!-- 대시보드 -->
+    <section class="dashboard">
+        <div class="stat-card"><div class="icon">❤️</div><div class="value" id="dday-counter">D+1</div><div class="label">함께 사랑한 지</div></div>
+        <div class="stat-card"><div class="icon">⭐</div><div class="value" id="total-count">0회</div><div class="label">올해 데이트 횟수</div></div>
+        <div class="stat-card"><div class="icon">💰</div><div class="value" id="total-cost">0원</div><div class="label">총 데이트 비용</div></div>
+        <div class="stat-card"><div class="icon">🗺️</div><div class="value" id="visited-count">0곳</div><div class="label">정복한 행정구역</div></div>
+        <div class="stat-card"><div class="icon">🏆</div><div class="value" id="bucket-rate">0%</div><div class="label">계획 달성률</div></div>
+    </section>
+
+    <div class="main-content">
+        
+        <!-- 1열: 캘린더 및 일정 -->
+        <div class="mobile-section mobile-active" data-mobile-section="home">
+            <div class="card-box">
+                <div class="section-title">📅 추억 & 일정 캘린더</div>
+                <div class="calendar-wrapper">
+                    <div class="calendar-header">
+                        <button class="calendar-btn" onclick="moveMonth(-1)">◀</button>
+                        <span id="calendar-title">2026년 7월</span>
+                        <button class="calendar-btn" onclick="moveMonth(1)">▶</button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+            </div>
+
+            <div class="card-box">
+                <div class="section-title">📅 개인 및 데이트/K리그 일정 등록</div>
+                
+                <div style="font-size:0.8rem; font-weight:bold; margin-bottom:5px; color:var(--point-pink);">✨ 개인/데이트 일정 추가 (캘린더 ❤️ 표시)</div>
+                <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 5px; margin-bottom: 12px;">
+                    <input type="date" id="date-schedule-date">
+                    <input type="text" id="date-schedule-text" placeholder="일정 이름 입력">
+                    <button onclick="addGeneralSchedule()" class="btn-black" style="padding: 8px; font-size: 0.8rem; margin:0;">등록</button>
+                </div>
+
+                <div style="font-size:0.8rem; font-weight:bold; margin-bottom:5px; color:#ff7619;">⚽ K리그 경기 일정 추가 (캘린더 ⚽ 표시)</div>
+                <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr; gap: 5px;">
+                    <input type="date" id="match-date">
+                    <input type="text" id="match-team" placeholder="예: 강원 vs 전북 (송암)">
+                    <select id="match-crew">
+                        <option value="강원">강원 🧡</option>
+                        <option value="수원">수원 💙</option>
+                        <option value="기타">기타 🤍</option>
+                    </select>
+                </div>
+                <button onclick="addKleagueMatch()" class="btn-black" style="padding: 8px; font-size: 0.85rem; margin-top: 5px;">K리그 일정 추가</button>
+                
+                <div class="match-list" id="kleague-match-box"></div>
+            </div>
+
+            <div class="card-box" style="background: #fffdf0;">
+                <div class="section-title">🎂 우리들의 기념일 현황판</div>
+                <ul style="font-size:0.85rem; padding-left:20px; margin:0; line-height:1.7;" id="anniversary-box">
+                    <li><b>5월 24일:</b> 우리의 처음 만난 날 👩‍❤️‍👨</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2열: 기록 및 피드 -->
+        <div class="mobile-section" data-mobile-section="diary">
+            <div class="card-box">
+                <div class="section-title">📷 오늘의 데이트 기록 (캘린더 자동 연동)</div>
+                <div class="diary-form">
+                    <!-- 연박 만남 지원을 위한 시작일/종료일 인터페이스 확장 -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:10px;">
+                        <div>
+                            <span style="font-size:0.75rem; color:var(--gray-sub)">시작일(필수)</span>
+                            <input type="date" id="diary-date" style="margin-bottom:0;">
+                        </div>
+                        <div>
+                            <span style="font-size:0.75rem; color:var(--gray-sub)">종료일(연박일 때만 선택)</span>
+                            <input type="date" id="diary-end-date" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    
+                    <div style="background:#fff8f9; padding:10px; border-radius:12px; margin-bottom:10px;">
+                        <span style="font-size:0.8rem; font-weight:bold; color:var(--point-pink)">💸 데이트 영수증 세부 기입</span>
+                        <div class="cost-split-grid" style="margin-top:5px;">
+                            <input type="number" id="cost-food" placeholder="🍚 식비">
+                            <input type="number" id="cost-cafe" placeholder="☕ 카페">
+                            <input type="number" id="cost-play" placeholder="🍿 문화/엔터">
+                            <input type="number" id="cost-etc" placeholder="🚗 교통/기타">
+                        </div>
+                    </div>
+
+                    <input type="file" id="diary-files" accept="image/*" multiple onchange="previewImages()">
+                    <div class="preview-thumbs" id="preview-container"></div>
+                    <textarea id="diary-comment" placeholder="오늘 있었던 행복한 이야기..."></textarea>
+                    <input type="text" id="diary-tags" placeholder="태그 (쉼표 구분: 예: 춘천, 강릉, 2박3일)"></input>
+                    <button class="btn-black" onclick="addDiary()">추억 아카이빙 피드 올리기</button>
+                </div>
+            </div>
+
+            <div class="card-box">
+                <div class="section-title">🌹 우리들의 타임라인 피드</div>
+                <div class="diary-feed" id="diary-feed-container"></div>
+            </div>
+        </div>
+
+        <!-- 3열: 계획 보관함 & 도장깨기 -->
+        <div class="mobile-section" data-mobile-section="wish">
+            <div class="card-box">
+                <div class="section-title">📌 계획 & 위시 보관함</div>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('activity')">🏃‍♂️ 액티비티</button>
+                    <button class="tab-btn" onclick="switchTab('restaurant')">🍕 식당/카페</button>
+                    <button class="tab-btn" onclick="switchTab('travel')">✈️ 여행지</button>
+                    <button class="tab-btn" onclick="switchTab('movie')">🎬 영화</button>
+                </div>
+                
+                <!-- 상단 다중 정렬 및 가독성 최적화 필터 배치 -->
+                <div style="margin-bottom:10px; font-size:0.8rem; display: flex; flex-direction:column; gap:6px; background:#fafafa; padding:8px; border-radius:10px;">
+                    <div id="filter-location-row" style="display: flex; align-items: center; gap: 5px;">
+                        🔎 지역 필터: 
+                        <select id="filter-location" onchange="renderBucketList()" style="width:auto; padding:3px; margin:0; font-size:0.75rem;">
+                            <option value="전체">🌍 전체 보기</option>
+                            <option value="강원">강원도</option><option value="서울">서울특별시</option><option value="경기">경기도</option><option value="인천">인천광역시</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        📋 상태 필터:
+                        <label style="cursor:pointer;"><input type="radio" name="filter-status" value="all" checked onchange="renderBucketList()"> 전체</label>
+                        <label style="cursor:pointer; color:var(--point-pink); font-weight:bold;"><input type="radio" name="filter-status" value="todo" onchange="renderBucketList()"> 미달성만</label>
+                        <label style="cursor:pointer; color:var(--gray-sub);"><input type="radio" name="filter-status" value="done" onchange="renderBucketList()"> 달성만</label>
+                    </div>
+                </div>
+
+                <div class="list-container" id="list-content"></div>
+                
+                <!-- 2단계 구조화 지역선택 / 영화 전환 연동 레이아웃 -->
+                <div style="margin-top:10px; display:flex; flex-direction:column; gap:4px;" id="bucket-insert-area">
+                    <div class="bucket-select-row" id="bucket-loc-group">
+                        <select id="bucket-sido" onchange="updateBucketSigunguSelect()" style="margin:0;">
+                            <option value="전체">시·도 선택</option>
+                        </select>
+                        <select id="bucket-sigungu" style="margin:0;">
+                            <option value="전체">시·군·구 선택</option>
+                        </select>
+                    </div>
+                    <!-- 영화 전용 미디어 플랫폼 셀렉트 박스 (평소 보이지 않음) -->
+                    <select id="bucket-movie-platform" style="margin:0; display:none;">
+                        <option value="넷플릭스">🎬 넷플릭스 (Netflix)</option>
+                        <option value="디즈니+">🍿 디즈니+ (Disney+)</option>
+                        <option value="티빙/웨이브">📺 국내 OTT (티빙/웨이브)</option>
+                        <option value="극장">🎞️ 영화관 스크린 데이트</option>
+                    </select>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="new-item-input" placeholder="하고 싶은 위시리스트 입력..." style="margin:0; flex:1;">
+                    </div>
+                    <button onclick="addItem()" class="btn-black" style="padding:8px; margin-top:5px;">리스트에 추가</button>
+                </div>
+            </div>
+
+            <!-- 도장깨기 메뉴 -->
+            <div class="card-box">
+                <div class="section-title">🗺️ 우리들의 발자국 도장 깨기</div>
+                <p style="font-size:0.75rem; color:var(--gray-sub); margin-top:-10px; margin-bottom:15px;">시·도를 고르고 시·군·구와 세부 동네까지 완벽 마스터!</p>
+                
+                <div class="map-3step-wrapper">
+                    <div class="map-row">
+                        <div class="map-row-title">1단계: 시·도 선택</div>
+                        <div class="chips-container" id="step1-container"></div>
+                    </div>
+                    <div class="map-row" id="row-step2" style="display:none;">
+                        <div class="map-row-title">2단계: 시·군·구 선택</div>
+                        <div class="chips-container" id="step2-container"></div>
+                    </div>
+                    <div class="map-row" id="row-step3" style="display:none;">
+                        <div class="map-row-title" id="step3-title">3단계: 세부 동네 토글</div>
+                        <div class="chips-container" id="step3-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 실제 행정구역 경계 기반 대한민국 지도 -->
+<section class="visual-map-card mobile-section" data-mobile-section="map">
+ <div class="section-title">🗺️ 대한민국 시·군·구 방문 지도</div>
+ <p class="map-status" id="map-status">실제 행정구역 경계 데이터를 불러오는 중입니다.</p>
+ <div id="real-korea-map"></div>
+ <p class="storage-note">방문 처리된 시·군·구는 분홍색으로 표시됩니다. 지도 경계 데이터는 GitHub Pages 배포 후 인터넷 연결 상태에서 불러옵니다.</p>
+</section>
+
+</div>
+
+<nav class="mobile-nav">
+ <button class="active" onclick="showMobileSection('home',this)"><span>🏠</span>홈</button>
+ <button onclick="showMobileSection('diary',this)"><span>📖</span>기록</button>
+ <button onclick="showMobileSection('wish',this)"><span>❤️</span>위시</button>
+ <button onclick="showMobileSection('map',this)"><span>🗺️</span>지도</button>
+ <button onclick="showMobileSection('home',this)"><span>📅</span>일정</button>
+</nav>
+
+<script>
+    const firstMeetDate = new Date(2026, 4, 24); 
+    let currentStats = { count: 0, cost: 0 }; 
+    let currentDate = new Date(2026, 6, 1); 
+
+    let allSchedules = [];
+    let diaryFeeds = []; // 피드 정밀 관리를 위한 전용 데이터 구조체 배열
+
+    const koreaMapData = {
+        "서울": {
+                "종로구": [],
+                "중구": [],
+                "용산구": [],
+                "성동구": [],
+                "광진구": [],
+                "동대문구": [],
+                "중랑구": [],
+                "성북구": [],
+                "강북구": [],
+                "도봉구": [],
+                "노원구": [],
+                "은평구": [],
+                "서대문구": [],
+                "마포구": [],
+                "양천구": [],
+                "강서구": [],
+                "구로구": [],
+                "금천구": [],
+                "영등포구": [],
+                "동작구": [],
+                "관악구": [],
+                "서초구": [],
+                "강남구": [],
+                "송파구": [],
+                "강동구": []
+        },
+        "부산": {
+                "중구": [],
+                "서구": [],
+                "동구": [],
+                "영도구": [],
+                "부산진구": [],
+                "동래구": [],
+                "남구": [],
+                "북구": [],
+                "해운대구": [],
+                "사하구": [],
+                "금정구": [],
+                "강서구": [],
+                "연제구": [],
+                "수영구": [],
+                "사상구": [],
+                "기장군": []
+        },
+        "대구": {
+                "중구": [],
+                "동구": [],
+                "서구": [],
+                "남구": [],
+                "북구": [],
+                "수성구": [],
+                "달서구": [],
+                "달성군": [],
+                "군위군": []
+        },
+        "인천": {
+                "중구": [],
+                "동구": [],
+                "미추홀구": [],
+                "연수구": [],
+                "남동구": [],
+                "부평구": [],
+                "계양구": [],
+                "서구": [],
+                "강화군": [],
+                "옹진군": []
+        },
+        "광주": {
+                "동구": [],
+                "서구": [],
+                "남구": [],
+                "북구": [],
+                "광산구": []
+        },
+        "대전": {
+                "동구": [],
+                "중구": [],
+                "서구": [],
+                "유성구": [],
+                "대덕구": []
+        },
+        "울산": {
+                "중구": [],
+                "남구": [],
+                "동구": [],
+                "북구": [],
+                "울주군": []
+        },
+        "세종": {
+                "세종특별자치시": []
+        },
+        "경기": {
+                "수원시": [],
+                "성남시": [],
+                "의정부시": [],
+                "안양시": [],
+                "부천시": [],
+                "광명시": [],
+                "평택시": [],
+                "동두천시": [],
+                "안산시": [],
+                "고양시": [],
+                "과천시": [],
+                "구리시": [],
+                "남양주시": [],
+                "오산시": [],
+                "시흥시": [],
+                "군포시": [],
+                "의왕시": [],
+                "하남시": [],
+                "용인시": [],
+                "파주시": [],
+                "이천시": [],
+                "안성시": [],
+                "김포시": [],
+                "화성시": [],
+                "광주시": [],
+                "양주시": [],
+                "포천시": [],
+                "여주시": [],
+                "연천군": [],
+                "가평군": [],
+                "양평군": []
+        },
+        "강원": {
+                "춘천시": [],
+                "원주시": [],
+                "강릉시": [],
+                "동해시": [],
+                "태백시": [],
+                "속초시": [],
+                "삼척시": [],
+                "홍천군": [],
+                "횡성군": [],
+                "영월군": [],
+                "평창군": [],
+                "정선군": [],
+                "철원군": [],
+                "화천군": [],
+                "양구군": [],
+                "인제군": [],
+                "고성군": [],
+                "양양군": []
+        },
+        "충북": {
+                "청주시": [],
+                "충주시": [],
+                "제천시": [],
+                "보은군": [],
+                "옥천군": [],
+                "영동군": [],
+                "증평군": [],
+                "진천군": [],
+                "괴산군": [],
+                "음성군": [],
+                "단양군": []
+        },
+        "충남": {
+                "천안시": [],
+                "공주시": [],
+                "보령시": [],
+                "아산시": [],
+                "서산시": [],
+                "논산시": [],
+                "계룡시": [],
+                "당진시": [],
+                "금산군": [],
+                "부여군": [],
+                "서천군": [],
+                "청양군": [],
+                "홍성군": [],
+                "예산군": [],
+                "태안군": []
+        },
+        "전북": {
+                "전주시": [],
+                "군산시": [],
+                "익산시": [],
+                "정읍시": [],
+                "남원시": [],
+                "김제시": [],
+                "완주군": [],
+                "진안군": [],
+                "무주군": [],
+                "장수군": [],
+                "임실군": [],
+                "순창군": [],
+                "고창군": [],
+                "부안군": []
+        },
+        "전남": {
+                "목포시": [],
+                "여수시": [],
+                "순천시": [],
+                "나주시": [],
+                "광양시": [],
+                "담양군": [],
+                "곡성군": [],
+                "구례군": [],
+                "고흥군": [],
+                "보성군": [],
+                "화순군": [],
+                "장흥군": [],
+                "강진군": [],
+                "해남군": [],
+                "영암군": [],
+                "무안군": [],
+                "함평군": [],
+                "영광군": [],
+                "장성군": [],
+                "완도군": [],
+                "진도군": [],
+                "신안군": []
+        },
+        "경북": {
+                "포항시": [],
+                "경주시": [],
+                "김천시": [],
+                "안동시": [],
+                "구미시": [],
+                "영주시": [],
+                "영천시": [],
+                "상주시": [],
+                "문경시": [],
+                "경산시": [],
+                "의성군": [],
+                "청송군": [],
+                "영양군": [],
+                "영덕군": [],
+                "청도군": [],
+                "고령군": [],
+                "성주군": [],
+                "칠곡군": [],
+                "예천군": [],
+                "봉화군": [],
+                "울진군": [],
+                "울릉군": []
+        },
+        "경남": {
+                "창원시": [],
+                "진주시": [],
+                "통영시": [],
+                "사천시": [],
+                "김해시": [],
+                "밀양시": [],
+                "거제시": [],
+                "양산시": [],
+                "의령군": [],
+                "함안군": [],
+                "창녕군": [],
+                "고성군": [],
+                "남해군": [],
+                "하동군": [],
+                "산청군": [],
+                "함양군": [],
+                "거창군": [],
+                "합천군": []
+        },
+        "제주": {
+                "제주시": [],
+                "서귀포시": []
+        }
+};
+
+    let selectedSido = "";
+    let selectedSigungu = "";
+    let visitedNodes = []; 
+
+    let bucketData = { activity: [], restaurant: [], travel: [], movie: [] };
+    let currentTab = 'activity';
+
+    // 캘린더 엔진 (피드 기록 날짜 범위 하트 매핑 자동 연동)
+    function renderCalendar() {
+        const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
+        const title = document.getElementById('calendar-title');
+        const year = currentDate.getFullYear(); const month = currentDate.getMonth();
+        title.innerText = `${year}년 ${month + 1}월`;
+
+        ['일', '월', '화', '수', '목', '금', '토'].forEach(d => {
+            const lbl = document.createElement('div'); lbl.className = 'calendar-day-label'; lbl.innerText = d; grid.appendChild(lbl);
+        });
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDayIndex; i++) grid.appendChild(document.createElement('div'));
+
+        for (let d = 1; d <= lastDay; d++) {
+            const dayBox = document.createElement('div'); dayBox.className = 'calendar-day'; dayBox.innerText = d;
+            const fullMonth = (month + 1) < 10 ? '0' + (month + 1) : (month + 1);
+            const fullDay = d < 10 ? '0' + d : d;
+            const dateStr = `${year}-${fullMonth}-${fullDay}`;
+            const targetDateObj = new Date(year, month, d);
+
+            // 1. K리그 및 입력된 개인 스케줄 연동
+            allSchedules.filter(s => s.date === dateStr).forEach(s => {
+                if(s.type === 'K리그') dayBox.classList.add('has-match');
+                if(s.type === '데이트') dayBox.classList.add('has-heart');
+            });
+
+            // 2. 피드 데이트 기록 범위 자동 하트 연동 (2박3일 범위 완벽 처리)
+            diaryFeeds.forEach(f => {
+                let start = new Date(f.startDate);
+                let end = f.endDate ? new Date(f.endDate) : new Date(f.startDate);
+                // 시간 오차를 제거하고 날짜 비교를 위해 정규화
+                start.setHours(0,0,0,0); end.setHours(23,59,59,999);
+                if (targetDateObj >= start && targetDateObj <= end) {
+                    dayBox.classList.add('has-heart');
+                }
+            });
+
+            let today = new Date();
+            if(year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) dayBox.classList.add('today');
+
+            grid.appendChild(dayBox);
+        }
+    }
+    function moveMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
+
+    // 개인 및 일반일정 추가 함수
+    function addGeneralSchedule() {
+        const dateVal = document.getElementById('date-schedule-date').value;
+        const textVal = document.getElementById('date-schedule-text').value.trim();
+        if(!dateVal || !textVal) { alert("날짜와 일정 내용을 입력해주세요!"); return; }
+
+        allSchedules.push({ id: Date.now(), type: '데이트', date: dateVal, content: textVal, detail: '일반' });
+        document.getElementById('date-schedule-text').value = '';
+        sortAndLoadSchedules();
+        renderCalendar();
+    }
+
+    // K리그 스케줄 수동 직접 등록 함수
+    function addKleagueMatch() {
+        const dateVal = document.getElementById('match-date').value;
+        const teamVal = document.getElementById('match-team').value.trim();
+        const crewVal = document.getElementById('match-crew').value;
+
+        if(!dateVal || !teamVal) { alert("날짜와 경기 스케줄을 입력해주세요!"); return; }
+
+        allSchedules.push({ id: Date.now(), type: 'K리그', date: dateVal, content: teamVal, detail: crewVal });
+        document.getElementById('match-team').value = '';
+        sortAndLoadSchedules();
+        renderCalendar();
+    }
+
+    function deleteSchedule(id) {
+        allSchedules = allSchedules.filter(s => s.id !== id);
+        sortAndLoadSchedules();
+        renderCalendar();
+    }
+
+    function sortAndLoadSchedules() {
+        allSchedules.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const container = document.getElementById('kleague-match-box'); container.innerHTML = '';
+        if(allSchedules.length === 0) {
+            container.innerHTML = '<div style="font-size:0.8rem; color:var(--gray-sub); text-align:center; padding:10px;">등록된 일정이 없습니다.</div>';
+            return;
+        }
+        allSchedules.forEach(s => {
+            const item = document.createElement('div'); item.className = 'match-item';
+            let badgeHtml = s.type === 'K리그' 
+                ? `<span class="match-badge ${s.detail === '강원'?'bg-gangwon':(s.detail==='수원'?'bg-suwon':'bg-etc')}">${s.detail} ⚽</span>`
+                : `<span class="match-badge bg-date">데이트 ❤️</span>`;
+
+            item.innerHTML = `
+                <span>📅 ${s.date.substring(5)} | ${s.content}</span>
+                <div style="display:flex; align-items:center; gap:6px;">${badgeHtml}<button class="btn-del" onclick="deleteSchedule(${s.id})">❌</button></div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    // 이미지 압축 프리뷰 및 브라우저 저장
+    let uploadedImgUrls = [];
+    async function compressImage(file, maxWidth=1000, quality=.72) {
+        return new Promise((resolve,reject)=>{
+            const reader=new FileReader();
+            reader.onload=e=>{
+                const img=new Image();
+                img.onload=()=>{
+                    let w=img.width,h=img.height;
+                    if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
+                    const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+                    canvas.getContext('2d').drawImage(img,0,0,w,h);
+                    resolve(canvas.toDataURL('image/jpeg',quality));
+                };
+                img.onerror=reject; img.src=e.target.result;
+            };
+            reader.onerror=reject; reader.readAsDataURL(file);
+        });
+    }
+    async function previewImages() {
+        const container=document.getElementById('preview-container'); container.innerHTML=''; uploadedImgUrls=[];
+        const files=Array.from(document.getElementById('diary-files').files).slice(0,8);
+        for(const file of files){
+            try{const url=await compressImage(file);uploadedImgUrls.push(url);const img=document.createElement('img');img.src=url;container.appendChild(img);}
+            catch(e){console.warn(e);}
+        }
+    }
+
+    // 데이트 기록 등록 모듈 (연박 일정 자동 대응 가공)
+    function addDiary() {
+        const startVal = document.getElementById('diary-date').value;
+        const endVal = document.getElementById('diary-end-date').value;
+        const commentVal = document.getElementById('diary-comment').value.trim();
+        if(!startVal || !commentVal) { alert("기록 시작 날짜와 커멘트를 꼭 채워주세요!"); return; }
+
+        const food = parseInt(document.getElementById('cost-food').value) || 0;
+        const cafe = parseInt(document.getElementById('cost-cafe').value) || 0;
+        const play = parseInt(document.getElementById('cost-play').value) || 0;
+        const etc = parseInt(document.getElementById('cost-etc').value) || 0;
+        const total = food + cafe + play + etc;
+
+        // 고유 데이터 피드 생성
+        const feedObj = {
+            id: Date.now(),
+            startDate: startVal,
+            endDate: endVal || null,
+            comment: commentVal,
+            tags: document.getElementById('diary-tags').value,
+            cost: { food, cafe, play, etc, total },
+            images: [...uploadedImgUrls]
+        };
+
+        diaryFeeds.push(feedObj);
+        diaryFeeds.sort((a,b) => new Date(b.startDate) - new Date(a.startDate)); // 최신순 정렬
+
+        // 금액 폼 및 파일 폼 리셋
+        document.getElementById('diary-comment').value = '';
+        document.getElementById('diary-tags').value = '';
+        document.getElementById('cost-food').value = ''; document.getElementById('cost-cafe').value = '';
+        document.getElementById('cost-play').value = ''; document.getElementById('cost-etc').value = '';
+        document.getElementById('preview-container').innerHTML = ''; uploadedImgUrls = [];
+
+        recalculateStatsAndFeeds();
+    }
+
+    // 피드 삭제 기능 및 통계 데이터 역산 동기화 함수
+    function deleteDiaryFeed(id) {
+        if(!confirm("정말 이 데이트 기록 피드를 삭제하시겠습니까? (캘린더 연동도 해제됩니다)")) return;
+        diaryFeeds = diaryFeeds.filter(f => f.id !== id);
+        recalculateStatsAndFeeds();
+    }
+
+    function recalculateStatsAndFeeds() {
+        // 전역 메인 카운터 변수 재정렬
+        currentStats.count = diaryFeeds.length;
+        currentStats.cost = diaryFeeds.reduce((acc, cur) => acc + cur.cost.total, 0);
+        updateDashboard();
+        renderCalendar();
+
+        // 피드 빌드 스트림 화면 드로잉
+        const feedContainer = document.getElementById('diary-feed-container'); feedContainer.innerHTML = '';
+        diaryFeeds.forEach(f => {
+            const card = document.createElement('div'); card.className = 'feed-card';
+            let dateLabelHtml = f.endDate ? `📅 ${f.startDate} ~ ${f.endDate}` : `📅 ${f.startDate}`;
+
+            let galleryHtml = '<div class="feed-gallery">';
+            if(f.images.length > 0) f.images.forEach(url => { galleryHtml += `<img src="${url}">`; });
+            else galleryHtml += `<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--gray-sub);">📷 저장된 사진 없음</div>`;
+            galleryHtml += '</div>';
+
+            card.innerHTML = `
+                <button class="feed-del-btn" onclick="deleteDiaryFeed(${f.id})">❌</button>
+                ${galleryHtml}
+                <div class="feed-content">
+                    <div style="font-size:0.8rem; color:var(--gray-sub); font-weight:bold;">${dateLabelHtml}</div>
+                    <div style="font-weight:700; margin:6px 0; font-size:0.95rem; line-height:1.4;">${f.comment}</div>
+                    ${f.tags ? `<div style="font-size:0.75rem; color:var(--point-pink); margin-bottom:8px;">🏷️ ${f.tags}</div>` : ''}
+                    <div style="font-size:0.75rem; background:#f1f2f6; padding:6px 10px; border-radius:8px; color:#57606f;">
+                        🍚 식비:${f.cost.food.toLocaleString()}원 | ☕ 카페:${f.cost.cafe.toLocaleString()}원 | 🍿 문화:${f.cost.play.toLocaleString()}원 | 🚗기타:${f.cost.etc.toLocaleString()}원
+                    </div>
+                </div>
+            `;
+            feedContainer.appendChild(card);
+        });
+    }
+
+    // 위시리스트 연동 데이터 초기설정 모듈
+    function initBucketLocationSelects() {
+        const sidoSel = document.getElementById('bucket-sido');
+        sidoSel.innerHTML = '<option value="전체">시·도 선택</option>';
+        Object.keys(koreaMapData).forEach(sido => {
+            const opt = document.createElement('option'); opt.value = sido; opt.innerText = sido;
+            sidoSel.appendChild(opt);
+        });
+        updateBucketSigunguSelect();
+    }
+
+    function updateBucketSigunguSelect() {
+        const sidoVal = document.getElementById('bucket-sido').value;
+        const sigunguSel = document.getElementById('bucket-sigungu');
+        sigunguSel.innerHTML = '<option value="전체">시·군·구 선택</option>';
+        if(sidoVal !== "전체" && koreaMapData[sidoVal]) {
+            Object.keys(koreaMapData[sidoVal]).forEach(sgg => {
+                const opt = document.createElement('option'); opt.value = sgg; opt.innerText = sgg;
+                sigunguSel.appendChild(opt);
+            });
+        }
+    }
+
+    // 탭 체인저 (영화 탭 선택 시 지역 필터 행 숨김 처리 기능 완벽 추가)
+    function switchTab(tabName) {
+        currentTab = tabName;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const locGroup = document.getElementById('bucket-loc-group');
+        const locFilterRow = document.getElementById('filter-location-row');
+        const moviePlatformSel = document.getElementById('bucket-movie-platform');
+
+        if(tabName === 'movie') { 
+            locGroup.style.display = 'none'; 
+            locFilterRow.style.display = 'none';
+            moviePlatformSel.style.display = 'block';
+        } else { 
+            locGroup.style.display = 'grid'; 
+            locFilterRow.style.display = 'flex';
+            moviePlatformSel.style.display = 'none';
+        }
+        renderBucketList();
+    }
+
+    // 위시리스트 렌더러 (미달성 최상단 정렬 및 상태 필터링 추가)
+    function renderBucketList() {
+        const container = document.getElementById('list-content'); container.innerHTML = '';
+        const filterLocVal = document.getElementById('filter-location').value;
+        const filterStatusVal = document.querySelector('input[name="filter-status"]:checked').value;
+
+        // 원본 배열 가공 없이 정렬 본사 생성 (미달성 false 항목이 앞으로 오게 정렬)
+        let sortedItems = bucketData[currentTab].map((item, originalIndex) => ({ ...item, originalIndex }));
+        sortedItems.sort((a, b) => a.done - b.done);
+
+        let matchCount = 0;
+        sortedItems.forEach((item) => {
+            // 1. 지역 필터링 (영화 탭 제외)
+            if(currentTab !== 'movie' && filterLocVal !== "전체" && item.sido !== filterLocVal) return;
+
+            // 2. 상태 필터링 (전체 / 미달성만 / 달성만)
+            if(filterStatusVal === 'todo' && item.done) return;
+            if(filterStatusVal === 'done' && !item.done) return;
+
+            matchCount++;
+            const div = document.createElement('div'); div.className = 'list-item';
+            
+            let locBadge = '';
+            if(currentTab === 'movie') {
+                locBadge = `<span class="item-loc-badge" style="background:#f1f2f6; color:#57606f;">${item.platform || '영화'}</span>`;
+            } else if(item.sido && item.sido !== '전체') {
+                let badgeTxt = item.sigungu && item.sigungu !== '전체' ? `${item.sido} ${item.sigungu}` : item.sido;
+                locBadge = `<span class="item-loc-badge">${badgeTxt}</span>`;
+            }
+            
+            div.innerHTML = `
+                <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleBucket('${currentTab}', ${item.originalIndex})">
+                ${locBadge}
+                <div class="item-text ${item.done ? 'done' : ''}">${item.text}</div>
+                <button class="btn-del" onclick="deleteBucketItem('${currentTab}', ${item.originalIndex})">❌</button>
+            `;
+            container.appendChild(div);
+        });
+
+        if(matchCount === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:30px; font-size:0.8rem; color:var(--gray-sub);">조건에 맞는 위시 아이템이 비어있습니다.</div>';
+        }
+        updateBucketRate();
+    }
+
+    function addItem() {
+        const input = document.getElementById('new-item-input'); if(!input.value.trim()) return;
+        const sidoVal = document.getElementById('bucket-sido').value;
+        const sigunguVal = document.getElementById('bucket-sigungu').value;
+        const platformVal = document.getElementById('bucket-movie-platform').value;
+        
+        let newItem = { 
+            text: input.value.trim(), 
+            done: false, 
+            sido: currentTab === 'movie' ? '전체' : sidoVal,
+            sigungu: currentTab === 'movie' ? '전체' : sigunguVal,
+            platform: currentTab === 'movie' ? platformVal : ''
+        };
+        bucketData[currentTab].push(newItem);
+        input.value = '';
+        renderBucketList();
+    }
+    
+    function toggleBucket(category, index) { bucketData[category][index].done = !bucketData[category][index].done; renderBucketList(); }
+    function deleteBucketItem(category, index) { bucketData[category].splice(index, 1); renderBucketList(); }
+
+    function updateBucketRate() {
+        let total = 0, done = 0; for (let c in bucketData) { total += bucketData[c].length; done += bucketData[c].filter(i => i.done).length; }
+        document.getElementById('bucket-rate').innerText = `${total ? Math.round((done/total)*100) : 0}%`;
+    }
+
+    // 도장깨기 및 시각화 전용 맵 제어 엔진
+    function init3StepMap() {
+        const s1Container = document.getElementById('step1-container'); s1Container.innerHTML = '';
+        Object.keys(koreaMapData).forEach(sido => {
+            const chip = document.createElement('div'); chip.className = `step-chip ${sido === selectedSido ? 'active' : ''}`;
+            chip.innerText = sido;
+            chip.onclick = () => { selectedSido = sido; selectedSigungu = ""; document.getElementById('row-step2').style.display='block'; document.getElementById('row-step3').style.display='none'; init3StepMap(); };
+            s1Container.appendChild(chip);
+        });
+        if(selectedSido) renderStep2();
+        renderVisualMapBoard();
+    }
+
+    function renderStep2() {
+        const s2Container = document.getElementById('step2-container'); s2Container.innerHTML = '';
+        const sigungus = Object.keys(koreaMapData[selectedSido]);
+        sigungus.forEach(sgg => {
+            let nodeKey = `${selectedSido} ${sgg}`;
+            let isVisitedSgg = visitedNodes.includes(nodeKey) || (koreaMapData[selectedSido][sgg] && koreaMapData[selectedSido][sgg].some(dong => visitedNodes.includes(`${selectedSido} ${sgg} ${dong}`)));
+            
+            const chip = document.createElement('div'); chip.className = `step-chip ${sgg === selectedSigungu ? 'active' : (isVisitedSgg?'visited':'')}`;
+            chip.innerText = sgg;
+            chip.onclick = () => {
+                selectedSigungu = sgg;
+                if(koreaMapData[selectedSido][sgg] && koreaMapData[selectedSido][sgg].length > 0) {
+                    document.getElementById('row-step3').style.display='block'; renderStep3();
+                } else {
+                    document.getElementById('row-step3').style.display='none';
+                    toggleVisitedNode(nodeKey);
+                }
+                renderStep2();
+            };
+            s2Container.appendChild(chip);
+        });
+    }
+
+    function renderStep3() {
+        document.getElementById('step3-title').innerText = `3단계: [${selectedSigungu}] 세부 동네 토글`;
+        const s3Container = document.getElementById('step3-container'); s3Container.innerHTML = '';
+        const dongs = koreaMapData[selectedSido][selectedSigungu];
+        dongs.forEach(dong => {
+            let nodeKey = `${selectedSido} ${selectedSigungu} ${dong}`;
+            let isVisited = visitedNodes.includes(nodeKey);
+            const chip = document.createElement('div'); chip.className = `step-chip ${isVisited ? 'visited' : ''}`;
+            chip.innerText = dong + (isVisited ? ' ✨' : '');
+            chip.onclick = () => { toggleVisitedNode(nodeKey); renderStep3(); renderStep2(); };
+            s3Container.appendChild(chip);
+        });
+    }
+
+    function toggleVisitedNode(nodeKey) {
+        if(visitedNodes.includes(nodeKey)) visitedNodes = visitedNodes.filter(n => n !== nodeKey);
+        else visitedNodes.push(nodeKey);
+        updateDashboard();
+        renderVisualMapBoard();
+    }
+
+    function renderVisualMapBoard() {
+        const board = document.getElementById('visual-map-board'); board.innerHTML = '';
+        Object.keys(koreaMapData).forEach(sido => {
+            const sigungus = Object.keys(koreaMapData[sido]);
+            if(sigungus.length === 0) {
+                let isVisited = visitedNodes.some(n => n.startsWith(sido));
+                const block = document.createElement('div'); block.className = `map-geo-block ${isVisited ? 'highlight' : ''}`;
+                block.innerHTML = `${sido}<span class="sgg-subtext">전역</span>`;
+                board.appendChild(block);
+            } else {
+                sigungus.forEach(sgg => {
+                    let isVisited = visitedNodes.some(n => n.includes(`${sido} ${sgg}`));
+                    const block = document.createElement('div'); block.className = `map-geo-block ${isVisited ? 'highlight' : ''}`;
+                    block.innerHTML = `${sido}<span class="sgg-subtext">${sgg}</span>`;
+                    board.appendChild(block);
+                });
+            }
+        });
+    }
+
+    function updateDashboard() {
+        let sggSet = new Set();
+        visitedNodes.forEach(n => {
+            let parts = n.split(' '); if(parts.length >= 2) sggSet.add(`${parts[0]} ${parts[1]}`);
+        });
+        document.getElementById('visited-count').innerText = `${sggSet.size}곳`;
+        document.getElementById('total-count').innerText = `${currentStats.count}회`;
+        document.getElementById('total-cost').innerText = `${currentStats.cost.toLocaleString()}원`;
+    }
+
+    function renderAnniversaries() {
+        const box = document.getElementById('anniversary-box');
+        const today = new Date();
+        const getDDayStr = (month, day) => {
+            let target = new Date(today.getFullYear(), month - 1, day);
+            if(target < today && target.toDateString() !== today.toDateString()) target.setFullYear(today.getFullYear() + 1);
+            const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+            return diff === 0 ? "🔥 오늘 생일!" : `(D-${diff})`;
+        };
+        box.innerHTML = `
+            <li><b>5월 24일:</b> 우리의 처음 만난 날 👩‍❤️‍👨</li>
+            <li><b>8월 1일:</b> 서형 생일 🎂 <span style="color:var(--point-pink); font-weight:700;">${getDDayStr(8, 1)}</span></li>
+            <li><b>2월 4일:</b> 현진 생일 🎁 <span style="color:var(--point-pink); font-weight:700;">${getDDayStr(2, 4)}</span></li>
+        `;
+    }
+
+
+    const STORAGE_KEY_V2 = 'lovelyDateArchiveV2';
+    function saveState(){
+        const state={allSchedules,diaryFeeds,bucketData,visitedNodes,currentDate:currentDate.toISOString()};
+        try{localStorage.setItem(STORAGE_KEY_V2,JSON.stringify(state));}
+        catch(e){alert('브라우저 저장 공간이 부족합니다. 사진 수를 줄이거나 데이터 백업 후 오래된 사진을 정리해주세요.');}
+    }
+    function loadState(){
+        try{
+            const s=JSON.parse(localStorage.getItem(STORAGE_KEY_V2)||'null'); if(!s)return;
+            allSchedules=s.allSchedules||[]; diaryFeeds=s.diaryFeeds||[];
+            bucketData=s.bucketData||bucketData; visitedNodes=s.visitedNodes||[];
+            if(s.currentDate) currentDate=new Date(s.currentDate);
+        }catch(e){console.warn('저장 데이터 불러오기 실패',e);}
+    }
+    function exportArchive(){
+        saveState();
+        const data=localStorage.getItem(STORAGE_KEY_V2)||'{}';
+        const blob=new Blob([data],{type:'application/json'});
+        const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+        a.download='date-archive-v2-backup.json';a.click();URL.revokeObjectURL(a.href);
+    }
+    function importArchive(event){
+        const file=event.target.files[0];if(!file)return;
+        const reader=new FileReader();
+        reader.onload=()=>{try{const obj=JSON.parse(reader.result);localStorage.setItem(STORAGE_KEY_V2,JSON.stringify(obj));location.reload();}catch(e){alert('올바른 백업 파일이 아닙니다.');}};
+        reader.readAsText(file);
+    }
+    function showMobileSection(name,btn){
+        document.querySelectorAll('.mobile-section').forEach(el=>el.classList.toggle('mobile-active',el.dataset.mobileSection===name));
+        document.querySelectorAll('.mobile-nav button').forEach(b=>b.classList.remove('active')); if(btn)btn.classList.add('active');
+        if(name==='map'){setTimeout(()=>{initRealKoreaMap();if(realMap)realMap.invalidateSize();},80);} window.scrollTo({top:0,behavior:'smooth'});
+    }
+    let realMap=null, municipalityLayer=null, municipalityGeoJSON=null;
+    const provinceNameMap={
+      "Seoul":"서울","Busan":"부산","Daegu":"대구","Incheon":"인천","Gwangju":"광주","Daejeon":"대전","Ulsan":"울산","Sejong":"세종",
+      "Gyeonggi-do":"경기","Gangwon-do":"강원","Chungcheongbuk-do":"충북","Chungcheongnam-do":"충남",
+      "Jeollabuk-do":"전북","Jeollanam-do":"전남","Gyeongsangbuk-do":"경북","Gyeongsangnam-do":"경남","Jeju-do":"제주"
+    };
+    function normalizeSido(name){return provinceNameMap[name]||name||"";}
+    function featureNames(feature){
+      const p=feature.properties||{};
+      return {sido:normalizeSido(p.NAME_1||p.name_1||p.CTP_KOR_NM||""),sigungu:p.NAME_2||p.name_2||p.SIG_KOR_NM||""};
+    }
+    function isMunicipalityVisited(sido,sigungu){
+      return visitedNodes.some(n=>n===`${sido} ${sigungu}`||n.startsWith(`${sido} ${sigungu} `));
+    }
+    function municipalityStyle(feature){
+      const {sido,sigungu}=featureNames(feature), visited=isMunicipalityVisited(sido,sigungu);
+      return {color:"#ffffff",weight:1,fillColor:visited?"#ff788e":"#f1f2f6",fillOpacity:visited?.82:.82};
+    }
+    function drawMunicipalityMap(){
+      if(!realMap||!municipalityGeoJSON)return;
+      if(municipalityLayer) municipalityLayer.remove();
+      municipalityLayer=L.geoJSON(municipalityGeoJSON,{
+        style:municipalityStyle,
+        onEachFeature:(feature,layer)=>{
+          const {sido,sigungu}=featureNames(feature);
+          layer.bindTooltip(`${sido} ${sigungu}${isMunicipalityVisited(sido,sigungu)?" ✓":""}`,{sticky:true});
+          layer.on("click",()=>{selectedSido=sido;selectedSigungu=sigungu;init3StepMap();});
+        }
+      }).addTo(realMap);
+      try{realMap.fitBounds(municipalityLayer.getBounds(),{padding:[10,10]});}catch(e){}
+    }
+    async function initRealKoreaMap(){
+      if(!document.getElementById("real-korea-map")||realMap)return;
+      realMap=L.map("real-korea-map",{zoomControl:true,attributionControl:true}).setView([36.3,127.8],7);
+      const status=document.getElementById("map-status");
+      try{
+        const url="https://raw.githubusercontent.com/southkorea/southkorea-maps/master/gadm/json/skorea-municipalities-geo.json";
+        const res=await fetch(url); if(!res.ok)throw new Error("HTTP "+res.status);
+        municipalityGeoJSON=await res.json(); drawMunicipalityMap();
+        status.textContent=`전국 행정구역 경계 ${municipalityGeoJSON.features.length}개 영역을 불러왔습니다.`;
+      }catch(e){
+        status.textContent="지도 경계 데이터를 불러오지 못했습니다. 인터넷 연결 또는 GitHub Pages 배포 상태를 확인해주세요.";
+        console.error(e);
+      }
+    }
+    function renderVisualMapBoard(){drawMunicipalityMap();}
+    function persistWrap(name){
+        const original=window[name]; if(typeof original!=='function')return;
+        window[name]=function(...args){const result=original.apply(this,args);saveState();return result;};
+    }
+
+    window.onload = function() {
+        loadState();
+        const diff = Math.ceil((new Date() - firstMeetDate) / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('dday-counter').innerText = `D+${diff}`;
+        document.getElementById('diary-date').value = new Date().toISOString().substring(0, 10);
+        document.getElementById('match-date').value = new Date().toISOString().substring(0, 10);
+        document.getElementById('date-schedule-date').value = new Date().toISOString().substring(0, 10);
+        
+        initBucketLocationSelects();
+        recalculateStatsAndFeeds(); renderBucketList(); init3StepMap(); sortAndLoadSchedules(); renderAnniversaries(); updateDashboard();
+        ['addGeneralSchedule','addKleagueMatch','deleteSchedule','addDiary','deleteDiaryFeed','addItem','toggleBucket','deleteBucketItem','toggleVisitedNode'].forEach(persistWrap);
+        saveState();
+        initRealKoreaMap();
+    }
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9aMcDtcZxKC0RQBlg-Q55DfD7yKB4hqA",
+  authDomain: "chj-jsh.firebaseapp.com",
+  projectId: "chj-jsh",
+  storageBucket: "chj-jsh.firebasestorage.app",
+  messagingSenderId: "247892097994",
+  appId: "1:247892097994:web:9ffd2641c38085e4c96d33",
+  measurementId: "G-Q9GVZTC7RR"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app), db=getFirestore(app);
+const sharedRef=doc(db,"dateArchive","shared");
+let applyingRemote=false, unsubscribe=null, saveTimer=null;
+
+const loginOverlay=document.createElement("div");
+loginOverlay.id="firebase-login-overlay";
+loginOverlay.innerHTML=`<div class="firebase-login-card">
+<h2>우리의 데이트 아카이브 💕</h2>
+<p>공동 기록을 보려면 로그인해줘.</p>
+<input id="fb-email" type="email" placeholder="이메일">
+<input id="fb-password" type="password" placeholder="비밀번호">
+<button id="fb-login-btn">로그인</button>
+<div id="fb-login-msg"></div>
+</div>`;
+document.body.appendChild(loginOverlay);
+
+const style=document.createElement("style");
+style.textContent=`#firebase-login-overlay{position:fixed;inset:0;z-index:99999;background:rgba(255,245,247,.97);display:flex;align-items:center;justify-content:center;padding:20px}.firebase-login-card{width:min(420px,100%);background:white;padding:28px;border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.14);text-align:center}.firebase-login-card input{width:100%;box-sizing:border-box;margin:7px 0;padding:13px;border:1px solid #ddd;border-radius:12px}.firebase-login-card button{width:100%;margin-top:10px;padding:13px;border:0;border-radius:12px;background:#ff788e;color:white;font-weight:700;cursor:pointer}#fb-login-msg{font-size:.82rem;color:#c44;margin-top:10px}.firebase-userbar{position:fixed;right:14px;top:14px;z-index:9998;background:white;padding:7px 10px;border-radius:999px;box-shadow:0 3px 14px rgba(0,0,0,.12);font-size:12px}.firebase-userbar button{border:0;background:#ff788e;color:#fff;border-radius:999px;padding:5px 9px;cursor:pointer;margin-left:6px}`;
+document.head.appendChild(style);
+
+document.getElementById("fb-login-btn").onclick=async()=>{
+ const msg=document.getElementById("fb-login-msg"); msg.textContent="로그인 중...";
+ try{await signInWithEmailAndPassword(auth,document.getElementById("fb-email").value.trim(),document.getElementById("fb-password").value);msg.textContent="";}
+ catch(e){msg.textContent="로그인 실패: 이메일 또는 비밀번호를 확인해줘.";}
+};
+
+function collectLocalStorage(){
+ const data={};
+ for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);data[k]=localStorage.getItem(k);}
+ return data;
+}
+function applyLocalStorage(data){
+ if(!data)return;
+ applyingRemote=true;
+ Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v));
+ applyingRemote=false;
+ try{location.reload();}catch(e){}
+}
+async function pushSharedState(){
+ if(applyingRemote||!auth.currentUser)return;
+ await setDoc(sharedRef,{localStorage:collectLocalStorage(),updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
+}
+const originalSet=Storage.prototype.setItem;
+Storage.prototype.setItem=function(k,v){
+ originalSet.call(this,k,v);
+ if(this===localStorage && !applyingRemote){
+   clearTimeout(saveTimer); saveTimer=setTimeout(()=>pushSharedState().catch(console.error),500);
+ }
+};
+
+onAuthStateChanged(auth,async user=>{
+ if(unsubscribe){unsubscribe();unsubscribe=null;}
+ document.querySelector(".firebase-userbar")?.remove();
+ if(!user){loginOverlay.style.display="flex";return;}
+ loginOverlay.style.display="none";
+ const bar=document.createElement("div");bar.className="firebase-userbar";
+ bar.innerHTML=`${user.email}<button id="fb-logout">로그아웃</button>`;document.body.appendChild(bar);
+ document.getElementById("fb-logout").onclick=()=>signOut(auth);
+ unsubscribe=onSnapshot(sharedRef,async snap=>{
+   if(!snap.exists()){
+     await setDoc(sharedRef,{localStorage:collectLocalStorage(),updatedAt:serverTimestamp(),updatedBy:user.uid});
+     return;
+   }
+   const remote=snap.data().localStorage||{};
+   const local=collectLocalStorage();
+   if(JSON.stringify(remote)!==JSON.stringify(local)) applyLocalStorage(remote);
+ });
+});
+</script>
+
+</body>
+</html>
