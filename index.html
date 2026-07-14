@@ -1115,9 +1115,7 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
                     <div style="font-size:0.8rem; color:var(--gray-sub); font-weight:bold;">${dateLabelHtml}</div>
                     <div style="font-weight:700; margin:6px 0; font-size:0.95rem; line-height:1.4;">${f.comment}</div>
                     ${f.tags ? `<div style="font-size:0.75rem; color:var(--point-pink); margin-bottom:8px;">🏷️ ${f.tags}</div>` : ''}
-                    <div style="font-size:0.75rem; background:#f1f2f6; padding:6px 10px; border-radius:8px; color:#57606f;">
-                        🍚 식비:${f.cost.food.toLocaleString()}원 | ☕ 카페:${f.cost.cafe.toLocaleString()}원 | 🍿 문화:${f.cost.play.toLocaleString()}원 | 🚗기타:${f.cost.etc.toLocaleString()}원
-                    </div>
+                    <div class="v4933-cost-grid"><span>🍚 식비:${f.cost.food.toLocaleString()}원</span><span>☕ 카페:${f.cost.cafe.toLocaleString()}원</span><span>🍿 문화:${f.cost.play.toLocaleString()}원</span><span>🚗 기타:${f.cost.etc.toLocaleString()}원</span></div>
                 </div>
             `;
             feedContainer.appendChild(card);
@@ -1490,15 +1488,17 @@ function v42CloseHistory(){document.getElementById("v42-history-modal").classLis
 function v43RegionRows(){const box=document.getElementById("v43-diary-regions");if(!box)return;box.innerHTML="";for(let i=1;i<=3;i++)box.insertAdjacentHTML('beforeend',`<div class="v43-region-row"><select id="v43-sido-${i}" onchange="v43FillSgg(${i})"><option value="">${i}지역 시·도</option>${Object.keys(koreaMapData).map(s=>`<option value="${s}">${s}</option>`).join('')}</select><select id="v43-sgg-${i}"><option value="">시·군·구</option></select></div>`);}
 function v43FillSgg(i){const s=document.getElementById(`v43-sido-${i}`)?.value,g=document.getElementById(`v43-sgg-${i}`);if(g)g.innerHTML='<option value="">시·군·구</option>'+Object.keys(koreaMapData[s]||{}).map(x=>`<option value="${x}">${x}</option>`).join('');}
 function v43SelectedRegionIds(){return [1,2,3].map(i=>v44RegionId(document.getElementById(`v43-sido-${i}`)?.value,document.getElementById(`v43-sgg-${i}`)?.value)).filter(Boolean);}
-function v44EnhanceDiary(){const form=document.querySelector('.diary-form');if(!form||document.getElementById('v44-diary-links'))return;const wrap=document.createElement('div');wrap.id='v44-diary-links';wrap.className='v44-link-selects';wrap.innerHTML=`<div style="font-size:.8rem;font-weight:bold;color:var(--point-pink)">📍 방문지역 (최대 3곳)</div><div id="v43-diary-regions"></div><div style="font-size:.8rem;font-weight:bold">📌 연결 장소</div><select id="v44-diary-places" multiple></select><div style="font-size:.8rem;font-weight:bold">🎬 연결 영화</div><select id="v44-diary-movies" multiple></select>`;form.insertBefore(wrap,document.getElementById('diary-files'));v43RegionRows();v44RefreshDiaryLinks();}
-function v44RefreshDiaryLinks(){const ps=document.getElementById('v44-diary-places'),ms=document.getElementById('v44-diary-movies');if(ps)ps.innerHTML=v42.places.map(p=>`<option value="${p.id}">${p.sido} ${p.sgg} · ${p.name}</option>`).join('');if(ms)ms.innerHTML=v42.movies.map(m=>`<option value="${m.id}">${m.title}</option>`).join('');}
-const v44OriginalAddDiary=window.addDiary;window.addDiary=function(){const before=diaryFeeds.length;v44OriginalAddDiary();if(diaryFeeds.length>before){const f=diaryFeeds[0];f.regionIds=v43SelectedRegionIds();f.regions=f.regionIds.map(v44RegionLabel);f.placeIds=Array.from(document.getElementById('v44-diary-places')?.selectedOptions||[]).map(o=>+o.value);f.movieIds=Array.from(document.getElementById('v44-diary-movies')?.selectedOptions||[]).map(o=>+o.value);f.authorUid=v42Uid();f.author=v42Author();f.regionIds.forEach(v44MarkVisited);saveState();recalculateStatsAndFeeds();v42Render();}};
-const v44OriginalRecalc=window.recalculateStatsAndFeeds;window.recalculateStatsAndFeeds=function(){v44OriginalRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;f.regionIds=f.regionIds||[];f.placeIds=f.placeIds||[];f.movieIds=f.movieIds||[];const content=card.querySelector('.feed-content');if(!content)return;const places=f.placeIds.map(id=>v42.places.find(p=>p.id===id)?.name).filter(Boolean),movies=f.movieIds.map(id=>v42.movies.find(m=>m.id===id)?.title).filter(Boolean);const extra=document.createElement('div');extra.innerHTML=`<div class="v42-author">${f.author||'💕 기존 기록'}</div><div>${f.regionIds.map(id=>`<span class="v42-tag">${v44RegionLabel(id)}</span>`).join('')}</div>${places.length?`<div>📍 ${places.join(' · ')}</div>`:''}${movies.length?`<div>🎬 ${movies.join(' · ')}</div>`:''}`;content.prepend(extra);});};
+function v4933PlaceLinkCount(id){return diaryFeeds.reduce((n,f)=>n+((f.placeIds||[]).includes(id)?1:0),0);}
+function v4933CheckedIds(id){return Array.from(document.querySelectorAll('#'+id+' input[type="checkbox"]:checked')).map(x=>+x.value);}
+function v44EnhanceDiary(){const form=document.querySelector('.diary-form');if(!form||document.getElementById('v44-diary-links'))return;const wrap=document.createElement('div');wrap.id='v44-diary-links';wrap.className='v44-link-selects';wrap.innerHTML=`<div style="font-size:.8rem;font-weight:bold;color:var(--point-pink)">📍 방문지역 (최대 3곳)</div><div id="v43-diary-regions"></div><details class="v4933-link-box"><summary>＋ 장소 연결 <span>(선택)</span></summary><div id="v44-diary-places" class="v4933-link-list"></div></details><details class="v4933-link-box"><summary>＋ 영화 연결 <span>(선택)</span></summary><div id="v44-diary-movies" class="v4933-link-list"></div></details>`;form.insertBefore(wrap,document.getElementById('diary-files'));v43RegionRows();v44RefreshDiaryLinks();}
+function v44RefreshDiaryLinks(){const ps=document.getElementById('v44-diary-places'),ms=document.getElementById('v44-diary-movies');if(!ps||!ms)return;const keepP=new Set(v4933CheckedIds('v44-diary-places')),keepM=new Set(v4933CheckedIds('v44-diary-movies'));const places=[...v42.places].sort((a,b)=>{const ac=v4933PlaceLinkCount(a.id),bc=v4933PlaceLinkCount(b.id);if((ac===0)!==(bc===0))return ac===0?-1:1;const ad=String(a.createdAt||v44LatestVisit(a)?.createdAt||v44LatestVisit(a)?.date||''),bd=String(b.createdAt||v44LatestVisit(b)?.createdAt||v44LatestVisit(b)?.date||'');return bd.localeCompare(ad)});ps.innerHTML=places.map(p=>`<label class="v4933-link-item"><input type="checkbox" value="${p.id}" ${keepP.has(p.id)?'checked':''}><span>${p.name} · 방문 ${v4933PlaceLinkCount(p.id)}회</span></label>`).join('')||'<div class="v4933-empty">연결할 장소가 없습니다.</div>';const used=new Set(diaryFeeds.flatMap(f=>f.movieIds||[]));ms.innerHTML=v42.movies.filter(m=>!used.has(m.id)||keepM.has(m.id)).map(m=>`<label class="v4933-link-item"><input type="checkbox" value="${m.id}" ${keepM.has(m.id)?'checked':''}><span>${m.title}</span></label>`).join('')||'<div class="v4933-empty">연결 가능한 영화가 없습니다.</div>';}">${p.sido} ${p.sgg} · ${p.name}</option>`).join('');if(ms)ms.innerHTML=v42.movies.map(m=>`<option value="${m.id}">${m.title}</option>`).join('');}
+const v44OriginalAddDiary=window.addDiary;window.addDiary=function(){const before=diaryFeeds.length;v44OriginalAddDiary();if(diaryFeeds.length>before){const f=diaryFeeds[0];f.regionIds=v43SelectedRegionIds();f.regions=f.regionIds.map(v44RegionLabel);f.placeIds=v4933CheckedIds('v44-diary-places');f.movieIds=v4933CheckedIds('v44-diary-movies');f.authorUid=v42Uid();f.author=v42Author();f.regionIds.forEach(v44MarkVisited);saveState();recalculateStatsAndFeeds();v42Render();}};
+const v44OriginalRecalc=window.recalculateStatsAndFeeds;window.recalculateStatsAndFeeds=function(){v44OriginalRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;f.regionIds=f.regionIds||[];f.placeIds=f.placeIds||[];f.movieIds=f.movieIds||[];const content=card.querySelector('.feed-content');if(!content)return;const places=f.placeIds.map(id=>v42.places.find(p=>p.id===id)?.name).filter(Boolean),movies=f.movieIds.map(id=>v42.movies.find(m=>m.id===id)?.title).filter(Boolean);const extra=document.createElement('div');extra.className='v4933-linked-meta';extra.innerHTML=`<div class="v42-author">${f.author||'💕 기존 기록'}</div><div>${f.regionIds.map(id=>`<span class="v42-tag">${v44RegionLabel(id)}</span>`).join('')}</div>${places.length?`<div>📍 ${places.join(' · ')}</div>`:''}${movies.length?`<div>🎬 ${movies.join(' · ')}</div>`:''}`;content.prepend(extra);});};
 const v43OldGeneral=window.addGeneralSchedule;window.addGeneralSchedule=function(){const before=allSchedules.length;v43OldGeneral();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.startTime=document.getElementById('v43-general-start').value||'';x.endTime=document.getElementById('v43-general-end').value||'';x.memo=document.getElementById('v43-general-memo').value.trim();saveState();v43RenderSchedules();}};
 const v43OldMatch=window.addKleagueMatch;window.addKleagueMatch=function(){const before=allSchedules.length;v43OldMatch();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.kickoff=document.getElementById('v43-match-time').value||'';x.stadium=document.getElementById('v43-match-stadium').value.trim();x.memo=document.getElementById('v43-match-memo').value.trim();saveState();v43RenderSchedules();}};
 function v43RenderSchedules(){const today=new Date().toISOString().slice(0,10),upcoming=[...allSchedules].filter(s=>s.date>=today).sort((a,b)=>(a.date+(a.startTime||a.kickoff||'')).localeCompare(b.date+(b.startTime||b.kickoff||''))).slice(0,8),up=document.getElementById('v43-upcoming');if(up)up.innerHTML=upcoming.map(s=>`<div class="v43-upcoming-item">${s.type==='K리그'?'⚽':'❤️'} <b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${s.content}${s.stadium?' · '+s.stadium:''}${s.memo?`<div style="color:#747d8c">${s.memo}</div>`:''}</div>`).join('')||'<div style="font-size:.8rem;color:#747d8c">예정된 일정이 없습니다.</div>';const past=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)),years=[...new Set(past.map(s=>s.date.slice(0,4)))],ys=document.getElementById('v43-match-year');if(ys){const cur=ys.value;ys.innerHTML='<option value="all">전체 연도</option>'+years.map(y=>`<option>${y}</option>`).join('');if([...ys.options].some(o=>o.value===cur))ys.value=cur;}const selected=ys?.value||'all',box=document.getElementById('v43-past-matches');if(box)box.innerHTML=past.filter(s=>selected==='all'||s.date.startsWith(selected)).slice(0,selected==='all'?5:9999).map(s=>`<div class="match-item"><span>⚽ ${s.date} ${s.kickoff||''} · ${s.content}${s.stadium?' · '+s.stadium:''}</span></div>`).join('')||'<div style="padding:10px;color:#747d8c">지난 경기가 없습니다.</div>';}
 function v44GlobalSearch(q){q=v44NormText(q).toLowerCase();const box=document.getElementById('v44-search-results');if(!box)return;if(!q){box.hidden=true;box.innerHTML='';return;}const diaries=diaryFeeds.filter(f=>[f.comment,f.tags,...(f.regions||[])].join(' ').toLowerCase().includes(q)),places=v42.places.filter(p=>[p.name,p.sido,p.sgg,p.category,...p.visits.map(v=>v.review)].join(' ').toLowerCase().includes(q)),movies=v42.movies.filter(m=>[m.title,m.review,m.releaseDate].join(' ').toLowerCase().includes(q)),comments=Object.entries(v42.comments).flatMap(([key,a])=>a.map(c=>({key,...c}))).filter(c=>[c.text,c.author].join(' ').toLowerCase().includes(q));const group=(title,a,fmt)=>`<div class="v44-search-group"><b>${title} ${a.length}건</b>${a.map(fmt).join('')||'<div class="v44-search-hit">결과 없음</div>'}</div>`;box.innerHTML=group('데이트 기록',diaries,x=>`<div class="v44-search-hit" onclick="showMobileSection('diary',document.querySelector('.mobile-nav button:nth-child(2)'))">${x.startDate} · ${x.comment}</div>`)+group('장소',places,x=>`<div class="v44-search-hit" onclick="showMobileSection('places',document.querySelector('.mobile-nav button:nth-child(3)'))">${x.sido} ${x.sgg} · ${x.name}</div>`)+group('영화',movies,x=>`<div class="v44-search-hit" onclick="showMobileSection('movies',document.querySelector('.mobile-nav button:nth-child(4)'))">${x.title}</div>`)+group('댓글',comments,x=>`<div class="v44-search-hit">${x.author} · ${x.text}</div>`);box.hidden=false;}
-function v44RenderAnnualSummary(){const ys=document.getElementById('v44-year-select'),box=document.getElementById('v44-annual-summary');if(!ys||!box)return;const years=[...new Set([...diaryFeeds.map(f=>f.startDate?.slice(0,4)),...v42.places.flatMap(p=>p.visits.map(v=>v.date?.slice(0,4))),...v42.movies.map(m=>m.watchedDate?.slice(0,4))].filter(Boolean))].sort().reverse();if(!years.length)years.push(String(new Date().getFullYear()));const cur=ys.value;ys.innerHTML=years.map(y=>`<option>${y}</option>`).join('');if(years.includes(cur))ys.value=cur;const y=ys.value,ds=diaryFeeds.filter(f=>f.startDate?.startsWith(y)),visits=v42.places.flatMap(p=>p.visits.filter(v=>v.date?.startsWith(y)).map(v=>({p,v}))),ms=v42.movies.filter(m=>m.watchedDate?.startsWith(y)),regions=new Map(),placeCounts=new Map();ds.forEach(f=>(f.regionIds||[]).forEach(id=>regions.set(id,(regions.get(id)||0)+1)));ds.forEach(f=>(f.placeIds||[]).forEach(id=>placeCounts.set(id,(placeCounts.get(id)||0)+1));const topRegion=[...regions].sort((a,b)=>b[1]-a[1])[0],topPlace=[...placeCounts].sort((a,b)=>b[1]-a[1])[0],avg=visits.length?(visits.reduce((a,x)=>a+(+x.v.rating||0),0)/visits.length).toFixed(1):'0.0',placeSet=new Set(visits.map(x=>x.p.id));const stats=[['데이트 횟수',ds.length+'회'],['방문 지역 수',regions.size+'곳'],['가장 많이 방문한 지역',topRegion?v44RegionLabel(topRegion[0]):'-'],['등록된 장소 수',placeSet.size+'곳'],['장소 평균 별점',avg],['같이 본 영화 수',ms.length+'편'],['가장 많이 방문한 장소',topPlace?(v42.places.find(p=>p.id===topPlace[0])?.name||'-'):'-'],['즐겨찾기 장소 수',v42.places.filter(p=>p.favorite&&placeSet.has(p.id)).length+'곳']];box.innerHTML=stats.map(([k,v])=>`<div class="v44-summary-card"><span>${k}</span><b>${v}</b></div>`).join('');}
+function v44RenderAnnualSummary(){const ys=document.getElementById('v44-year-select'),box=document.getElementById('v44-annual-summary');if(!ys||!box)return;const years=[...new Set([...diaryFeeds.map(f=>f.startDate?.slice(0,4)),...v42.places.flatMap(p=>(p.visits||[]).map(v=>v.date?.slice(0,4))),...v42.movies.map(m=>m.watchedDate?.slice(0,4))].filter(Boolean))].sort().reverse();if(!years.length)years.push(String(new Date().getFullYear()));const cur=ys.value;ys.innerHTML=years.map(y=>`<option>${y}</option>`).join('');if(years.includes(cur))ys.value=cur;const y=ys.value,ds=diaryFeeds.filter(f=>f.startDate?.startsWith(y)),visits=v42.places.flatMap(p=>(p.visits||[]).filter(v=>v.date?.startsWith(y)).map(v=>({p,v}))),ms=v42.movies.filter(m=>m.watchedDate?.startsWith(y)),regions=new Map(),placeCounts=new Map();ds.forEach(f=>(f.regionIds||[]).forEach(id=>regions.set(id,(regions.get(id)||0)+1)));ds.forEach(f=>(f.placeIds||[]).forEach(id=>placeCounts.set(id,(placeCounts.get(id)||0)+1));const topRegion=[...regions].sort((a,b)=>b[1]-a[1])[0],topPlace=[...placeCounts].sort((a,b)=>b[1]-a[1])[0],avg=visits.length?(visits.reduce((a,x)=>a+(+x.v.rating||0),0)/visits.length).toFixed(1):'0.0',placeSet=new Set(visits.map(x=>x.p.id));const stats=[['데이트 횟수',ds.length+'회'],['방문 지역 수',regions.size+'곳'],['가장 많이 방문한 지역',topRegion?v44RegionLabel(topRegion[0]):'-'],['등록된 장소 수',placeSet.size+'곳'],['장소 평균 별점',avg],['같이 본 영화 수',ms.length+'편'],['가장 많이 방문한 장소',topPlace?(v42.places.find(p=>p.id===topPlace[0])?.name||'-'):'-'],['즐겨찾기 장소 수',v42.places.filter(p=>p.favorite&&placeSet.has(p.id)).length+'곳']];box.innerHTML=stats.map(([k,v])=>`<div class="v44-summary-card"><span>${k}</span><b>${v}</b></div>`).join('');}
 // GeoJSON properties are analyzed at runtime and assigned canonical IDs.
 const v44OldFeatureNames=window.featureNames;window.featureNames=function(feature){if(feature?.properties?.__canonicalRegionId){const [sido,sigungu]=feature.properties.__canonicalRegionId.split('::');return {sido,sigungu};}return v44OldFeatureNames(feature);};
 const v44OldDraw=window.drawMunicipalityMap;window.drawMunicipalityMap=function(){if(municipalityGeoJSON)v44BuildGeoMapping(municipalityGeoJSON);return v44OldDraw();};
@@ -1788,195 +1788,8 @@ function v492IsRevisit(p){
 }
 </style>
 
-
-<style id="v4932-css">
-/* Optional link UI */
-.v4932-link-box{border:1px solid var(--light-pink);border-radius:14px;background:#fff;margin-top:8px;overflow:hidden}
-.v4932-link-box summary{cursor:pointer;padding:11px 12px;font-size:.82rem;font-weight:800;list-style:none}
-.v4932-link-box summary::-webkit-details-marker{display:none}
-.v4932-link-list{display:flex;flex-direction:column;gap:6px;padding:0 10px 10px;max-height:210px;overflow-y:auto}
-.v4932-link-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;background:#fff8f9;font-size:.8rem}
-.v4932-link-item input{width:17px!important;height:17px!important;margin:0!important;flex:0 0 auto}
-.v4932-empty{font-size:.78rem;color:var(--gray-sub);padding:0 12px 11px}
-
-/* Calendar selected-date mode */
-.calendar-day.v4932-selected{outline:2px solid var(--dark-black);outline-offset:1px}
-.v4932-date-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;margin:8px 0 10px;background:#fff8f9;border-radius:12px;font-size:.82rem}
-.v4932-date-bar button{width:auto;border:0;border-radius:999px;padding:7px 10px;cursor:pointer;font-weight:700}
-.v4932-date-empty{padding:12px 6px;color:var(--gray-sub);font-size:.82rem}
-
-/* Actual timeline DOM spacing */
-#diary-feed-container .feed-content>.v4932-linked-meta{display:flex;flex-direction:column;gap:7px;margin-bottom:9px}
-#diary-feed-container .feed-content>.v4932-linked-meta>div{margin:0!important;line-height:1.45!important}
-#diary-feed-container .feed-content>.v4932-linked-meta+.v4932-feed-date{margin-top:9px!important}
-
-/* Actual cost block replacement */
-#diary-feed-container .v4932-cost-grid{display:flex;flex-wrap:wrap;gap:6px 10px!important;line-height:1.45!important}
-#diary-feed-container .v4932-cost-grid span{white-space:nowrap!important}
-
-@media(max-width:768px){
- #diary-feed-container .v4932-cost-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px 8px!important}
- #diary-feed-container .v4932-cost-grid span{min-width:0!important;white-space:nowrap!important;font-size:.72rem}
- #diary-feed-container .feed-content>.v4932-linked-meta{gap:7px!important;margin-bottom:10px!important}
-}
-</style>
-
-<script id="v4932-js">
-(function(){
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let selectedDate='';
-
-function linkCount(kind,id,year){
- return diaryFeeds.filter(f=>(!year||(f.startDate||'').startsWith(year))&&
-   (kind==='place'?(f.placeIds||[]):(f.movieIds||[])).includes(id)).length;
-}
-function checkedIds(boxId){
- return [...document.querySelectorAll('#'+boxId+' input[type="checkbox"]:checked')].map(x=>+x.value);
-}
-function refreshLinkChoices(keepP=[],keepM=[]){
- const pb=document.getElementById('v4932-place-list'),mb=document.getElementById('v4932-movie-list');
- if(!pb||!mb)return;
- const pKeep=new Set(keepP.length?keepP:checkedIds('v4932-place-list'));
- const mKeep=new Set(keepM.length?keepM:checkedIds('v4932-movie-list'));
-
- const places=[...v42.places].sort((a,b)=>{
-   const ac=linkCount('place',a.id),bc=linkCount('place',b.id);
-   if((ac===0)!==(bc===0))return ac===0?-1:1; // 미연결 우선
-   const ad=String(a.createdAt||v44LatestVisit(a)?.createdAt||v44LatestVisit(a)?.date||'');
-   const bd=String(b.createdAt||v44LatestVisit(b)?.createdAt||v44LatestVisit(b)?.date||'');
-   return bd.localeCompare(ad); // 각 그룹 내 최근 등록/방문 우선
- });
- pb.innerHTML=places.length?places.map(p=>`<label class="v4932-link-item"><input type="checkbox" value="${p.id}" ${pKeep.has(p.id)?'checked':''}><span>${esc(p.name)} · 방문 ${linkCount('place',p.id)}회</span></label>`).join(''):'<div class="v4932-empty">연결할 장소가 없어.</div>';
-
- const used=new Set(diaryFeeds.flatMap(f=>f.movieIds||[]));
- const movies=v42.movies.filter(m=>!used.has(m.id)||mKeep.has(m.id));
- mb.innerHTML=movies.length?movies.map(m=>`<label class="v4932-link-item"><input type="checkbox" value="${m.id}" ${mKeep.has(m.id)?'checked':''}><span>${esc(m.title)}</span></label>`).join(''):'<div class="v4932-empty">연결 가능한 영화가 없어.</div>';
-}
-function installLinkUI(){
- const wrap=document.getElementById('v44-diary-links'); if(!wrap)return;
- const ps=document.getElementById('v44-diary-places'),ms=document.getElementById('v44-diary-movies');
- if(ps)ps.style.display='none'; if(ms)ms.style.display='none';
- [...wrap.children].forEach(el=>{
-   if(el.id==='v43-diary-regions')return;
-   const t=(el.textContent||'').trim();
-   if((t.includes('연결 장소')||t.includes('연결 영화'))&&!el.classList.contains('v4932-link-box'))el.style.display='none';
- });
- if(!document.getElementById('v4932-place-list')){
-   wrap.insertAdjacentHTML('beforeend',`
-    <details class="v4932-link-box"><summary>＋ 장소 연결 <span style="font-weight:400;color:var(--gray-sub)">(선택)</span></summary><div id="v4932-place-list" class="v4932-link-list"></div></details>
-    <details class="v4932-link-box"><summary>＋ 영화 연결 <span style="font-weight:400;color:var(--gray-sub)">(선택)</span></summary><div id="v4932-movie-list" class="v4932-link-list"></div></details>`);
- }
- refreshLinkChoices();
-}
-
-/* Capture selected links before the existing addDiary wrapper runs, then overwrite the newly created feed's links. */
-const previousAdd=window.addDiary;
-window.addDiary=function(){
- const p=checkedIds('v4932-place-list'),m=checkedIds('v4932-movie-list');
- const beforeIds=new Set(diaryFeeds.map(f=>f.id));
- previousAdd.apply(this,arguments);
- const created=diaryFeeds.find(f=>!beforeIds.has(f.id));
- if(created){
-   created.placeIds=p; created.movieIds=m;
-   saveState(); recalculateStatsAndFeeds(); v42Render();
-   refreshLinkChoices([],[]);
- }
-};
-
-/* Edit form: allow link changes too, with already-linked movie retained for that diary. */
-const previousEdit=window.v45EditDiary;
-window.v45EditDiary=function(id){
- previousEdit(id);
- const f=diaryFeeds.find(x=>x.id===id),box=document.querySelector(`[data-edit-diary="${id}"]`);
- if(!f||!box)return;
- const usedByOthers=new Set(diaryFeeds.filter(x=>x.id!==id).flatMap(x=>x.movieIds||[]));
- const places=[...v42.places].sort((a,b)=>linkCount('place',a.id)-linkCount('place',b.id));
- const movies=v42.movies.filter(m=>!usedByOthers.has(m.id));
- box.insertAdjacentHTML('beforeend',`
-  <details class="v4932-link-box"><summary>＋ 장소 연결 수정</summary><div class="v4932-link-list" data-edit-places>${places.map(p=>`<label class="v4932-link-item"><input type="checkbox" value="${p.id}" ${(f.placeIds||[]).includes(p.id)?'checked':''}><span>${esc(p.name)} · 방문 ${linkCount('place',p.id)}회</span></label>`).join('')}</div></details>
-  <details class="v4932-link-box"><summary>＋ 영화 연결 수정</summary><div class="v4932-link-list" data-edit-movies>${movies.map(m=>`<label class="v4932-link-item"><input type="checkbox" value="${m.id}" ${(f.movieIds||[]).includes(m.id)?'checked':''}><span>${esc(m.title)}</span></label>`).join('')}</div></details>`);
-};
-const previousSave=window.v45SaveDiary;
-window.v45SaveDiary=function(id){
- const box=document.querySelector(`[data-edit-diary="${id}"]`),f=diaryFeeds.find(x=>x.id===id);
- if(box&&f){
-   f.placeIds=[...box.querySelectorAll('[data-edit-places] input:checked')].map(x=>+x.value);
-   f.movieIds=[...box.querySelectorAll('[data-edit-movies] input:checked')].map(x=>+x.value);
- }
- previousSave(id); refreshLinkChoices();
-};
-
-/* Calendar selected-date schedule view */
-function renderScheduleItem(s,football){
- const badge=football?(s.detail==='강원'?'강원 🧡':s.detail==='수원'?'수원 💙':'기타 ⚽'):(s.type==='현진'?'🖤 현진':s.type==='서형'?'💛 서형':'❤️ 같이');
- return `<div class="match-item v49-schedule-item ${football?'v49-football-item':'v49-personal-item'}"><div class="v49-schedule-info"><b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${esc(s.content)}${s.stadium?' · 🏟️ '+esc(s.stadium):''}<div class="v45-badges"><span>${badge}</span>${football&&s.work?'<span>💼 서형 근무</span>':''}</div>${s.memo?`<small>${esc(s.memo)}</small>`:''}</div><div class="v45-actions v49-icon-actions"><button onclick="v45ScheduleEdit(${s.id})">✏️</button><button onclick="v45ScheduleDelete(${s.id})">🗑️</button></div></div>`;
-}
-function showDate(ds){
- if(selectedDate===ds){backUpcoming();return}
- selectedDate=ds; renderCalendar();
- const p=allSchedules.filter(s=>s.date===ds&&s.type!=='K리그').sort((a,b)=>(a.startTime||'').localeCompare(b.startTime||''));
- const f=allSchedules.filter(s=>s.date===ds&&s.type==='K리그').sort((a,b)=>(a.startTime||a.kickoff||'').localeCompare(b.startTime||b.kickoff||''));
- const diaries=diaryFeeds.filter(x=>{const a=x.startDate||'',b=x.endDate||a;return a&&ds>=a&&ds<=b});
- document.querySelector('#v45-personal-panel>.section-title').textContent=`📅 ${ds} 개인·같이 일정`;
- document.querySelector('#v45-football-panel>.section-title').textContent=`📅 ${ds} 축구 일정`;
- document.getElementById('v45-personal-list').innerHTML=p.map(x=>renderScheduleItem(x,false)).join('')+diaries.map(x=>`<div class="match-item"><div><b>❤️ ${esc(x.comment)}</b><div style="font-size:.75rem;color:var(--gray-sub)">데이트 기록</div></div></div>`).join('')||'<div class="v4932-date-empty">등록된 개인·같이 일정이 없습니다.</div>';
- document.getElementById('v45-football-list').innerHTML=f.map(x=>renderScheduleItem(x,true)).join('')||'<div class="v4932-date-empty">등록된 축구 일정이 없습니다.</div>';
- let bar=document.getElementById('v4932-date-bar');
- if(!bar){bar=document.createElement('div');bar.id='v4932-date-bar';bar.className='v4932-date-bar';document.querySelector('#v45-schedule-card .tabs').after(bar)}
- bar.innerHTML=`<b>${ds} 일정 조회 중</b><button onclick="v4932BackUpcoming()">선택 해제</button>`;
- document.getElementById('v45-schedule-card').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function backUpcoming(){
- selectedDate=''; document.getElementById('v4932-date-bar')?.remove();
- document.querySelector('#v45-personal-panel>.section-title').textContent='다가오는 개인·데이트 일정';
- document.querySelector('#v45-football-panel>.section-title').textContent='다가오는 경기 일정';
- v45RenderSchedules(); renderCalendar();
-}
-window.v4932BackUpcoming=backUpcoming;
-
-const previousCalendar=window.renderCalendar;
-window.renderCalendar=function(){
- previousCalendar.apply(this,arguments);
- const y=currentDate.getFullYear(),m=currentDate.getMonth();
- document.querySelectorAll('#calendar-grid .calendar-day').forEach(day=>{
-   const d=parseInt(day.textContent,10); if(!d)return;
-   const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-   if(ds===selectedDate)day.classList.add('v4932-selected');
-   day.onclick=()=>showDate(ds);
- });
-};
-
-/* Timeline: use actual generated DOM and text to style spacing/costs. */
-function polishTimeline(){
- document.querySelectorAll('#diary-feed-container .feed-card').forEach(card=>{
-   const content=card.querySelector('.feed-content'); if(!content)return;
-   const kids=[...content.children];
-   const author=kids.find(x=>x.classList.contains('v42-author'));
-   if(author&&author.parentElement===content){
-     const meta=document.createElement('div');meta.className='v4932-linked-meta';
-     while(content.firstElementChild&&(content.firstElementChild.classList.contains('v42-author')||/^(📍|🎬)/.test((content.firstElementChild.textContent||'').trim())))meta.appendChild(content.firstElementChild);
-     content.prepend(meta);
-   }else{
-     const extra=kids.find(x=>x.querySelector?.('.v42-author'));
-     if(extra)extra.classList.add('v4932-linked-meta');
-   }
-   const date=[...content.children].find(x=>(x.textContent||'').trim().startsWith('📅'));
-   if(date)date.classList.add('v4932-feed-date');
-   [...content.querySelectorAll('div')].forEach(d=>{
-     const t=(d.textContent||'').trim();
-     if(t.includes('🍚 식비:')&&t.includes('☕ 카페:')&&t.includes('🍿 문화:')&&t.includes('🚗 기타:')&&!d.classList.contains('v4932-cost-grid')){
-       const parts=t.split('|').map(x=>x.trim()).filter(Boolean);
-       d.classList.add('v4932-cost-grid'); d.innerHTML=parts.map(x=>`<span>${esc(x)}</span>`).join('');
-     }
-   });
- });
-}
-const previousRecalc=window.recalculateStatsAndFeeds;
-window.recalculateStatsAndFeeds=function(){const r=previousRecalc.apply(this,arguments);polishTimeline();return r};
-
-window.addEventListener('load',()=>setTimeout(()=>{installLinkUI();refreshLinkChoices();renderCalendar();polishTimeline();v44RenderAnnualSummary();},900));
-})();
-</script>
-
+<style id="v4933-rebuild-css">
+.v4933-link-box{border:1px solid #ffd5dc;border-radius:14px;background:#fff;margin-top:8px;overflow:hidden}.v4933-link-box summary{cursor:pointer;padding:11px 12px;font-size:.82rem;font-weight:800;list-style:none}.v4933-link-box summary span{font-weight:400;color:#8b909c}.v4933-link-list{display:flex;flex-direction:column;gap:6px;padding:0 10px 10px;max-height:210px;overflow-y:auto}.v4933-link-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;background:#fff8f9;font-size:.8rem}.v4933-link-item input{width:17px!important;height:17px!important;margin:0!important;flex:0 0 auto}.v4933-empty{font-size:.78rem;color:#8b909c;padding:8px}.v4933-linked-meta{display:flex!important;flex-direction:column!important;gap:8px!important;margin:0 0 11px!important}.v4933-linked-meta>div{margin:0!important;line-height:1.45!important}.v4933-cost-grid{display:flex;flex-wrap:wrap;gap:6px 10px;background:#f1f2f6;padding:7px 10px;border-radius:8px;color:#57606f;font-size:.75rem;line-height:1.45}.v4933-cost-grid span{white-space:nowrap}.calendar-day.v4933-selected{outline:2px solid #2f3542;outline-offset:1px}.v4933-date-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;margin:8px 0 10px;background:#fff8f9;border-radius:12px;font-size:.82rem}.v4933-date-bar button{width:auto;border:0;border-radius:999px;padding:7px 10px;font-weight:700;cursor:pointer}@media(max-width:768px){.v4933-cost-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px 8px!important}.v4933-cost-grid span{white-space:nowrap!important;font-size:.72rem!important;min-width:0!important}}</style>
+<script id="v4933-rebuild-js">(function(){let selectedDate='';const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function repairPlaceUI(){try{v44InitPlaceUI();v42RenderPlaces()}catch(e){console.error(e)}}function row(s,football){const badge=football?(s.detail==='강원'?'강원 🧡':s.detail==='수원'?'수원 💙':'기타 ⚽'):(s.type==='현진'?'🖤 현진':s.type==='서형'?'💛 서형':'❤️ 같이');return `<div class="match-item v49-schedule-item"><div class="v49-schedule-info"><b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${esc(s.content)}${s.stadium?' · 🏟️ '+esc(s.stadium):''}<div class="v45-badges"><span>${badge}</span></div>${s.memo?`<small>${esc(s.memo)}</small>`:''}</div></div>`}function back(){selectedDate='';document.getElementById('v4933-date-bar')?.remove();document.querySelector('#v45-personal-panel>.section-title').textContent='다가오는 개인·데이트 일정';document.querySelector('#v45-football-panel>.section-title').textContent='다가오는 경기 일정';v45RenderSchedules();renderCalendar()}function show(ds){if(selectedDate===ds){back();return}selectedDate=ds;renderCalendar();const p=allSchedules.filter(s=>s.date===ds&&s.type!=='K리그'),f=allSchedules.filter(s=>s.date===ds&&s.type==='K리그'),diaries=diaryFeeds.filter(x=>{const a=x.startDate||'',b=x.endDate||a;return a&&ds>=a&&ds<=b});document.querySelector('#v45-personal-panel>.section-title').textContent=`📅 ${ds} 개인·같이 일정`;document.querySelector('#v45-football-panel>.section-title').textContent=`📅 ${ds} 축구 일정`;document.getElementById('v45-personal-list').innerHTML=(p.map(x=>row(x,false)).join('')+diaries.map(x=>`<div class="match-item"><b>❤️ ${esc(x.comment)}</b></div>`).join(''))||'등록된 개인·같이 일정이 없습니다.';document.getElementById('v45-football-list').innerHTML=f.map(x=>row(x,true)).join('')||'등록된 축구 일정이 없습니다.';let bar=document.getElementById('v4933-date-bar');if(!bar){bar=document.createElement('div');bar.id='v4933-date-bar';bar.className='v4933-date-bar';document.querySelector('#v45-schedule-card .tabs').after(bar)}bar.innerHTML=`<b>${ds} 일정 조회 중</b><button onclick="v4933Back()">선택 해제</button>`}window.v4933Back=back;const oldCalendar=window.renderCalendar;window.renderCalendar=function(){oldCalendar.apply(this,arguments);const y=currentDate.getFullYear(),m=currentDate.getMonth();document.querySelectorAll('#calendar-grid .calendar-day').forEach(day=>{const d=parseInt(day.textContent,10);if(!d)return;const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(ds===selectedDate)day.classList.add('v4933-selected');day.onclick=()=>show(ds)})};window.addEventListener('load',()=>setTimeout(()=>{v44EnhanceDiary();v44RefreshDiaryLinks();repairPlaceUI();v44RenderAnnualSummary();renderCalendar()},900))})();</script>
 </body>
 </html>
