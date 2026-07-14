@@ -1858,5 +1858,103 @@ function v492IsRevisit(p){
  [data-mobile-section="wish"] .item-text{min-width:0!important;flex:1!important;overflow-wrap:anywhere!important}
 }
 </style>
+
+<script id="v4954-sync-photo-edit-hotfix">
+(function(){
+  const photoDrafts=new Map();
+
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  // Unified delete path for desktop/mobile, independent of card index.
+  window.v4954DeleteDiary=function(id){
+    id=Number(id);
+    if(!confirm("정말 이 데이트 기록 피드를 삭제하시겠습니까?")) return;
+    const before=diaryFeeds.length;
+    diaryFeeds=diaryFeeds.filter(f=>Number(f.id)!==id);
+    if(diaryFeeds.length===before){ alert("삭제할 기록을 찾지 못했습니다."); return; }
+    saveState();
+    if(typeof v42Save==='function') try{v42Save();}catch(e){console.warn(e);}
+    recalculateStatsAndFeeds();
+  };
+
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('button');
+    if(!btn) return;
+    const raw=btn.getAttribute('onclick')||'';
+    const m=raw.match(/deleteDiaryFeed\((\d+)\)/);
+    if(m){
+      e.preventDefault(); e.stopImmediatePropagation();
+      v4954DeleteDiary(Number(m[1]));
+    }
+  },true);
+
+  const oldEdit=window.v45EditDiary;
+  window.v45EditDiary=function(id){
+    const f=diaryFeeds.find(x=>Number(x.id)===Number(id));
+    if(f) photoDrafts.set(Number(id),{images:[...(f.images||[])],newImages:[]});
+    if(oldEdit) oldEdit(id);
+    setTimeout(()=>v4954InjectPhotoEditor(id),0);
+  };
+
+  window.v4954InjectPhotoEditor=function(id){
+    id=Number(id);
+    const box=document.querySelector(`[data-edit-diary="${id}"]`);
+    const f=diaryFeeds.find(x=>Number(x.id)===id);
+    if(!box||!f)return;
+    if(!photoDrafts.has(id)) photoDrafts.set(id,{images:[...(f.images||[])],newImages:[]});
+    let area=box.querySelector('.v4954-photo-editor');
+    if(!area){area=document.createElement('div');area.className='v4954-photo-editor';box.appendChild(area);}
+    const d=photoDrafts.get(id);
+    area.innerHTML=`<div style="margin-top:10px"><b>📷 사진 편집</b></div>
+      <div class="v4954-photo-list" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div>
+      <label style="display:block">사진 추가 <input type="file" accept="image/*" multiple onchange="v4954AddDiaryPhotos(${id},this)"></label>`;
+    const list=area.querySelector('.v4954-photo-list');
+    d.images.forEach((src,i)=>{
+      const wrap=document.createElement('div');wrap.style.cssText='position:relative;width:84px;height:84px';
+      wrap.innerHTML=`<img src="${src}" style="width:84px;height:84px;object-fit:cover;border-radius:8px"><button type="button" onclick="v4954RemoveDiaryPhoto(${id},${i})" style="position:absolute;right:2px;top:2px">×</button>`;
+      list.appendChild(wrap);
+    });
+  };
+
+  window.v4954RemoveDiaryPhoto=function(id,index){
+    const d=photoDrafts.get(Number(id)); if(!d)return;
+    d.images.splice(index,1); v4954InjectPhotoEditor(id);
+  };
+
+  window.v4954AddDiaryPhotos=async function(id,input){
+    id=Number(id); const d=photoDrafts.get(id); if(!d)return;
+    const files=[...input.files];
+    for(const file of files){
+      try{d.images.push(await compressImage(file));}
+      catch(e){console.warn(e);alert("사진 처리에 실패했습니다.");}
+    }
+    v4954InjectPhotoEditor(id);
+  };
+
+  const oldSave=window.v45SaveDiary;
+  window.v45SaveDiary=function(id){
+    id=Number(id); const f=diaryFeeds.find(x=>Number(x.id)===id), d=photoDrafts.get(id);
+    if(f&&d) f.images=[...d.images];
+    if(oldSave) oldSave(id);
+    saveState();
+    if(typeof v42Save==='function') try{v42Save();}catch(e){console.warn(e);}
+    photoDrafts.delete(id);
+  };
+
+  const oldCancel=window.v45CancelDiary;
+  window.v45CancelDiary=function(id){
+    photoDrafts.delete(Number(id));
+    if(oldCancel) oldCancel(id);
+  };
+
+  // Re-inject photo editor after any rerender while editing.
+  const oldRecalc=window.recalculateStatsAndFeeds;
+  window.recalculateStatsAndFeeds=function(){
+    oldRecalc();
+    diaryFeeds.filter(f=>f._editing).forEach(f=>setTimeout(()=>v4954InjectPhotoEditor(f.id),0));
+  };
+})();
+</script>
+
 </body>
 </html>
