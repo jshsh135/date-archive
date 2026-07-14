@@ -339,6 +339,52 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
 }
 </style>
 
+
+<style id="v492-mobile-compact">
+@media(max-width:768px){
+  /* 기록 폼: 과도한 세로 높이와 간격 축소 */
+  [data-mobile-section="diary"] .card-box,
+  [data-mobile-section="movies"] .visual-map-card{
+    padding-left:16px!important;padding-right:16px!important;
+  }
+  [data-mobile-section="diary"] input,
+  [data-mobile-section="diary"] select,
+  [data-mobile-section="movies"] input,
+  [data-mobile-section="movies"] select{
+    min-height:48px!important;height:48px!important;padding:8px 12px!important;font-size:16px!important;
+    box-sizing:border-box!important;min-width:0!important;max-width:100%!important;
+  }
+  [data-mobile-section="diary"] textarea,
+  [data-mobile-section="movies"] textarea{
+    min-height:72px!important;padding:10px 12px!important;font-size:16px!important;
+  }
+  [data-mobile-section="diary"] .form-grid,
+  [data-mobile-section="diary"] .date-grid,
+  [data-mobile-section="movies"] .form-grid{
+    gap:10px!important;
+  }
+  [data-mobile-section="diary"] input[type="date"],
+  [data-mobile-section="diary"] input[type="time"],
+  [data-mobile-section="movies"] input[type="date"]{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+  }
+  /* 영화 폼의 직접 자식들을 2열 가능 구조로 압축 */
+  [data-mobile-section="movies"] section.visual-map-card{
+    overflow:hidden!important;
+  }
+  #v42-movie-form{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:10px!important;width:100%!important;min-width:0!important;
+  }
+  #v42-movie-form>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+  #v42-movie-form input:first-child,
+  #v42-movie-form textarea,
+  #v42-movie-form button,
+  #v42-movie-form .full,
+  #v42-movie-list{grid-column:1/-1!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -1447,7 +1493,7 @@ function v43SelectedRegionIds(){return [1,2,3].map(i=>v44RegionId(document.getEl
 function v44EnhanceDiary(){const form=document.querySelector('.diary-form');if(!form||document.getElementById('v44-diary-links'))return;const wrap=document.createElement('div');wrap.id='v44-diary-links';wrap.className='v44-link-selects';wrap.innerHTML=`<div style="font-size:.8rem;font-weight:bold;color:var(--point-pink)">📍 방문지역 (최대 3곳)</div><div id="v43-diary-regions"></div><div style="font-size:.8rem;font-weight:bold">📌 연결 장소</div><select id="v44-diary-places" multiple></select><div style="font-size:.8rem;font-weight:bold">🎬 연결 영화</div><select id="v44-diary-movies" multiple></select>`;form.insertBefore(wrap,document.getElementById('diary-files'));v43RegionRows();v44RefreshDiaryLinks();}
 function v44RefreshDiaryLinks(){const ps=document.getElementById('v44-diary-places'),ms=document.getElementById('v44-diary-movies');if(ps)ps.innerHTML=v42.places.map(p=>`<option value="${p.id}">${p.sido} ${p.sgg} · ${p.name}</option>`).join('');if(ms)ms.innerHTML=v42.movies.map(m=>`<option value="${m.id}">${m.title}</option>`).join('');}
 const v44OriginalAddDiary=window.addDiary;window.addDiary=function(){const before=diaryFeeds.length;v44OriginalAddDiary();if(diaryFeeds.length>before){const f=diaryFeeds[0];f.regionIds=v43SelectedRegionIds();f.regions=f.regionIds.map(v44RegionLabel);f.placeIds=Array.from(document.getElementById('v44-diary-places')?.selectedOptions||[]).map(o=>+o.value);f.movieIds=Array.from(document.getElementById('v44-diary-movies')?.selectedOptions||[]).map(o=>+o.value);f.authorUid=v42Uid();f.author=v42Author();f.regionIds.forEach(v44MarkVisited);saveState();recalculateStatsAndFeeds();v42Render();}};
-const v44OriginalRecalc=window.recalculateStatsAndFeeds;window.recalculateStatsAndFeeds=function(){v44OriginalRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;f.regionIds=f.regionIds||[];f.placeIds=f.placeIds||[];f.movieIds=f.movieIds||[];const content=card.querySelector('.feed-content');if(!content)return;const places=f.placeIds.map(id=>v42.places.find(p=>p.id===id)?.name).filter(Boolean),movies=f.movieIds.map(id=>v42.movies.find(m=>m.id===id)?.title).filter(Boolean);const extra=document.createElement('div');extra.innerHTML=`<div class="v42-author">${f.author||'💕 기존 기록'}</div><div>${f.regionIds.map(id=>`<span class="v42-tag">${v44RegionLabel(id)}</span>`).join('')}</div>${places.length?`<div>📍 ${places.join(' · ')}</div>`:''}${movies.length?`<div>🎬 ${movies.join(' · ')}</div>`:''}<button onclick="v42AddComment('diary',${f.id})">댓글</button><div class="v42-comments">${v42Comments('diary',f.id)}</div>`;content.prepend(extra);});};
+const v44OriginalRecalc=window.recalculateStatsAndFeeds;window.recalculateStatsAndFeeds=function(){v44OriginalRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;f.regionIds=f.regionIds||[];f.placeIds=f.placeIds||[];f.movieIds=f.movieIds||[];const content=card.querySelector('.feed-content');if(!content)return;const places=f.placeIds.map(id=>v42.places.find(p=>p.id===id)?.name).filter(Boolean),movies=f.movieIds.map(id=>v42.movies.find(m=>m.id===id)?.title).filter(Boolean);const extra=document.createElement('div');extra.innerHTML=`<div class="v42-author">${f.author||'💕 기존 기록'}</div><div>${f.regionIds.map(id=>`<span class="v42-tag">${v44RegionLabel(id)}</span>`).join('')}</div>${places.length?`<div>📍 ${places.join(' · ')}</div>`:''}${movies.length?`<div>🎬 ${movies.join(' · ')}</div>`:''}`;content.prepend(extra);});};
 const v43OldGeneral=window.addGeneralSchedule;window.addGeneralSchedule=function(){const before=allSchedules.length;v43OldGeneral();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.startTime=document.getElementById('v43-general-start').value||'';x.endTime=document.getElementById('v43-general-end').value||'';x.memo=document.getElementById('v43-general-memo').value.trim();saveState();v43RenderSchedules();}};
 const v43OldMatch=window.addKleagueMatch;window.addKleagueMatch=function(){const before=allSchedules.length;v43OldMatch();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.kickoff=document.getElementById('v43-match-time').value||'';x.stadium=document.getElementById('v43-match-stadium').value.trim();x.memo=document.getElementById('v43-match-memo').value.trim();saveState();v43RenderSchedules();}};
 function v43RenderSchedules(){const today=new Date().toISOString().slice(0,10),upcoming=[...allSchedules].filter(s=>s.date>=today).sort((a,b)=>(a.date+(a.startTime||a.kickoff||'')).localeCompare(b.date+(b.startTime||b.kickoff||''))).slice(0,8),up=document.getElementById('v43-upcoming');if(up)up.innerHTML=upcoming.map(s=>`<div class="v43-upcoming-item">${s.type==='K리그'?'⚽':'❤️'} <b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${s.content}${s.stadium?' · '+s.stadium:''}${s.memo?`<div style="color:#747d8c">${s.memo}</div>`:''}</div>`).join('')||'<div style="font-size:.8rem;color:#747d8c">예정된 일정이 없습니다.</div>';const past=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)),years=[...new Set(past.map(s=>s.date.slice(0,4)))],ys=document.getElementById('v43-match-year');if(ys){const cur=ys.value;ys.innerHTML='<option value="all">전체 연도</option>'+years.map(y=>`<option>${y}</option>`).join('');if([...ys.options].some(o=>o.value===cur))ys.value=cur;}const selected=ys?.value||'all',box=document.getElementById('v43-past-matches');if(box)box.innerHTML=past.filter(s=>selected==='all'||s.date.startsWith(selected)).slice(0,selected==='all'?5:9999).map(s=>`<div class="match-item"><span>⚽ ${s.date} ${s.kickoff||''} · ${s.content}${s.stadium?' · '+s.stadium:''}</span></div>`).join('')||'<div style="padding:10px;color:#747d8c">지난 경기가 없습니다.</div>';}
@@ -1712,5 +1758,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
+
+<script id="v492-revisit-compat">
+function v492IsRevisit(p){
+ const vals=[p&&p.revisit,p&&p.wantAgain,p&&p.again,p&&p.revisitStatus,p&&p.visitAgain];
+ return vals.some(v=>v===true||v===1||v==='1'||v==='true'||v==='꼭 다시'||v==='다시'||v==='꼭다시');
+}
+</script>
+
 </body>
 </html>
