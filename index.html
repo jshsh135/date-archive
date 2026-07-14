@@ -1971,5 +1971,116 @@ function v492IsRevisit(p){
  setTimeout(()=>{merge();if(typeof recalculateStatsAndFeeds==='function')recalculateStatsAndFeeds()},0);
 })();
 </script>
+
+<script id="v4956-region-normalize-hotfix">
+(function(){
+  const REGION_ALIASES = {
+    '서울':'서울','서울시':'서울','서울특별시':'서울',
+    '부산':'부산','부산시':'부산','부산광역시':'부산',
+    '대구':'대구','대구시':'대구','대구광역시':'대구',
+    '인천':'인천','인천시':'인천','인천광역시':'인천',
+    '광주':'광주','광주시':'광주','광주광역시':'광주',
+    '대전':'대전','대전시':'대전','대전광역시':'대전',
+    '울산':'울산','울산시':'울산','울산광역시':'울산',
+    '세종':'세종','세종시':'세종','세종특별자치시':'세종',
+    '경기':'경기','경기도':'경기',
+    '강원':'강원','강원도':'강원','강원특별자치도':'강원',
+    '충북':'충북','충청북도':'충북',
+    '충남':'충남','충청남도':'충남',
+    '전북':'전북','전라북도':'전북','전북특별자치도':'전북',
+    '전남':'전남','전라남도':'전남',
+    '경북':'경북','경상북도':'경북',
+    '경남':'경남','경상남도':'경남',
+    '제주':'제주','제주도':'제주','제주특별자치도':'제주'
+  };
+
+  window.v4956NormalizeRegion = function(value){
+    let s = String(value ?? '').trim();
+    if(!s) return '';
+    if(REGION_ALIASES[s]) return REGION_ALIASES[s];
+    const first = s.split(/\s+/)[0];
+    if(REGION_ALIASES[first]) return REGION_ALIASES[first];
+    for(const [alias, normalized] of Object.entries(REGION_ALIASES)){
+      if(s.startsWith(alias)) return normalized;
+    }
+    return s;
+  };
+
+  // 저장 데이터의 다양한 필드명/형식을 호환한다.
+  window.v4956ItemRegion = function(item){
+    if(!item) return '';
+    const raw =
+      item.sido ??
+      item.region ??
+      item.location ??
+      item.province ??
+      item.city ??
+      '';
+    return v4956NormalizeRegion(raw);
+  };
+
+  // 기존 렌더 함수를 감싸기 전에 bucketData의 지역값을 일시 정규화한다.
+  // 영화 탭은 기존대로 지역 필터를 사용하지 않는다.
+  const originalRenderBucketList = window.renderBucketList;
+  if(typeof originalRenderBucketList === 'function'){
+    window.renderBucketList = function(){
+      const isMovie = window.currentTab === 'movie';
+      if(isMovie) return originalRenderBucketList.apply(this, arguments);
+
+      const selectedCandidates = [
+        window.currentLocation,
+        window.selectedLocation,
+        window.selectedRegion,
+        window.bucketLocationFilter,
+        window.currentRegion
+      ];
+      const selected = selectedCandidates.find(v => v && v !== '전체');
+      const normalizedSelected = v4956NormalizeRegion(selected || '');
+
+      // 기존 코드가 비교하는 전역 필터값도 정규화한다.
+      const globals = ['currentLocation','selectedLocation','selectedRegion','bucketLocationFilter','currentRegion'];
+      const backups = {};
+      globals.forEach(k=>{
+        if(k in window){
+          backups[k] = window[k];
+          if(window[k] && window[k] !== '전체') window[k] = v4956NormalizeRegion(window[k]);
+        }
+      });
+
+      // bucketData의 원본 지역값을 보존한 채 렌더 동안만 정규화한다.
+      const changed = [];
+      if(window.bucketData && typeof window.bucketData === 'object'){
+        Object.values(window.bucketData).forEach(arr=>{
+          if(!Array.isArray(arr)) return;
+          arr.forEach(item=>{
+            if(!item || typeof item !== 'object') return;
+            ['sido','region','location','province','city'].forEach(key=>{
+              if(item[key] != null){
+                changed.push([item,key,item[key]]);
+                item[key] = v4956NormalizeRegion(item[key]);
+              }
+            });
+          });
+        });
+      }
+
+      try{
+        return originalRenderBucketList.apply(this, arguments);
+      } finally {
+        changed.forEach(([item,key,value])=>{ item[key]=value; });
+        Object.keys(backups).forEach(k=>{ window[k]=backups[k]; });
+      }
+    };
+  }
+
+  // 지역 버튼 클릭 후 기존 핸들러가 렌더를 호출하지 않는 경우까지 보강.
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('#filter-location-row button, [data-region], .region-chip');
+    if(!btn || window.currentTab === 'movie') return;
+    setTimeout(()=>{ if(typeof window.renderBucketList === 'function') window.renderBucketList(); },0);
+  });
+})();
+</script>
+
 </body>
 </html>
