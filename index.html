@@ -385,6 +385,17 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
 }
 </style>
 
+<style id="v4952-movie-wish-final-fix">
+/* Movie wishlist never uses regional UI */
+body.wish-movie-active #filter-location-row,
+body.wish-movie-active #bucket-loc-group { display:none!important; }
+body.wish-movie-active #filter-movie-row { display:flex!important; }
+body.wish-movie-active #bucket-movie-platform { display:block!important; }
+@media(max-width:768px){
+  body.wish-movie-active [data-mobile-section="wish"] #filter-location-row,
+  body.wish-movie-active [data-mobile-section="wish"] #bucket-loc-group { display:none!important; }
+}
+</style>
 </head>
 <body>
 
@@ -1073,6 +1084,7 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
 
         diaryFeeds.push(feedObj);
         diaryFeeds.sort((a,b) => new Date(b.startDate) - new Date(a.startDate)); // 최신순 정렬
+        saveState();
 
         // 금액 폼 및 파일 폼 리셋
         document.getElementById('diary-comment').value = '';
@@ -1088,10 +1100,12 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
     function deleteDiaryFeed(id) {
         if(!confirm("정말 이 데이트 기록 피드를 삭제하시겠습니까? (캘린더 연동도 해제됩니다)")) return;
         diaryFeeds = diaryFeeds.filter(f => f.id !== id);
+        saveState();
         recalculateStatsAndFeeds();
     }
 
     function recalculateStatsAndFeeds() {
+        saveState();
         // 전역 메인 카운터 변수 재정렬
         currentStats.count = diaryFeeds.length;
         currentStats.cost = diaryFeeds.reduce((acc, cur) => acc + cur.cost.total, 0);
@@ -1149,14 +1163,23 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
     // 탭 체인저 (영화 탭 선택 시 지역 필터 행 숨김 처리 기능 완벽 추가)
     function switchTab(tabName, btn) {
         currentTab = tabName;
-        document.querySelectorAll('[data-mobile-section="wish"] .tab-btn').forEach(b=>b.classList.remove('active'));
-        const target=btn || (typeof event!=='undefined'?event.currentTarget:null);
-        if(target) target.classList.add('active');
-        const isMovie=tabName==='movie';
-        document.getElementById('bucket-loc-group').style.display=isMovie?'none':'grid';
-        document.getElementById('filter-location-row').style.display=isMovie?'none':'flex';
-        document.getElementById('filter-movie-row').style.display=isMovie?'flex':'none';
-        document.getElementById('bucket-movie-platform').style.display=isMovie?'block':'none';
+        document.body.classList.toggle('wish-movie-active', tabName === 'movie');
+        document.querySelectorAll('[data-mobile-section="wish"] .tab-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        const isMovie = tabName === 'movie';
+        const locFilter = document.getElementById('filter-location-row');
+        const movieFilter = document.getElementById('filter-movie-row');
+        const locGroup = document.getElementById('bucket-loc-group');
+        const moviePlatform = document.getElementById('bucket-movie-platform');
+        const foodFields = document.getElementById('v45-food-fields');
+
+        if (locFilter) locFilter.style.setProperty('display', isMovie ? 'none' : 'flex', 'important');
+        if (movieFilter) movieFilter.style.setProperty('display', isMovie ? 'flex' : 'none', 'important');
+        if (locGroup) locGroup.style.setProperty('display', isMovie ? 'none' : 'grid', 'important');
+        if (moviePlatform) moviePlatform.style.setProperty('display', isMovie ? 'block' : 'none', 'important');
+        if (foodFields) foodFields.style.display = tabName === 'restaurant' ? 'flex' : 'none';
+
         renderBucketList();
     }
 
@@ -1306,8 +1329,15 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
     const STORAGE_KEY_V2 = 'lovelyDateArchiveV2';
     function saveState(){
         const state={allSchedules,diaryFeeds,bucketData,visitedNodes,currentDate:currentDate.toISOString()};
-        try{localStorage.setItem(STORAGE_KEY_V2,JSON.stringify(state));}
-        catch(e){alert('브라우저 저장 공간이 부족합니다. 사진 수를 줄이거나 데이터 백업 후 오래된 사진을 정리해주세요.');}
+        try{
+            const payload=JSON.stringify(state);
+            localStorage.setItem(STORAGE_KEY_V2,payload);
+            return true;
+        }catch(e){
+            console.error('타임라인 저장 실패',e);
+            alert('기록 저장에 실패했습니다. 사진 데이터로 브라우저 저장 공간이 부족할 수 있습니다. 사진 수를 줄인 뒤 다시 시도해주세요.');
+            return false;
+        }
     }
     function loadState(){
         try{
