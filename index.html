@@ -1484,7 +1484,7 @@ function v42AddMovie(){const title=document.getElementById("v42-movie-title").va
 function v44ToggleMovieFavorite(id){const m=v42.movies.find(x=>x.id===id);if(m){m.favorite=!m.favorite;v42Save();}}
 function v42AddComment(kind,id){const text=prompt("댓글을 입력해줘.");if(!text)return;const key=kind+":"+id;v42.comments[key]=v42.comments[key]||[];v42.comments[key].push({id:Date.now(),uid:v42Uid(),author:v42Author(),text,createdAt:new Date().toISOString()});v42Save();}function v42Comments(kind,id){return (v42.comments[kind+":"+id]||[]).map(c=>`<div class="v42-comment"><b>${c.author}</b> · ${c.text}</div>`).join("");}
 function v44LinkedDiaryCount(kind,id){return diaryFeeds.filter(f=>(kind==="place"?(f.placeIds||[]):(f.movieIds||[])).includes(id)).length;}
-function v42Render(){const pl=document.getElementById("v42-place-list");if(pl){let arr=v42.places.filter(p=>(!v44PlaceFilter.sido||p.sido===v44PlaceFilter.sido)&&(!v44PlaceFilter.sgg||p.sgg===v44PlaceFilter.sgg)&&(!v44PlaceFilter.category||p.category===v44PlaceFilter.category));if(document.getElementById("v44-favorite-only")?.checked)arr=arr.filter(p=>p.favorite);const sort=document.getElementById("v44-place-sort")?.value||"rating";const rank={"꼭 다시":3,"기회 되면":2,"한 번이면 충분":1};arr.sort((a,b)=>sort==="recent"?String(v44LatestVisit(b).date).localeCompare(String(v44LatestVisit(a).date)):sort==="revisit"?(rank[v44LatestVisit(b).revisit]||0)-(rank[v44LatestVisit(a).revisit]||0):(v44LatestVisit(b).rating||0)-(v44LatestVisit(a).rating||0));pl.innerHTML=arr.map(p=>{const last=v44LatestVisit(p);return `<div class="v42-item"><button class="v44-fav" onclick="v44ToggleFavorite(${p.id})">${p.favorite?'❤️':'🤍'}</button> <b>${p.name}</b> <span class="v42-stars">★ ${last.rating||0}</span><div>${p.sido} ${p.sgg} · ${p.category} · 총 ${p.visits.length}회 방문 · 연결 데이트 ${v44LinkedDiaryCount('place',p.id)}건</div><div class="v44-history">${[...p.visits].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(v=>`<div><b>${v.date}</b> ★${v.rating} “${v.review||''}” · ${v.author}</div>`).join('')}</div><button onclick="v42AddComment('place',${p.id})">댓글</button><div class="v42-comments">${v42Comments('place',p.id)}</div></div>`}).join("")||"조건에 맞는 장소가 없어.";}
+function v42Render(){const pl=document.getElementById("v42-place-list");if(pl){let arr=v42.places.filter(p=>(!v44PlaceFilter.sido||p.sido===v44PlaceFilter.sido)&&(!v44PlaceFilter.sgg||p.sgg===v44PlaceFilter.sgg)&&(!v44PlaceFilter.category||p.category===v44PlaceFilter.category));if(document.getElementById("v44-favorite-only")?.checked)arr=arr.filter(p=>v492IsRevisit(p)||((p.visits||[]).some(v=>v&&v.revisit==="꼭 다시")));const sort=document.getElementById("v44-place-sort")?.value||"rating";const rank={"꼭 다시":3,"기회 되면":2,"한 번이면 충분":1};arr.sort((a,b)=>sort==="recent"?String(v44LatestVisit(b).date).localeCompare(String(v44LatestVisit(a).date)):sort==="revisit"?(rank[v44LatestVisit(b).revisit]||0)-(rank[v44LatestVisit(a).revisit]||0):(v44LatestVisit(b).rating||0)-(v44LatestVisit(a).rating||0));pl.innerHTML=arr.map(p=>{const last=v44LatestVisit(p);return `<div class="v42-item"><button class="v44-fav" onclick="v44ToggleFavorite(${p.id})">${p.favorite?'❤️':'🤍'}</button> <b>${p.name}</b> <span class="v42-stars">★ ${last.rating||0}</span><div>${p.sido} ${p.sgg} · ${p.category} · 총 ${p.visits.length}회 방문 · 연결 데이트 ${v44LinkedDiaryCount('place',p.id)}건</div><div class="v44-history">${[...p.visits].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(v=>`<div><b>${v.date}</b> ★${v.rating} “${v.review||''}” · ${v.author}</div>`).join('')}</div><button onclick="v42AddComment('place',${p.id})">댓글</button><div class="v42-comments">${v42Comments('place',p.id)}</div></div>`}).join("")||"조건에 맞는 장소가 없어.";}
 const ml=document.getElementById("v42-movie-list");if(ml)ml.innerHTML=v42.movies.map(m=>`<div class="v42-item">${m.posterUrl?`<img src="${m.posterUrl}" style="width:70px;border-radius:8px;float:right" onerror="this.style.display='none'">`:''}<button class="v44-fav" onclick="v44ToggleMovieFavorite(${m.id})">${m.favorite?'❤️':'🤍'}</button> <b>${m.title}</b><div>${m.releaseDate?`개봉 ${m.releaseDate} · `:''}관람 ${m.watchedDate||'-'} · 연결 데이트 ${v44LinkedDiaryCount('movie',m.id)}건</div><div><span class="v42-stars">서형 ★${m.ratingUser1||0}</span> · <span class="v42-stars">현진 ★${m.ratingUser2||0}</span></div><div>${m.review||''}</div></div>`).join("")||"아직 같이 본 영화가 없어.";}
 function v42CloseHistory(){document.getElementById("v42-history-modal").classList.remove("open");}
 function v43RegionRows(){const box=document.getElementById("v43-diary-regions");if(!box)return;box.innerHTML="";for(let i=1;i<=3;i++)box.insertAdjacentHTML('beforeend',`<div class="v43-region-row"><select id="v43-sido-${i}" onchange="v43FillSgg(${i})"><option value="">${i}지역 시·도</option>${Object.keys(koreaMapData).map(s=>`<option value="${s}">${s}</option>`).join('')}</select><select id="v43-sgg-${i}"><option value="">시·군·구</option></select></div>`);}
@@ -1498,7 +1498,7 @@ const v43OldGeneral=window.addGeneralSchedule;window.addGeneralSchedule=function
 const v43OldMatch=window.addKleagueMatch;window.addKleagueMatch=function(){const before=allSchedules.length;v43OldMatch();if(allSchedules.length>before){const x=allSchedules[allSchedules.length-1];x.kickoff=document.getElementById('v43-match-time').value||'';x.stadium=document.getElementById('v43-match-stadium').value.trim();x.memo=document.getElementById('v43-match-memo').value.trim();saveState();v43RenderSchedules();}};
 function v43RenderSchedules(){const today=new Date().toISOString().slice(0,10),upcoming=[...allSchedules].filter(s=>s.date>=today).sort((a,b)=>(a.date+(a.startTime||a.kickoff||'')).localeCompare(b.date+(b.startTime||b.kickoff||''))).slice(0,8),up=document.getElementById('v43-upcoming');if(up)up.innerHTML=upcoming.map(s=>`<div class="v43-upcoming-item">${s.type==='K리그'?'⚽':'❤️'} <b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${s.content}${s.stadium?' · '+s.stadium:''}${s.memo?`<div style="color:#747d8c">${s.memo}</div>`:''}</div>`).join('')||'<div style="font-size:.8rem;color:#747d8c">예정된 일정이 없습니다.</div>';const past=allSchedules.filter(s=>s.type==='K리그'&&s.date<today).sort((a,b)=>b.date.localeCompare(a.date)),years=[...new Set(past.map(s=>s.date.slice(0,4)))],ys=document.getElementById('v43-match-year');if(ys){const cur=ys.value;ys.innerHTML='<option value="all">전체 연도</option>'+years.map(y=>`<option>${y}</option>`).join('');if([...ys.options].some(o=>o.value===cur))ys.value=cur;}const selected=ys?.value||'all',box=document.getElementById('v43-past-matches');if(box)box.innerHTML=past.filter(s=>selected==='all'||s.date.startsWith(selected)).slice(0,selected==='all'?5:9999).map(s=>`<div class="match-item"><span>⚽ ${s.date} ${s.kickoff||''} · ${s.content}${s.stadium?' · '+s.stadium:''}</span></div>`).join('')||'<div style="padding:10px;color:#747d8c">지난 경기가 없습니다.</div>';}
 function v44GlobalSearch(q){q=v44NormText(q).toLowerCase();const box=document.getElementById('v44-search-results');if(!box)return;if(!q){box.hidden=true;box.innerHTML='';return;}const diaries=diaryFeeds.filter(f=>[f.comment,f.tags,...(f.regions||[])].join(' ').toLowerCase().includes(q)),places=v42.places.filter(p=>[p.name,p.sido,p.sgg,p.category,...p.visits.map(v=>v.review)].join(' ').toLowerCase().includes(q)),movies=v42.movies.filter(m=>[m.title,m.review,m.releaseDate].join(' ').toLowerCase().includes(q)),comments=Object.entries(v42.comments).flatMap(([key,a])=>a.map(c=>({key,...c}))).filter(c=>[c.text,c.author].join(' ').toLowerCase().includes(q));const group=(title,a,fmt)=>`<div class="v44-search-group"><b>${title} ${a.length}건</b>${a.map(fmt).join('')||'<div class="v44-search-hit">결과 없음</div>'}</div>`;box.innerHTML=group('데이트 기록',diaries,x=>`<div class="v44-search-hit" onclick="showMobileSection('diary',document.querySelector('.mobile-nav button:nth-child(2)'))">${x.startDate} · ${x.comment}</div>`)+group('장소',places,x=>`<div class="v44-search-hit" onclick="showMobileSection('places',document.querySelector('.mobile-nav button:nth-child(3)'))">${x.sido} ${x.sgg} · ${x.name}</div>`)+group('영화',movies,x=>`<div class="v44-search-hit" onclick="showMobileSection('movies',document.querySelector('.mobile-nav button:nth-child(4)'))">${x.title}</div>`)+group('댓글',comments,x=>`<div class="v44-search-hit">${x.author} · ${x.text}</div>`);box.hidden=false;}
-function v44RenderAnnualSummary(){const ys=document.getElementById('v44-year-select'),box=document.getElementById('v44-annual-summary');if(!ys||!box)return;const years=[...new Set([...diaryFeeds.map(f=>f.startDate?.slice(0,4)),...v42.places.flatMap(p=>p.visits.map(v=>v.date?.slice(0,4))),...v42.movies.map(m=>m.watchedDate?.slice(0,4))].filter(Boolean))].sort().reverse();if(!years.length)years.push(String(new Date().getFullYear()));const cur=ys.value;ys.innerHTML=years.map(y=>`<option>${y}</option>`).join('');if(years.includes(cur))ys.value=cur;const y=ys.value,ds=diaryFeeds.filter(f=>f.startDate?.startsWith(y)),visits=v42.places.flatMap(p=>p.visits.filter(v=>v.date?.startsWith(y)).map(v=>({p,v}))),ms=v42.movies.filter(m=>m.watchedDate?.startsWith(y)),regions=new Map(),placeCounts=new Map();ds.forEach(f=>(f.regionIds||[]).forEach(id=>regions.set(id,(regions.get(id)||0)+1)));visits.forEach(({p})=>placeCounts.set(p.id,(placeCounts.get(p.id)||0)+1));const topRegion=[...regions].sort((a,b)=>b[1]-a[1])[0],topPlace=[...placeCounts].sort((a,b)=>b[1]-a[1])[0],avg=visits.length?(visits.reduce((a,x)=>a+(+x.v.rating||0),0)/visits.length).toFixed(1):'0.0',placeSet=new Set(visits.map(x=>x.p.id));const stats=[['데이트 횟수',ds.length+'회'],['방문 지역 수',regions.size+'곳'],['가장 많이 방문한 지역',topRegion?v44RegionLabel(topRegion[0]):'-'],['등록된 장소 수',placeSet.size+'곳'],['장소 평균 별점',avg],['같이 본 영화 수',ms.length+'편'],['가장 많이 방문한 장소',topPlace?(v42.places.find(p=>p.id===topPlace[0])?.name||'-'):'-'],['즐겨찾기 장소 수',v42.places.filter(p=>p.favorite&&placeSet.has(p.id)).length+'곳']];box.innerHTML=stats.map(([k,v])=>`<div class="v44-summary-card"><span>${k}</span><b>${v}</b></div>`).join('');}
+function v44RenderAnnualSummary(){const ys=document.getElementById('v44-year-select'),box=document.getElementById('v44-annual-summary');if(!ys||!box)return;const years=[...new Set([...diaryFeeds.map(f=>f.startDate?.slice(0,4)),...v42.places.flatMap(p=>p.visits.map(v=>v.date?.slice(0,4))),...v42.movies.map(m=>m.watchedDate?.slice(0,4))].filter(Boolean))].sort().reverse();if(!years.length)years.push(String(new Date().getFullYear()));const cur=ys.value;ys.innerHTML=years.map(y=>`<option>${y}</option>`).join('');if(years.includes(cur))ys.value=cur;const y=ys.value,ds=diaryFeeds.filter(f=>f.startDate?.startsWith(y)),visits=v42.places.flatMap(p=>p.visits.filter(v=>v.date?.startsWith(y)).map(v=>({p,v}))),ms=v42.movies.filter(m=>m.watchedDate?.startsWith(y)),regions=new Map(),placeCounts=new Map();ds.forEach(f=>(f.regionIds||[]).forEach(id=>regions.set(id,(regions.get(id)||0)+1)));ds.forEach(f=>(f.placeIds||[]).forEach(id=>placeCounts.set(id,(placeCounts.get(id)||0)+1));const topRegion=[...regions].sort((a,b)=>b[1]-a[1])[0],topPlace=[...placeCounts].sort((a,b)=>b[1]-a[1])[0],avg=visits.length?(visits.reduce((a,x)=>a+(+x.v.rating||0),0)/visits.length).toFixed(1):'0.0',placeSet=new Set(visits.map(x=>x.p.id));const stats=[['데이트 횟수',ds.length+'회'],['방문 지역 수',regions.size+'곳'],['가장 많이 방문한 지역',topRegion?v44RegionLabel(topRegion[0]):'-'],['등록된 장소 수',placeSet.size+'곳'],['장소 평균 별점',avg],['같이 본 영화 수',ms.length+'편'],['가장 많이 방문한 장소',topPlace?(v42.places.find(p=>p.id===topPlace[0])?.name||'-'):'-'],['즐겨찾기 장소 수',v42.places.filter(p=>p.favorite&&placeSet.has(p.id)).length+'곳']];box.innerHTML=stats.map(([k,v])=>`<div class="v44-summary-card"><span>${k}</span><b>${v}</b></div>`).join('');}
 // GeoJSON properties are analyzed at runtime and assigned canonical IDs.
 const v44OldFeatureNames=window.featureNames;window.featureNames=function(feature){if(feature?.properties?.__canonicalRegionId){const [sido,sigungu]=feature.properties.__canonicalRegionId.split('::');return {sido,sigungu};}return v44OldFeatureNames(feature);};
 const v44OldDraw=window.drawMunicipalityMap;window.drawMunicipalityMap=function(){if(municipalityGeoJSON)v44BuildGeoMapping(municipalityGeoJSON);return v44OldDraw();};
@@ -1764,6 +1764,169 @@ function v492IsRevisit(p){
  const vals=[p&&p.revisit,p&&p.wantAgain,p&&p.again,p&&p.revisitStatus,p&&p.visitAgain];
  return vals.some(v=>v===true||v===1||v==='1'||v==='true'||v==='꼭 다시'||v==='다시'||v==='꼭다시');
 }
+</script>
+
+
+<style id="v493-feature-css">
+/* Compact optional diary links */
+.v493-link-details{border:1px solid #ffd5dc;border-radius:14px;padding:0 12px;background:#fff;margin-top:8px}
+.v493-link-details summary{cursor:pointer;padding:12px 0;font-weight:800;list-style:none}
+.v493-link-details summary::-webkit-details-marker{display:none}
+.v493-link-options{display:flex;flex-direction:column;gap:7px;padding:0 0 12px}
+.v493-link-option{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:#fff7f8;font-size:.82rem}
+.v493-link-empty{padding:0 0 12px;color:#8b909c;font-size:.8rem}
+.v493-selected-date-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 10px;padding:10px 12px;border-radius:12px;background:#fff6f8}
+.v493-selected-date-bar button{border:0;border-radius:999px;padding:7px 10px;cursor:pointer}
+.v493-feed-links{display:flex;flex-direction:column;gap:5px;margin:7px 0 9px}
+.v493-costs{display:flex!important;flex-wrap:wrap!important;gap:6px 10px!important;line-height:1.45!important}
+.v493-cost-item{white-space:nowrap!important}
+@media(max-width:768px){
+ .v493-link-details{margin-top:6px}
+ .v493-link-option{font-size:.78rem;padding:8px}
+ .v493-feed-links{gap:6px;margin:8px 0 10px}
+}
+</style>
+<script id="v493-feature-js">
+(function(){
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+window.v493SelectedScheduleDate='';
+
+function linkedCount(kind,id,year){
+ return diaryFeeds.filter(f=>(!year||(f.startDate||'').startsWith(year))&&
+   (kind==='place'?(f.placeIds||[]):(f.movieIds||[])).includes(id)).length;
+}
+function selectedIds(id){
+ return [...document.querySelectorAll('#'+id+' input[type=checkbox]:checked')].map(x=>+x.value);
+}
+window.v493ToggleLinks=function(kind){
+ const d=document.getElementById('v493-'+kind+'-details'); if(d)d.open=!d.open;
+};
+window.v493RefreshDiaryLinks=function(){
+ const pb=document.getElementById('v493-place-options'),mb=document.getElementById('v493-movie-options');
+ if(!pb||!mb)return;
+ const currentP=new Set(selectedIds('v493-place-options')), currentM=new Set(selectedIds('v493-movie-options'));
+ const places=[...v42.places].sort((a,b)=>{
+   const ac=linkedCount('place',a.id),bc=linkedCount('place',b.id);
+   if((ac===0)!==(bc===0))return ac===0?-1:1;
+   return String(b.createdAt||v44LatestVisit(b).createdAt||'').localeCompare(String(a.createdAt||v44LatestVisit(a).createdAt||''));
+ });
+ pb.innerHTML=places.length?places.map(p=>{
+   const n=linkedCount('place',p.id);
+   return `<label class="v493-link-option"><input type="checkbox" value="${p.id}" ${currentP.has(p.id)?'checked':''}> <span>${esc(p.name)} · 방문 ${n}회</span></label>`;
+ }).join(''):'<div class="v493-link-empty">연결할 장소가 없어.</div>';
+ const used=new Set(diaryFeeds.flatMap(f=>f.movieIds||[]));
+ const movies=v42.movies.filter(m=>!used.has(m.id)||currentM.has(m.id));
+ mb.innerHTML=movies.length?movies.map(m=>`<label class="v493-link-option"><input type="checkbox" value="${m.id}" ${currentM.has(m.id)?'checked':''}> <span>${esc(m.title)}</span></label>`).join(''):'<div class="v493-link-empty">연결 가능한 영화가 없어.</div>';
+};
+
+function rebuildDiaryLinks(){
+ const wrap=document.getElementById('v44-diary-links'); if(!wrap||document.getElementById('v493-place-options'))return;
+ const oldP=document.getElementById('v44-diary-places'),oldM=document.getElementById('v44-diary-movies');
+ if(oldP)oldP.style.display='none'; if(oldM)oldM.style.display='none';
+ [...wrap.children].forEach(el=>{if(el!==document.getElementById('v43-diary-regions')&&!el.contains?.(document.getElementById('v43-diary-regions'))) {
+   if(el.tagName==='SELECT'||(el.textContent||'').includes('연결 장소')||(el.textContent||'').includes('연결 영화')) el.style.display='none';
+ }});
+ wrap.insertAdjacentHTML('beforeend',`
+ <details class="v493-link-details" id="v493-place-details"><summary>＋ 장소 연결 <span style="font-weight:400;color:#8b909c">(선택)</span></summary><div id="v493-place-options" class="v493-link-options"></div></details>
+ <details class="v493-link-details" id="v493-movie-details"><summary>＋ 영화 연결 <span style="font-weight:400;color:#8b909c">(선택)</span></summary><div id="v493-movie-options" class="v493-link-options"></div></details>`);
+ v493RefreshDiaryLinks();
+}
+const oldEnhance=window.v44EnhanceDiary;
+window.v44EnhanceDiary=function(){const r=oldEnhance&&oldEnhance.apply(this,arguments);rebuildDiaryLinks();return r};
+const oldRefresh=window.v44RefreshDiaryLinks;
+window.v44RefreshDiaryLinks=function(){if(oldRefresh)oldRefresh.apply(this,arguments);v493RefreshDiaryLinks();};
+
+const oldAdd=window.addDiary;
+window.addDiary=function(){
+ const p=selectedIds('v493-place-options'),m=selectedIds('v493-movie-options');
+ const before=diaryFeeds.length;
+ const r=oldAdd.apply(this,arguments);
+ if(diaryFeeds.length>before){
+   const f=diaryFeeds[0]; f.placeIds=p; f.movieIds=m; saveState(); recalculateStatsAndFeeds(); v42Render(); v493RefreshDiaryLinks();
+ }
+ return r;
+};
+
+function scheduleItems(ds){
+ const schedules=allSchedules.filter(s=>s.date===ds);
+ const diaries=diaryFeeds.filter(f=>{const a=f.startDate||'',b=f.endDate||a;return a&&ds>=a&&ds<=b});
+ return {schedules,diaries};
+}
+function scheduleRow(s){
+ const icon=s.type==='서형'?'💛':s.type==='현진'?'🖤':(s.type==='데이트'||s.type==='같이')?'❤️':s.detail==='강원'?'🧡':s.detail==='수원'?'💙':'⚽';
+ const time=s.startTime||s.time||'';
+ return `<div class="v45-schedule-item"><div><b>${icon} ${time?esc(time)+' · ':''}${esc(s.text||s.team||s.title||'일정')}</b><div>${esc(s.memo||s.stadium||'')}</div></div></div>`;
+}
+window.v493ShowDateSchedules=function(ds){
+ v493SelectedScheduleDate=ds;
+ const card=document.getElementById('v45-schedule-card'); if(!card)return;
+ const personal=document.getElementById('v45-personal-list'),football=document.getElementById('v45-football-list');
+ const pTitle=document.querySelector('#v45-personal-panel>.section-title'),fTitle=document.querySelector('#v45-football-panel>.section-title');
+ const {schedules,diaries}=scheduleItems(ds);
+ const personalItems=schedules.filter(s=>s.type!=='K리그');
+ const footballItems=schedules.filter(s=>s.type==='K리그');
+ if(pTitle)pTitle.textContent=`📅 ${ds} 일정`;
+ if(fTitle)fTitle.textContent=`📅 ${ds} 경기 일정`;
+ if(personal)personal.innerHTML=(personalItems.map(scheduleRow).join('')+diaries.map(f=>`<div class="v45-schedule-item"><div><b>❤️ ${esc(f.comment||'데이트 기록')}</b><div>데이트 기록</div></div></div>`).join(''))||'<div class="v493-link-empty">등록된 일정이 없습니다.</div>';
+ if(football)football.innerHTML=footballItems.map(scheduleRow).join('')||'<div class="v493-link-empty">등록된 경기 일정이 없습니다.</div>';
+ let bar=document.getElementById('v493-selected-date-bar');
+ if(!bar){bar=document.createElement('div');bar.id='v493-selected-date-bar';bar.className='v493-selected-date-bar';card.querySelector('.tabs').after(bar)}
+ bar.innerHTML=`<b>${ds} 선택됨</b><button onclick="v493BackUpcoming()">다가오는 일정으로 돌아가기</button>`;
+ card.scrollIntoView({behavior:'smooth',block:'start'});
+};
+window.v493BackUpcoming=function(){
+ v493SelectedScheduleDate='';
+ document.getElementById('v493-selected-date-bar')?.remove();
+ const pTitle=document.querySelector('#v45-personal-panel>.section-title'),fTitle=document.querySelector('#v45-football-panel>.section-title');
+ if(pTitle)pTitle.textContent='다가오는 개인·데이트 일정'; if(fTitle)fTitle.textContent='다가오는 경기 일정';
+ v45RenderSchedules();
+};
+
+const oldCal=window.renderCalendar;
+window.renderCalendar=function(){
+ oldCal.apply(this,arguments);
+ const year=currentDate.getFullYear(),month=currentDate.getMonth();
+ document.querySelectorAll('#calendar-grid .calendar-day').forEach(box=>{
+   const d=+(box.querySelector('span')?.textContent||0); if(!d)return;
+   const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+   box.style.cursor='pointer'; box.onclick=()=>v493ShowDateSchedules(ds);
+ });
+};
+
+const oldSummary=window.v44RenderAnnualSummary;
+window.v44RenderAnnualSummary=function(){
+ oldSummary.apply(this,arguments);
+ const y=document.getElementById('v44-year-select')?.value; if(!y)return;
+ const counts=new Map();
+ diaryFeeds.filter(f=>(f.startDate||'').startsWith(y)).forEach(f=>(f.placeIds||[]).forEach(id=>counts.set(id,(counts.get(id)||0)+1)));
+ const top=[...counts].sort((a,b)=>b[1]-a[1])[0];
+ const cards=[...document.querySelectorAll('#v44-annual-summary .v44-summary-card')];
+ const c=cards.find(x=>x.querySelector('span')?.textContent==='가장 많이 방문한 장소');
+ if(c)c.querySelector('b').textContent=top?(v42.places.find(p=>p.id===top[0])?.name||'-'):'-';
+};
+
+function polishFeed(){
+ document.querySelectorAll('#diary-feed-container .feed-card').forEach(card=>{
+   const content=card.querySelector('.feed-content'); if(!content)return;
+   const author=content.querySelector('.v42-author'); if(author){
+     const parent=author.parentElement;
+     if(parent&&!parent.classList.contains('v493-feed-links'))parent.classList.add('v493-feed-links');
+   }
+   [...content.querySelectorAll('div')].forEach(d=>{
+     const t=d.textContent||'';
+     if(t.includes('식비:')&&t.includes('카페:')&&t.includes('문화:')&&t.includes('기타:')){
+       d.classList.add('v493-costs');
+       const parts=t.split('|').map(x=>x.trim()).filter(Boolean);
+       d.innerHTML=parts.map(x=>`<span class="v493-cost-item">${esc(x)}</span>`).join('');
+     }
+   });
+ });
+}
+const oldRecalc=window.recalculateStatsAndFeeds;
+window.recalculateStatsAndFeeds=function(){const r=oldRecalc.apply(this,arguments);polishFeed();return r};
+
+window.addEventListener('load',()=>setTimeout(()=>{rebuildDiaryLinks();v493RefreshDiaryLinks();renderCalendar();v44RenderAnnualSummary();polishFeed();},1000));
+})();
 </script>
 
 </body>
