@@ -1956,5 +1956,20 @@ function v492IsRevisit(p){
 })();
 </script>
 
+<script id="v4955-data-split-hotfix">
+(function(){
+ const KEY='lovelyDateArchiveLocalPhotosV1';
+ function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return {}}}
+ function write(){const m={};diaryFeeds.forEach(f=>{if(f&&f.id!=null&&Array.isArray(f.images)&&f.images.length)m[String(f.id)]=f.images});try{localStorage.setItem(KEY,JSON.stringify(m));return true}catch(e){alert('사진 저장 공간이 부족합니다.');return false}}
+ function merge(){const m=read();diaryFeeds.forEach(f=>{if(!f||f.id==null)return;const a=m[String(f.id)];f.images=Array.isArray(a)?[...a]:(Array.isArray(f.images)?f.images:[])})}
+ function safe(v){if(!v||typeof v!=='object'||!Array.isArray(v.diaryFeeds))return v;return {...v,diaryFeeds:v.diaryFeeds.map(f=>{const c={...f};delete c.images;delete c._editing;return c})}}
+ const s=window.saveState;window.saveState=function(){write();return s?s():true};
+ const l=window.loadState;window.loadState=function(){const r=l&&l();merge();return r};
+ function wrap(proto,n){if(!proto||typeof proto[n]!=='function'||proto[n].__split)return;const o=proto[n];const w=function(v,...r){return o.call(this,safe(v),...r)};w.__split=true;proto[n]=w}
+ try{if(window.firebase&&firebase.database){const p=Object.getPrototypeOf(firebase.database().ref('__split_probe__'));wrap(p,'set');wrap(p,'update')}}catch(e){console.warn(e)}
+ window.addEventListener('beforeunload',write);
+ setTimeout(()=>{merge();if(typeof recalculateStatsAndFeeds==='function')recalculateStatsAndFeeds()},0);
+})();
+</script>
 </body>
 </html>
