@@ -494,10 +494,10 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
             <div class="card-box">
                 <div class="section-title">📌 계획 & 위시 보관함</div>
                 <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('activity')">🏃‍♂️ 액티비티</button>
-                    <button class="tab-btn" onclick="switchTab('restaurant')">🍕 식당/카페</button>
-                    <button class="tab-btn" onclick="switchTab('travel')">✈️ 여행지</button>
-                    <button class="tab-btn" onclick="switchTab('movie')">🎬 영화</button>
+                    <button class="tab-btn active" onclick="switchTab('activity',this)">🏃‍♂️ 액티비티</button>
+                    <button class="tab-btn" onclick="switchTab('restaurant',this)">🍕 식당/카페</button>
+                    <button class="tab-btn" onclick="switchTab('travel',this)">✈️ 여행지</button>
+                    <button class="tab-btn" onclick="switchTab('movie',this)">🎬 영화</button>
                 </div>
                 
                 <!-- 상단 다중 정렬 및 가독성 최적화 필터 배치 -->
@@ -508,7 +508,11 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
                             <option value="전체">🌍 전체 보기</option>
                             
                         </select>
-                    </div>
+                    </div><div id="filter-movie-row" style="display:none;align-items:center;gap:5px;">
+🎞️ 관람 방식:
+<select id="filter-movie-type" onchange="renderBucketList()" style="width:auto;padding:3px;margin:0;font-size:.75rem;">
+<option value="전체">전체</option><option value="영화관">🎬 영화관</option><option value="OTT">📺 OTT</option><option value="미분류">미분류</option>
+</select></div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         📋 상태 필터:
                         <label style="cursor:pointer;"><input type="radio" name="filter-status" value="all" checked onchange="renderBucketList()"> 전체</label>
@@ -531,11 +535,8 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
                     </div>
                     <!-- 영화 전용 미디어 플랫폼 셀렉트 박스 (평소 보이지 않음) -->
                     <select id="bucket-movie-platform" style="margin:0; display:none;">
-                        <option value="넷플릭스">🎬 넷플릭스 (Netflix)</option>
-                        <option value="디즈니+">🍿 디즈니+ (Disney+)</option>
-                        <option value="티빙/웨이브">📺 국내 OTT (티빙/웨이브)</option>
-                        <option value="극장">🎞️ 영화관 스크린 데이트</option>
-                    </select>
+<option value="영화관">🎬 영화관</option><option value="OTT">📺 OTT</option>
+</select>
                     <div id="v45-food-fields" style="display:none;gap:5px"><select id="v45-food-type"><option>한식</option><option>일식</option><option>양식</option><option>중식</option><option>분식</option><option>아시아</option><option>패스트푸드</option><option>카페</option><option>디저트</option><option>기타</option></select><input type="url" id="v45-wish-link" placeholder="링크 (선택)"></div><div style="display:flex; gap:5px;"><input type="text" id="new-item-input" placeholder="하고 싶은 위시리스트 입력..." style="margin:0; flex:1;"></div>
                     <button onclick="addItem()" class="btn-black" style="padding:8px; margin-top:5px;">리스트에 추가</button>
                 </div>
@@ -566,7 +567,7 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
     </div>
 
     <!-- 실제 행정구역 경계 기반 대한민국 지도 -->
-<section class="visual-map-card mobile-section" data-mobile-section="map">
+<section class="visual-map-card mobile-section" data-mobile-section="map" style="display:none!important">
  <div class="section-title">🗺️ 대한민국 시·군·구 방문 지도</div>
  <p class="map-status" id="map-status">실제 행정구역 경계 데이터를 불러오는 중입니다.</p>
  <div id="real-korea-map"></div>
@@ -613,7 +614,7 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
  <button onclick="showMobileSection('diary',this)"><span>📖</span>기록</button>
  <button onclick="showMobileSection('places',this)"><span>📍</span>장소</button>
  <button onclick="showMobileSection('movies',this)"><span>🎬</span>영화</button>
- <button onclick="showMobileSection('map',this)"><span>🗺️</span>지도</button>
+ <button onclick="showMobileSection('wish',this)"><span>📌</span>위시</button>
 </nav>
 
 <script>
@@ -1146,88 +1147,48 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
     }
 
     // 탭 체인저 (영화 탭 선택 시 지역 필터 행 숨김 처리 기능 완벽 추가)
-    function switchTab(tabName) {
+    function switchTab(tabName, btn) {
         currentTab = tabName;
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        
-        const locGroup = document.getElementById('bucket-loc-group');
-        const locFilterRow = document.getElementById('filter-location-row');
-        const moviePlatformSel = document.getElementById('bucket-movie-platform');
-
-        if(tabName === 'movie') { 
-            locGroup.style.display = 'none'; 
-            locFilterRow.style.display = 'none';
-            moviePlatformSel.style.display = 'block';
-        } else { 
-            locGroup.style.display = 'grid'; 
-            locFilterRow.style.display = 'flex';
-            moviePlatformSel.style.display = 'none';
-        }
+        document.querySelectorAll('[data-mobile-section="wish"] .tab-btn').forEach(b=>b.classList.remove('active'));
+        const target=btn || (typeof event!=='undefined'?event.currentTarget:null);
+        if(target) target.classList.add('active');
+        const isMovie=tabName==='movie';
+        document.getElementById('bucket-loc-group').style.display=isMovie?'none':'grid';
+        document.getElementById('filter-location-row').style.display=isMovie?'none':'flex';
+        document.getElementById('filter-movie-row').style.display=isMovie?'flex':'none';
+        document.getElementById('bucket-movie-platform').style.display=isMovie?'block':'none';
         renderBucketList();
     }
 
-    // 위시리스트 렌더러 (미달성 최상단 정렬 및 상태 필터링 추가)
     function renderBucketList() {
-        const container = document.getElementById('list-content'); container.innerHTML = '';
-        const filterLocVal = document.getElementById('filter-location').value;
-        const filterStatusVal = document.querySelector('input[name="filter-status"]:checked').value;
-
-        // 원본 배열 가공 없이 정렬 본사 생성 (미달성 false 항목이 앞으로 오게 정렬)
-        let sortedItems = bucketData[currentTab].map((item, originalIndex) => ({ ...item, originalIndex }));
-        sortedItems.sort((a, b) => a.done - b.done);
-
-        let matchCount = 0;
-        sortedItems.forEach((item) => {
-            // 1. 지역 필터링 (영화 탭 제외)
-            if(currentTab !== 'movie' && filterLocVal !== "전체" && item.sido !== filterLocVal) return;
-
-            // 2. 상태 필터링 (전체 / 미달성만 / 달성만)
-            if(filterStatusVal === 'todo' && item.done) return;
-            if(filterStatusVal === 'done' && !item.done) return;
-
-            matchCount++;
-            const div = document.createElement('div'); div.className = 'list-item';
-            
-            let locBadge = '';
-            if(currentTab === 'movie') {
-                locBadge = `<span class="item-loc-badge" style="background:#f1f2f6; color:#57606f;">${item.platform || '영화'}</span>`;
-            } else if(item.sido && item.sido !== '전체') {
-                let badgeTxt = item.sigungu && item.sigungu !== '전체' ? `${item.sido} ${item.sigungu}` : item.sido;
-                locBadge = `<span class="item-loc-badge">${badgeTxt}</span>`;
-            }
-            
-            div.innerHTML = `
-                <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleBucket('${currentTab}', ${item.originalIndex})">
-                ${locBadge}
-                <div class="item-text ${item.done ? 'done' : ''}">${item.text}</div>
-                <button class="btn-del" onclick="deleteBucketItem('${currentTab}', ${item.originalIndex})">❌</button>
-            `;
-            container.appendChild(div);
+        const container=document.getElementById('list-content'); if(!container)return; container.innerHTML='';
+        const filterLoc=document.getElementById('filter-location')?.value||'전체';
+        const status=document.querySelector('input[name="filter-status"]:checked')?.value||'all';
+        const movieType=document.getElementById('filter-movie-type')?.value||'전체';
+        let items=(bucketData[currentTab]||[]).map((item,originalIndex)=>({...item,originalIndex})).sort((a,b)=>Number(a.done)-Number(b.done));
+        let count=0;
+        items.forEach(item=>{
+          const wt=item.watchType||item.platform||'미분류';
+          if(currentTab==='movie'&&movieType!=='전체'&&wt!==movieType)return;
+          if(currentTab!=='movie'&&filterLoc!=='전체'&&item.sido!==filterLoc)return;
+          if(status==='todo'&&item.done)return;if(status==='done'&&!item.done)return;
+          count++;
+          const div=document.createElement('div');div.className='list-item';
+          let badge='';
+          if(currentTab==='movie')badge=`<span class="item-loc-badge">${wt==='영화관'?'🎬 영화관':wt==='OTT'?'📺 OTT':'미분류'}</span>`;
+          else if(item.sido&&item.sido!=='전체')badge=`<span class="item-loc-badge">${item.sido}${item.sigungu&&item.sigungu!=='전체'?' '+item.sigungu:''}</span>`;
+          div.innerHTML=`<input type="checkbox" ${item.done?'checked':''} onchange="toggleBucket('${currentTab}',${item.originalIndex})">${badge}<div class="item-text ${item.done?'done':''}">${item.text}</div><button class="btn-del" onclick="deleteBucketItem('${currentTab}',${item.originalIndex})">❌</button>`;
+          container.appendChild(div);
         });
-
-        if(matchCount === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:30px; font-size:0.8rem; color:var(--gray-sub);">조건에 맞는 위시 아이템이 비어있습니다.</div>';
-        }
+        if(!count)container.innerHTML='<div style="text-align:center;padding:30px;font-size:.8rem;color:var(--gray-sub)">조건에 맞는 위시 아이템이 비어있습니다.</div>';
         updateBucketRate();
     }
 
     function addItem() {
-        const input = document.getElementById('new-item-input'); if(!input.value.trim()) return;
-        const sidoVal = document.getElementById('bucket-sido').value;
-        const sigunguVal = document.getElementById('bucket-sigungu').value;
-        const platformVal = document.getElementById('bucket-movie-platform').value;
-        
-        let newItem = { 
-            text: input.value.trim(), 
-            done: false, 
-            sido: currentTab === 'movie' ? '전체' : sidoVal,
-            sigungu: currentTab === 'movie' ? '전체' : sigunguVal,
-            platform: currentTab === 'movie' ? platformVal : ''
-        };
-        bucketData[currentTab].push(newItem);
-        input.value = '';
-        renderBucketList();
+        const input=document.getElementById('new-item-input');if(!input||!input.value.trim())return;
+        const isMovie=currentTab==='movie';
+        const item={text:input.value.trim(),done:false,sido:isMovie?'전체':document.getElementById('bucket-sido').value,sigungu:isMovie?'전체':document.getElementById('bucket-sigungu').value,watchType:isMovie?document.getElementById('bucket-movie-platform').value:'',platform:''};
+        bucketData[currentTab].push(item);input.value='';renderBucketList();
     }
     
     function toggleBucket(category, index) { bucketData[category][index].done = !bucketData[category][index].done; renderBucketList(); }
@@ -1855,5 +1816,17 @@ function v492IsRevisit(p){
 
 
 <!-- v4.9.5 stable: annual summary disabled -->
+<style id="v4951-wish-fix">
+[data-mobile-section="map"]{display:none!important}
+@media(max-width:768px){
+ [data-mobile-section="wish"].mobile-section{width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
+ [data-mobile-section="wish"] .card-box{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important}
+ [data-mobile-section="wish"] .tabs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+ [data-mobile-section="wish"] .tab-btn{min-width:0!important;padding:8px 3px!important;font-size:.7rem!important;white-space:nowrap!important}
+ [data-mobile-section="wish"] #list-content{display:block!important;min-height:60px!important;width:100%!important;overflow:visible!important}
+ [data-mobile-section="wish"] .list-item{display:flex!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+ [data-mobile-section="wish"] .item-text{min-width:0!important;flex:1!important;overflow-wrap:anywhere!important}
+}
+</style>
 </body>
 </html>
