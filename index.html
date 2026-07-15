@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+
+<html lang="ko"><!--v4.9.6 baseline maintenance build - no functional changes-->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리들의 러블리 아카이브 🎀</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>우리들의 러블리 아카이브 🎀 (v4.9.6)</title>
+<style>
         :root {
             --bg-pink: #fff0f2;
             --point-pink: #ff788e;
@@ -102,7 +103,6 @@
         .map-geo-block.highlight { background: var(--light-pink); border-color: var(--point-pink); color: var(--point-pink); transform: scale(1.03); box-shadow: 0 4px 8px rgba(255,120,142,0.15); }
         .map-geo-block .sgg-subtext { font-size: 0.65rem; display: block; margin-top: 2px; opacity: 0.8; }
     </style>
-
 <style>
 .v2-toolbar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:14px}
 .v2-toolbar button{width:auto;padding:9px 12px}
@@ -129,16 +129,13 @@
  .feed-gallery img{width:92%;height:220px}
 }
 </style>
-
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 #real-korea-map{height:650px;border-radius:18px;overflow:hidden;background:#eef2f3}
 .map-status{font-size:.78rem;color:var(--gray-sub);margin:8px 0 12px}
 @media(max-width:768px){#real-korea-map{height:68vh;min-height:460px}}
 </style>
-
 <style>
 .v42-fab{position:fixed;right:14px;bottom:86px;z-index:9997;border:0;border-radius:999px;padding:11px 14px;background:#2f3542;color:#fff;font-weight:700;cursor:pointer}
 .v42-modal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.38);display:none;align-items:center;justify-content:center;padding:16px}
@@ -263,8 +260,6 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
   }
 }
 </style>
-
-
 <style id="v49-schedule-mobile-fix">
 /* 일정 목록: 정보 영역 확대, 액션은 이모지만 */
 .v49-schedule-item{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:10px!important;align-items:center!important}
@@ -313,8 +308,6 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
   #v46-work-wrap{min-width:190px!important;width:max-content!important;max-width:100%!important}
 }
 </style>
-
-
 <style id="v491-ui-cleanup">
 .v47-timeline-wide #diary-feed-container .v45-actions,
 .v47-timeline-wide .diary-feed .v45-actions{
@@ -338,8 +331,6 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
   }
 }
 </style>
-
-
 <style id="v492-mobile-compact">
 @media(max-width:768px){
   /* 기록 폼: 과도한 세로 높이와 간격 축소 */
@@ -384,7 +375,6 @@ html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
   #v42-movie-list{grid-column:1/-1!important}
 }
 </style>
-
 <style id="v4952-movie-wish-final-fix">
 /* Movie wishlist never uses regional UI */
 body.wish-movie-active #filter-location-row,
@@ -398,236 +388,210 @@ body.wish-movie-active #bucket-movie-platform { display:block!important; }
 </style>
 </head>
 <body>
-
 <div class="container">
-    
 <div class="v2-toolbar">
-  <button class="btn-black" onclick="exportArchive()">💾 데이터 백업</button>
-  <button class="btn-black" onclick="document.getElementById('restore-file').click()">📂 데이터 복원</button>
-  <input id="restore-file" type="file" accept=".json" style="display:none" onchange="importArchive(event)">
+<button class="btn-black" onclick="exportArchive()">💾 데이터 백업</button>
+<button class="btn-black" onclick="document.getElementById('restore-file').click()">📂 데이터 복원</button>
+<input accept=".json" id="restore-file" onchange="importArchive(event)" style="display:none" type="file"/>
 </div>
-
 <header>
-        <h1>우리들의 러블리 아카이브 🎀</h1>
-        <p>우리만의 소중한 발자국과 타임라인 관리창</p>
-    </header>
-
-    <section class="card-box v44-search-card">
-      <div class="section-title">🔎 통합 검색</div>
-      <input id="v44-global-search" type="search" placeholder="데이트 기록 · 장소 · 영화 · 댓글 검색" oninput="v44GlobalSearch(this.value)">
-      <div id="v44-search-results" class="v44-search-results" hidden></div>
-    </section>
-
-    <!-- 대시보드 -->
-    <section class="dashboard">
-        <div class="stat-card"><div class="icon">❤️</div><div class="value" id="dday-counter">D+1</div><div class="label">함께 사랑한 지</div></div>
-        <div class="stat-card"><div class="icon">⭐</div><div class="value" id="total-count">0회</div><div class="label">올해 데이트 횟수</div></div>
-        <div class="stat-card"><div class="icon">💰</div><div class="value" id="total-cost">0원</div><div class="label">총 데이트 비용</div></div>
-        <div class="stat-card"><div class="icon">🗺️</div><div class="value" id="visited-count">0곳</div><div class="label">정복한 행정구역</div></div>
-        <div class="stat-card"><div class="icon">🏆</div><div class="value" id="bucket-rate">0%</div><div class="label">계획 달성률</div></div>
-    </section>
-
-    <div class="main-content">
-        
-        <!-- 1열: 캘린더 및 일정 -->
-        <div class="mobile-section mobile-active" data-mobile-section="home">
-            <div class="card-box">
-                <div class="section-title">📅 추억 & 일정 캘린더</div>
-                <div class="calendar-wrapper">
-                    <div class="calendar-header">
-                        <button class="calendar-btn" onclick="moveMonth(-1)">◀</button>
-                        <span id="calendar-title">2026년 7월</span>
-                        <button class="calendar-btn" onclick="moveMonth(1)">▶</button>
-                    </div>
-                    <div class="calendar-grid" id="calendar-grid"></div>
-                </div>
-            </div>
-
-            <div class="card-box" id="v45-schedule-card">
-                <div class="section-title">📅 일정 관리</div>
-                <div class="tabs"><button class="tab-btn active" onclick="v45ScheduleTab('personal',this)">💗 개인·데이트 일정</button><button class="tab-btn" onclick="v45ScheduleTab('football',this)">⚽ 축구 일정</button></div>
-                <section id="v45-personal-panel"><div class="section-title" style="font-size:.95rem">다가오는 개인·데이트 일정</div><div id="v45-personal-list"></div><details><summary>＋ 일정 추가</summary><div class="v45-form"><select id="date-schedule-type"><option value="데이트">❤️ 같이 일정</option><option value="현진">🖤 현진 일정</option><option value="서형">💛 서형 일정</option></select><input type="date" id="date-schedule-date"><input type="text" id="date-schedule-text" placeholder="일정 이름"><input type="time" id="v43-general-start"><input type="time" id="v43-general-end"><input type="text" id="v43-general-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addGeneralSchedule()">등록</button></div></details></section>
-                <section id="v45-football-panel" style="display:none"><div class="section-title" style="font-size:.95rem">다가오는 경기 일정</div><div id="v45-football-list"></div><details><summary>＋ 경기 일정 등록</summary><div class="v45-form"><input type="date" id="match-date"><input type="text" id="match-team" placeholder="예: 강원 FC vs 수원 삼성"><input type="time" id="v43-match-time"><input list="v43-stadium-list" id="v43-match-stadium" placeholder="경기장 선택 또는 직접 입력"><datalist id="v43-stadium-list"></datalist><label><input type="checkbox" id="v45-save-stadium"> 경기장 목록에 저장</label><select id="match-crew"><option value="강원">강원 🧡</option><option value="수원">수원 💙</option><option value="기타">기타 ⚽</option></select><label><input type="checkbox" id="v45-work"> 💼 서형 근무</label><input type="text" id="v43-match-memo" placeholder="메모 (선택)"><button class="btn-black" onclick="addKleagueMatch()">경기 일정 추가</button></div></details><details><summary>🗃️ 지난 경기 보기</summary><div id="v43-past-matches"></div></details></section>
-                <div id="v43-upcoming" style="display:none"></div><div id="kleague-match-box" style="display:none"></div><select id="v43-match-year" style="display:none"></select>
-            </div>
-
-            <div class="card-box" style="background: #fffdf0;">
-                <div class="section-title">🎂 우리들의 기념일 현황판</div>
-                <ul style="font-size:0.85rem; padding-left:20px; margin:0; line-height:1.7;" id="anniversary-box">
-                    <li><b>5월 24일:</b> 우리의 처음 만난 날 👩‍❤️‍👨</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 2열: 기록 및 피드 -->
-        <div class="mobile-section" data-mobile-section="diary">
-            <div class="card-box">
-                <div class="section-title">📷 오늘의 데이트 기록 (캘린더 자동 연동)</div>
-                <div class="diary-form">
-                    <!-- 연박 만남 지원을 위한 시작일/종료일 인터페이스 확장 -->
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:10px;">
-                        <div>
-                            <span style="font-size:0.75rem; color:var(--gray-sub)">시작일(필수)</span>
-                            <input type="date" id="diary-date" style="margin-bottom:0;">
-                        </div>
-                        <div>
-                            <span style="font-size:0.75rem; color:var(--gray-sub)">종료일(연박일 때만 선택)</span>
-                            <input type="date" id="diary-end-date" style="margin-bottom:0;">
-                        </div>
-                    </div>
-                    
-                    <div style="background:#fff8f9; padding:10px; border-radius:12px; margin-bottom:10px;">
-                        <span style="font-size:0.8rem; font-weight:bold; color:var(--point-pink)">💸 데이트 영수증 세부 기입</span>
-                        <div class="cost-split-grid" style="margin-top:5px;">
-                            <input type="number" id="cost-food" placeholder="🍚 식비">
-                            <input type="number" id="cost-cafe" placeholder="☕ 카페">
-                            <input type="number" id="cost-play" placeholder="🍿 문화/엔터">
-                            <input type="number" id="cost-etc" placeholder="🚗 교통/기타">
-                        </div>
-                    </div>
-
-                    <input type="file" id="diary-files" accept="image/*" multiple onchange="previewImages()">
-                    <div class="preview-thumbs" id="preview-container"></div>
-                    <textarea id="diary-comment" placeholder="오늘 있었던 행복한 이야기..."></textarea>
-                    <input type="text" id="diary-tags" placeholder="태그 (쉼표 구분: 예: 춘천, 강릉, 2박3일)"></input>
-                    <button class="btn-black" onclick="addDiary()">추억 아카이빙 피드 올리기</button>
-                </div>
-            </div>
-
-            <div class="card-box">
-                <div class="section-title">🌹 우리들의 타임라인 피드</div>
-                <div class="diary-feed" id="diary-feed-container"></div>
-            </div>
-        </div>
-
-        <!-- 3열: 계획 보관함 & 도장깨기 -->
-        <div class="mobile-section" data-mobile-section="wish">
-            <div class="card-box">
-                <div class="section-title">📌 계획 & 위시 보관함</div>
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('activity',this)">🏃‍♂️ 액티비티</button>
-                    <button class="tab-btn" onclick="switchTab('restaurant',this)">🍕 식당/카페</button>
-                    <button class="tab-btn" onclick="switchTab('travel',this)">✈️ 여행지</button>
-                    <button class="tab-btn" onclick="switchTab('movie',this)">🎬 영화</button>
-                </div>
-                
-                <!-- 상단 다중 정렬 및 가독성 최적화 필터 배치 -->
-                <div style="margin-bottom:10px; font-size:0.8rem; display: flex; flex-direction:column; gap:6px; background:#fafafa; padding:8px; border-radius:10px;">
-                    <div id="filter-location-row" style="display: flex; align-items: center; gap: 5px;">
+<h1>우리들의 러블리 아카이브 🎀</h1>
+<p>우리만의 소중한 발자국과 타임라인 관리창</p>
+</header>
+<section class="card-box v44-search-card">
+<div class="section-title">🔎 통합 검색</div>
+<input id="v44-global-search" oninput="v44GlobalSearch(this.value)" placeholder="데이트 기록 · 장소 · 영화 · 댓글 검색" type="search"/>
+<div class="v44-search-results" hidden="" id="v44-search-results"></div>
+</section>
+<!-- 대시보드 -->
+<section class="dashboard">
+<div class="stat-card"><div class="icon">❤️</div><div class="value" id="dday-counter">D+1</div><div class="label">함께 사랑한 지</div></div>
+<div class="stat-card"><div class="icon">⭐</div><div class="value" id="total-count">0회</div><div class="label">올해 데이트 횟수</div></div>
+<div class="stat-card"><div class="icon">💰</div><div class="value" id="total-cost">0원</div><div class="label">총 데이트 비용</div></div>
+<div class="stat-card"><div class="icon">🗺️</div><div class="value" id="visited-count">0곳</div><div class="label">정복한 행정구역</div></div>
+<div class="stat-card"><div class="icon">🏆</div><div class="value" id="bucket-rate">0%</div><div class="label">계획 달성률</div></div>
+</section>
+<div class="main-content">
+<!-- 1열: 캘린더 및 일정 -->
+<div class="mobile-section mobile-active" data-mobile-section="home">
+<div class="card-box">
+<div class="section-title">📅 추억 &amp; 일정 캘린더</div>
+<div class="calendar-wrapper">
+<div class="calendar-header">
+<button class="calendar-btn" onclick="moveMonth(-1)">◀</button>
+<span id="calendar-title">2026년 7월</span>
+<button class="calendar-btn" onclick="moveMonth(1)">▶</button>
+</div>
+<div class="calendar-grid" id="calendar-grid"></div>
+</div>
+</div>
+<div class="card-box" id="v45-schedule-card">
+<div class="section-title">📅 일정 관리</div>
+<div class="tabs"><button class="tab-btn active" onclick="v45ScheduleTab('personal',this)">💗 개인·데이트 일정</button><button class="tab-btn" onclick="v45ScheduleTab('football',this)">⚽ 축구 일정</button></div>
+<section id="v45-personal-panel"><div class="section-title" style="font-size:.95rem">다가오는 개인·데이트 일정</div><div id="v45-personal-list"></div><details><summary>＋ 일정 추가</summary><div class="v45-form"><select id="date-schedule-type"><option value="데이트">❤️ 같이 일정</option><option value="현진">🖤 현진 일정</option><option value="서형">💛 서형 일정</option></select><input id="date-schedule-date" type="date"/><input id="date-schedule-text" placeholder="일정 이름" type="text"/><input id="v43-general-start" type="time"/><input id="v43-general-end" type="time"/><input id="v43-general-memo" placeholder="메모 (선택)" type="text"/><button class="btn-black" onclick="addGeneralSchedule()">등록</button></div></details></section>
+<section id="v45-football-panel" style="display:none"><div class="section-title" style="font-size:.95rem">다가오는 경기 일정</div><div id="v45-football-list"></div><details><summary>＋ 경기 일정 등록</summary><div class="v45-form"><input id="match-date" type="date"/><input id="match-team" placeholder="예: 강원 FC vs 수원 삼성" type="text"/><input id="v43-match-time" type="time"/><input id="v43-match-stadium" list="v43-stadium-list" placeholder="경기장 선택 또는 직접 입력"/><datalist id="v43-stadium-list"></datalist><label><input id="v45-save-stadium" type="checkbox"/> 경기장 목록에 저장</label><select id="match-crew"><option value="강원">강원 🧡</option><option value="수원">수원 💙</option><option value="기타">기타 ⚽</option></select><label><input id="v45-work" type="checkbox"/> 💼 서형 근무</label><input id="v43-match-memo" placeholder="메모 (선택)" type="text"/><button class="btn-black" onclick="addKleagueMatch()">경기 일정 추가</button></div></details><details><summary>🗃️ 지난 경기 보기</summary><div id="v43-past-matches"></div></details></section>
+<div id="v43-upcoming" style="display:none"></div><div id="kleague-match-box" style="display:none"></div><select id="v43-match-year" style="display:none"></select>
+</div>
+<div class="card-box" style="background: #fffdf0;">
+<div class="section-title">🎂 우리들의 기념일 현황판</div>
+<ul id="anniversary-box" style="font-size:0.85rem; padding-left:20px; margin:0; line-height:1.7;">
+<li><b>5월 24일:</b> 우리의 처음 만난 날 👩‍❤️‍👨</li>
+</ul>
+</div>
+</div>
+<!-- 2열: 기록 및 피드 -->
+<div class="mobile-section" data-mobile-section="diary">
+<div class="card-box">
+<div class="section-title">📷 오늘의 데이트 기록 (캘린더 자동 연동)</div>
+<div class="diary-form">
+<!-- 연박 만남 지원을 위한 시작일/종료일 인터페이스 확장 -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:10px;">
+<div>
+<span style="font-size:0.75rem; color:var(--gray-sub)">시작일(필수)</span>
+<input id="diary-date" style="margin-bottom:0;" type="date"/>
+</div>
+<div>
+<span style="font-size:0.75rem; color:var(--gray-sub)">종료일(연박일 때만 선택)</span>
+<input id="diary-end-date" style="margin-bottom:0;" type="date"/>
+</div>
+</div>
+<div style="background:#fff8f9; padding:10px; border-radius:12px; margin-bottom:10px;">
+<span style="font-size:0.8rem; font-weight:bold; color:var(--point-pink)">💸 데이트 영수증 세부 기입</span>
+<div class="cost-split-grid" style="margin-top:5px;">
+<input id="cost-food" placeholder="🍚 식비" type="number"/>
+<input id="cost-cafe" placeholder="☕ 카페" type="number"/>
+<input id="cost-play" placeholder="🍿 문화/엔터" type="number"/>
+<input id="cost-etc" placeholder="🚗 교통/기타" type="number"/>
+</div>
+</div>
+<input accept="image/*" id="diary-files" multiple="" onchange="previewImages()" type="file"/>
+<div class="preview-thumbs" id="preview-container"></div>
+<textarea id="diary-comment" placeholder="오늘 있었던 행복한 이야기..."></textarea>
+<input id="diary-tags" placeholder="태그 (쉼표 구분: 예: 춘천, 강릉, 2박3일)" type="text"/>
+<button class="btn-black" onclick="addDiary()">추억 아카이빙 피드 올리기</button>
+</div>
+</div>
+<div class="card-box">
+<div class="section-title">🌹 우리들의 타임라인 피드</div>
+<div class="diary-feed" id="diary-feed-container"></div>
+</div>
+</div>
+<!-- 3열: 계획 보관함 & 도장깨기 -->
+<div class="mobile-section" data-mobile-section="wish">
+<div class="card-box">
+<div class="section-title">📌 계획 &amp; 위시 보관함</div>
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('activity',this)">🏃‍♂️ 액티비티</button>
+<button class="tab-btn" onclick="switchTab('restaurant',this)">🍕 식당/카페</button>
+<button class="tab-btn" onclick="switchTab('travel',this)">✈️ 여행지</button>
+<button class="tab-btn" onclick="switchTab('movie',this)">🎬 영화</button>
+</div>
+<!-- 상단 다중 정렬 및 가독성 최적화 필터 배치 -->
+<div style="margin-bottom:10px; font-size:0.8rem; display: flex; flex-direction:column; gap:6px; background:#fafafa; padding:8px; border-radius:10px;">
+<div id="filter-location-row" style="display: flex; align-items: center; gap: 5px;">
                         🔎 지역 필터: 
                         <select id="filter-location" onchange="renderBucketList()" style="width:auto; padding:3px; margin:0; font-size:0.75rem;">
-                            <option value="전체">🌍 전체 보기</option>
-                            
-                        </select>
-                    </div><div id="filter-movie-row" style="display:none;align-items:center;gap:5px;">
+<option value="전체">🌍 전체 보기</option>
+</select>
+</div><div id="filter-movie-row" style="display:none;align-items:center;gap:5px;">
 🎞️ 관람 방식:
 <select id="filter-movie-type" onchange="renderBucketList()" style="width:auto;padding:3px;margin:0;font-size:.75rem;">
 <option value="전체">전체</option><option value="영화관">🎬 영화관</option><option value="OTT">📺 OTT</option><option value="미분류">미분류</option>
 </select></div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
+<div style="display: flex; align-items: center; gap: 10px;">
                         📋 상태 필터:
-                        <label style="cursor:pointer;"><input type="radio" name="filter-status" value="all" checked onchange="renderBucketList()"> 전체</label>
-                        <label style="cursor:pointer; color:var(--point-pink); font-weight:bold;"><input type="radio" name="filter-status" value="todo" onchange="renderBucketList()"> 미달성만</label>
-                        <label style="cursor:pointer; color:var(--gray-sub);"><input type="radio" name="filter-status" value="done" onchange="renderBucketList()"> 달성만</label>
-                    </div>
-                </div>
-
-                <div class="list-container" id="list-content"></div>
-                
-                <!-- 2단계 구조화 지역선택 / 영화 전환 연동 레이아웃 -->
-                <div style="margin-top:10px; display:flex; flex-direction:column; gap:4px;" id="bucket-insert-area">
-                    <div class="bucket-select-row" id="bucket-loc-group">
-                        <select id="bucket-sido" onchange="updateBucketSigunguSelect()" style="margin:0;">
-                            <option value="전체">시·도 선택</option>
-                        </select>
-                        <select id="bucket-sigungu" style="margin:0;">
-                            <option value="전체">시·군·구 선택</option>
-                        </select>
-                    </div>
-                    <!-- 영화 전용 미디어 플랫폼 셀렉트 박스 (평소 보이지 않음) -->
-                    <select id="bucket-movie-platform" style="margin:0; display:none;">
+                        <label style="cursor:pointer;"><input checked="" name="filter-status" onchange="renderBucketList()" type="radio" value="all"/> 전체</label>
+<label style="cursor:pointer; color:var(--point-pink); font-weight:bold;"><input name="filter-status" onchange="renderBucketList()" type="radio" value="todo"/> 미달성만</label>
+<label style="cursor:pointer; color:var(--gray-sub);"><input name="filter-status" onchange="renderBucketList()" type="radio" value="done"/> 달성만</label>
+</div>
+</div>
+<div class="list-container" id="list-content"></div>
+<!-- 2단계 구조화 지역선택 / 영화 전환 연동 레이아웃 -->
+<div id="bucket-insert-area" style="margin-top:10px; display:flex; flex-direction:column; gap:4px;">
+<div class="bucket-select-row" id="bucket-loc-group">
+<select id="bucket-sido" onchange="updateBucketSigunguSelect()" style="margin:0;">
+<option value="전체">시·도 선택</option>
+</select>
+<select id="bucket-sigungu" style="margin:0;">
+<option value="전체">시·군·구 선택</option>
+</select>
+</div>
+<!-- 영화 전용 미디어 플랫폼 셀렉트 박스 (평소 보이지 않음) -->
+<select id="bucket-movie-platform" style="margin:0; display:none;">
 <option value="영화관">🎬 영화관</option><option value="OTT">📺 OTT</option>
 </select>
-                    <div id="v45-food-fields" style="display:none;gap:5px"><select id="v45-food-type"><option>한식</option><option>일식</option><option>양식</option><option>중식</option><option>분식</option><option>아시아</option><option>패스트푸드</option><option>카페</option><option>디저트</option><option>기타</option></select><input type="url" id="v45-wish-link" placeholder="링크 (선택)"></div><div style="display:flex; gap:5px;"><input type="text" id="new-item-input" placeholder="하고 싶은 위시리스트 입력..." style="margin:0; flex:1;"></div>
-                    <button onclick="addItem()" class="btn-black" style="padding:8px; margin-top:5px;">리스트에 추가</button>
-                </div>
-            </div>
-
-            <!-- 도장깨기 메뉴 -->
-            <div class="card-box">
-                <div class="section-title">🗺️ 우리들의 발자국 도장 깨기</div>
-                <p style="font-size:0.75rem; color:var(--gray-sub); margin-top:-10px; margin-bottom:15px;">시·도를 고르고 시·군·구와 세부 동네까지 완벽 마스터!</p>
-                
-                <div class="map-3step-wrapper">
-                    <div class="map-row">
-                        <div class="map-row-title">1단계: 시·도 선택</div>
-                        <div class="chips-container" id="step1-container"></div>
-                    </div>
-                    <div class="map-row" id="row-step2" style="display:none;">
-                        <div class="map-row-title">2단계: 시·군·구 선택</div>
-                        <div class="chips-container" id="step2-container"></div>
-                    </div>
-                    <div class="map-row" id="row-step3" style="display:none;">
-                        <div class="map-row-title" id="step3-title">3단계: 세부 동네 토글</div>
-                        <div class="chips-container" id="step3-container"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- 실제 행정구역 경계 기반 대한민국 지도 -->
+<div id="v45-food-fields" style="display:none;gap:5px"><select id="v45-food-type"><option>한식</option><option>일식</option><option>양식</option><option>중식</option><option>분식</option><option>아시아</option><option>패스트푸드</option><option>카페</option><option>디저트</option><option>기타</option></select><input id="v45-wish-link" placeholder="링크 (선택)" type="url"/></div><div style="display:flex; gap:5px;"><input id="new-item-input" placeholder="하고 싶은 위시리스트 입력..." style="margin:0; flex:1;" type="text"/></div>
+<button class="btn-black" onclick="addItem()" style="padding:8px; margin-top:5px;">리스트에 추가</button>
+</div>
+</div>
+<!-- 도장깨기 메뉴 -->
+<div class="card-box">
+<div class="section-title">🗺️ 우리들의 발자국 도장 깨기</div>
+<p style="font-size:0.75rem; color:var(--gray-sub); margin-top:-10px; margin-bottom:15px;">시·도를 고르고 시·군·구와 세부 동네까지 완벽 마스터!</p>
+<div class="map-3step-wrapper">
+<div class="map-row">
+<div class="map-row-title">1단계: 시·도 선택</div>
+<div class="chips-container" id="step1-container"></div>
+</div>
+<div class="map-row" id="row-step2" style="display:none;">
+<div class="map-row-title">2단계: 시·군·구 선택</div>
+<div class="chips-container" id="step2-container"></div>
+</div>
+<div class="map-row" id="row-step3" style="display:none;">
+<div class="map-row-title" id="step3-title">3단계: 세부 동네 토글</div>
+<div class="chips-container" id="step3-container"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 실제 행정구역 경계 기반 대한민국 지도 -->
 <section class="visual-map-card mobile-section" data-mobile-section="map" style="display:none!important">
- <div class="section-title">🗺️ 대한민국 시·군·구 방문 지도</div>
- <p class="map-status" id="map-status">실제 행정구역 경계 데이터를 불러오는 중입니다.</p>
- <div id="real-korea-map"></div>
- <p class="storage-note">방문 처리된 시·군·구는 분홍색으로 표시됩니다. 지도 경계 데이터는 GitHub Pages 배포 후 인터넷 연결 상태에서 불러옵니다.</p>
+<div class="section-title">🗺️ 대한민국 시·군·구 방문 지도</div>
+<p class="map-status" id="map-status">실제 행정구역 경계 데이터를 불러오는 중입니다.</p>
+<div id="real-korea-map"></div>
+<p class="storage-note">방문 처리된 시·군·구는 분홍색으로 표시됩니다. 지도 경계 데이터는 GitHub Pages 배포 후 인터넷 연결 상태에서 불러옵니다.</p>
 </section>
-
-
 <section class="visual-map-card mobile-section" data-mobile-section="places">
- <div class="section-title">📍 방문 장소 리뷰</div>
- <div class="v44-place-layout">
-  <div class="v44-place-form">
-   <div class="v44-label">시·도</div><div id="v44-place-sido-ribbons" class="v44-ribbons"></div>
-   <div class="v44-label">시·군·구</div><div id="v44-place-sgg-ribbons" class="v44-ribbons"></div>
-   <div class="v44-label">장소 카테고리</div><div id="v44-place-category-ribbons" class="v44-ribbons"></div>
-   <input id="v42-place-name" placeholder="장소명">
-   <input id="v44-place-date" type="date" title="방문일">
-   <select id="v42-place-rating"><option value="5">⭐⭐⭐⭐⭐ 5점</option><option value="4.5">4.5점</option><option value="4">4점</option><option value="3.5">3.5점</option><option value="3">3점</option><option value="2">2점</option><option value="1">1점</option></select>
-   <select id="v42-revisit"><option>꼭 다시</option><option>기회 되면</option><option>한 번이면 충분</option></select>
-   <textarea id="v42-place-review" placeholder="리뷰"></textarea><button class="btn-black" onclick="v42AddPlace()">방문 장소 저장</button>
-  </div>
-  <div>
-   <div class="v44-filter-row"><select id="v44-place-sort" onchange="v42Render()"><option value="rating">별점 높은 순</option><option value="recent">최근 방문 순</option><option value="revisit">재방문 우선</option></select><label><input id="v44-favorite-only" type="checkbox" onchange="v42Render()"> ❤️ 다시 가고 싶은 곳만</label></div>
-   <div id="v42-place-list" class="v42-list v44-scroll-list"></div>
-  </div>
- </div>
+<div class="section-title">📍 방문 장소 리뷰</div>
+<div class="v44-place-layout">
+<div class="v44-place-form">
+<div class="v44-label">시·도</div><div class="v44-ribbons" id="v44-place-sido-ribbons"></div>
+<div class="v44-label">시·군·구</div><div class="v44-ribbons" id="v44-place-sgg-ribbons"></div>
+<div class="v44-label">장소 카테고리</div><div class="v44-ribbons" id="v44-place-category-ribbons"></div>
+<input id="v42-place-name" placeholder="장소명"/>
+<input id="v44-place-date" title="방문일" type="date"/>
+<select id="v42-place-rating"><option value="5">⭐⭐⭐⭐⭐ 5점</option><option value="4.5">4.5점</option><option value="4">4점</option><option value="3.5">3.5점</option><option value="3">3점</option><option value="2">2점</option><option value="1">1점</option></select>
+<select id="v42-revisit"><option>꼭 다시</option><option>기회 되면</option><option>한 번이면 충분</option></select>
+<textarea id="v42-place-review" placeholder="리뷰"></textarea><button class="btn-black" onclick="v42AddPlace()">방문 장소 저장</button>
+</div>
+<div>
+<div class="v44-filter-row"><select id="v44-place-sort" onchange="v42Render()"><option value="rating">별점 높은 순</option><option value="recent">최근 방문 순</option><option value="revisit">재방문 우선</option></select><label><input id="v44-favorite-only" onchange="v42Render()" type="checkbox"/> ❤️ 다시 가고 싶은 곳만</label></div>
+<div class="v42-list v44-scroll-list" id="v42-place-list"></div>
+</div>
+</div>
 </section>
 <section class="visual-map-card mobile-section" data-mobile-section="movies">
- <div class="section-title">🎬 같이 본 영화 아카이브</div>
- <div class="v42-row">
-  <div><input id="v42-movie-title" placeholder="영화 제목"><input id="v42-movie-date" type="date"><input id="v42-movie-poster" placeholder="포스터 이미지 URL (선택)"><input id="v42-movie-release" placeholder="개봉일 (선택)">
-  <select id="v44-rating-user1"><option value="5">서형 별점 5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-  <select id="v44-rating-user2"><option value="5">현진 별점 5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-  <textarea id="v42-movie-review" placeholder="메모 / 한줄평"></textarea><button class="btn-black" onclick="v42AddMovie()">영화 저장</button></div>
-  <div id="v42-movie-list" class="v42-list v44-scroll-list"></div>
- </div>
+<div class="section-title">🎬 같이 본 영화 아카이브</div>
+<div class="v42-row">
+<div><input id="v42-movie-title" placeholder="영화 제목"/><input id="v42-movie-date" type="date"/><input id="v42-movie-poster" placeholder="포스터 이미지 URL (선택)"/><input id="v42-movie-release" placeholder="개봉일 (선택)"/>
+<select id="v44-rating-user1"><option value="5">서형 별점 5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+<select id="v44-rating-user2"><option value="5">현진 별점 5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+<textarea id="v42-movie-review" placeholder="메모 / 한줄평"></textarea><button class="btn-black" onclick="v42AddMovie()">영화 저장</button></div>
+<div class="v42-list v44-scroll-list" id="v42-movie-list"></div>
+</div>
 </section>
 <section class="visual-map-card">
- <div class="section-title">📊 연도별 결산</div>
+<div class="section-title">📊 연도별 결산</div>
 </section>
 </div>
-
 <nav class="mobile-nav">
- <button class="active" onclick="showMobileSection('home',this)"><span>🏠</span>홈</button>
- <button onclick="showMobileSection('diary',this)"><span>📖</span>기록</button>
- <button onclick="showMobileSection('places',this)"><span>📍</span>장소</button>
- <button onclick="showMobileSection('movies',this)"><span>🎬</span>영화</button>
- <button onclick="showMobileSection('wish',this)"><span>📌</span>위시</button>
+<button class="active" onclick="showMobileSection('home',this)"><span>🏠</span>홈</button>
+<button onclick="showMobileSection('diary',this)"><span>📖</span>기록</button>
+<button onclick="showMobileSection('places',this)"><span>📍</span>장소</button>
+<button onclick="showMobileSection('movies',this)"><span>🎬</span>영화</button>
+<button onclick="showMobileSection('wish',this)"><span>📌</span>위시</button>
 </nav>
-
 <script>
     const firstMeetDate = new Date(2026, 4, 24);
     function getLocalCalendarDayNumber(year, month, day) {
@@ -1432,14 +1396,12 @@ body.wish-movie-active #bucket-movie-platform { display:block!important; }
         initRealKoreaMap();
     }
 </script>
-
-
 <button class="v42-fab" onclick="v42OpenSettings()">⚙️ 설정</button>
-<div id="v42-settings" class="v42-modal"><div class="v42-panel"><button class="v42-close" onclick="v42CloseSettings()">✕</button><h3>⚙️ 사이트 & 내 프로필</h3>
-<input id="v42-site-title" placeholder="사이트 이름"><input id="v42-site-subtitle" placeholder="부제목">
-<input id="v42-nickname" placeholder="내 별명"><input id="v42-emoji" placeholder="대표 이모지 예: 🐰">
+<div class="v42-modal" id="v42-settings"><div class="v42-panel"><button class="v42-close" onclick="v42CloseSettings()">✕</button><h3>⚙️ 사이트 &amp; 내 프로필</h3>
+<input id="v42-site-title" placeholder="사이트 이름"/><input id="v42-site-subtitle" placeholder="부제목"/>
+<input id="v42-nickname" placeholder="내 별명"/><input id="v42-emoji" placeholder="대표 이모지 예: 🐰"/>
 <button class="btn-black" onclick="v42SaveSettings()">저장</button></div></div>
-<div id="v42-history-modal" class="v42-modal"><div class="v42-panel"><button class="v42-close" onclick="v42CloseHistory()">✕</button><h3 id="v42-history-title">지역 방문 이력</h3><div id="v42-history-list"></div></div></div>
+<div class="v42-modal" id="v42-history-modal"><div class="v42-panel"><button class="v42-close" onclick="v42CloseHistory()">✕</button><h3 id="v42-history-title">지역 방문 이력</h3><div id="v42-history-list"></div></div></div>
 <script>
 const V42_KEY="lovelyDateArchiveV42";
 const V44_CATEGORIES=["식당","카페","술집","숙소","관광지","기타"];
@@ -1611,7 +1573,6 @@ function v45EditDiary(id){const f=diaryFeeds.find(x=>x.id===id);if(f){f._editing
 const v45BaseRecalc=recalculateStatsAndFeeds;recalculateStatsAndFeeds=function(){v45BaseRecalc();document.querySelectorAll('#diary-feed-container .feed-card').forEach((card,i)=>{const f=diaryFeeds[i];if(!f)return;if(f._editing){card.innerHTML=`<div class="v45-inline" data-edit-diary="${f.id}"><input data-k="startDate" type="date" value="${f.startDate}"><input data-k="endDate" type="date" value="${f.endDate||''}"><textarea data-k="comment">${v45Esc(f.comment)}</textarea><input data-k="tags" value="${v45Esc(f.tags||'')}">${['food','cafe','play','etc'].map(k=>`<input data-k="${k}" type="number" value="${f.cost[k]||0}">`).join('')}<button onclick="v45SaveDiary(${f.id})">💾 저장</button><button onclick="v45CancelDiary(${f.id})">취소</button></div>`}else{card.insertAdjacentHTML('beforeend',`<div class="v45-actions"><button onclick="v45EditDiary(${f.id})">✏️ 수정</button><button onclick="v45AddComment('diary',${f.id})">💬 댓글</button></div>`)}})}
 window.addEventListener('load',()=>setTimeout(()=>{v45InitWish();v45RenderStadiums();v45RenderSchedules();v44InitPlaceUI();v42Render();recalculateStatsAndFeeds();},500));
 </script>
-
 <style id="v46-polish-css">
 .v46-ribbon-wrap{display:flex;gap:6px;overflow-x:auto;padding:3px 0 7px;scrollbar-width:thin}.v46-ribbon{flex:0 0 auto;border:0;border-radius:999px;padding:7px 11px;background:#f1f2f6;color:#57606f;font-weight:700;cursor:pointer}.v46-ribbon.active{background:var(--point-pink);color:#fff}.v46-filter-block{background:#fafafa;padding:9px;border-radius:12px;margin-bottom:10px}.v46-filter-label{font-size:.75rem;font-weight:800;color:#747d8c;margin:2px 0 4px}.v46-comment-actions button,.v42-comment button{border:0;border-radius:999px;padding:4px 8px;margin-left:3px;background:#fff0f2;color:#ff788e;cursor:pointer;font-size:.72rem}.v42-comment button:last-child{background:#fff1f1;color:#ff4757}
 .v46-football-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.v46-football-form .v46-full{grid-column:1/-1}.v46-team-ribbons{display:flex;gap:6px;flex-wrap:wrap}.v46-option-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v46-option{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;background:#fafafa;font-weight:700;cursor:pointer}.v46-option.active{background:#fff0f2;color:#ff788e}.v46-add-btn{width:100%}.v46-calendar-icons{position:absolute;left:2px;right:2px;bottom:3px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;font-size:.58rem;line-height:1.05;text-align:center}.calendar-day{position:relative;padding-bottom:25px!important}.calendar-day.has-heart::after,.calendar-day.has-match::before{content:none!important}
@@ -1640,8 +1601,6 @@ const addG46=window.addGeneralSchedule;window.addGeneralSchedule=function(){cons
 window.addEventListener('load',()=>setTimeout(()=>{v46BuildWishRibbons();v46BuildFootballForm();v42Render();renderCalendar();},800));
 })();
 </script>
-
-
 <style id="v47-layout-css">
 @media (min-width:1025px){
   .main-content{grid-template-columns:minmax(250px,.85fr) minmax(330px,1.08fr) minmax(330px,1.08fr);align-items:start}
@@ -1801,21 +1760,17 @@ onAuthStateChanged(auth,async user=>{ window.v42CurrentUser=user||null; if(windo
  });
 });
 </script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-
 <script id="v492-revisit-compat">
 function v492IsRevisit(p){
  const vals=[p&&p.revisit,p&&p.wantAgain,p&&p.again,p&&p.revisitStatus,p&&p.visitAgain];
  return vals.some(v=>v===true||v===1||v==='1'||v==='true'||v==='꼭 다시'||v==='다시'||v==='꼭다시');
 }
 </script>
-
-
 <style id="v4931-safe-hotfix">
 /* 연결 장소 → 연결 영화 → 날짜 간격 개선 */
 #diary-feed-container .feed-card .feed-content > div{min-width:0}
@@ -1836,15 +1791,9 @@ function v492IsRevisit(p){
  #diary-feed-container .feed-card .v44-cost-summary span{white-space:nowrap!important}
 }
 </style>
-
 <style id="v494-final-css">
 .v494-link-box{border:1px solid #ffd5dc;border-radius:14px;background:#fff;margin-top:8px;overflow:hidden}.v494-link-box summary{cursor:pointer;padding:11px 12px;font-size:.82rem;font-weight:800;list-style:none}.v494-link-box summary span{font-weight:400;color:#8b909c}.v494-link-list{display:flex;flex-direction:column;gap:6px;padding:0 10px 10px;max-height:210px;overflow-y:auto}.v494-link-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;background:#fff8f9;font-size:.8rem}.v494-link-item input{width:17px!important;height:17px!important;margin:0!important;flex:0 0 auto}.v494-empty{font-size:.78rem;color:#8b909c;padding:8px}.v494-linked-meta{display:flex!important;flex-direction:column!important;gap:8px!important;margin:0 0 11px!important}.v494-linked-meta>div{margin:0!important;line-height:1.45!important}.v494-cost-grid{display:flex;flex-wrap:wrap;gap:6px 10px;background:#f1f2f6;padding:7px 10px;border-radius:8px;color:#57606f;font-size:.75rem;line-height:1.45}.v494-cost-grid span{white-space:nowrap}.calendar-day.v494-selected{outline:2px solid #2f3542;outline-offset:1px}.v494-date-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;margin:8px 0 10px;background:#fff8f9;border-radius:12px;font-size:.82rem}.v494-date-bar button{width:auto;border:0;border-radius:999px;padding:7px 10px;font-weight:700;cursor:pointer}@media(max-width:768px){.v494-cost-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px 8px!important}.v494-cost-grid span{white-space:nowrap!important;font-size:.72rem!important;min-width:0!important}.v494-linked-meta{gap:8px!important;margin-bottom:11px!important}}
 </style><script id="v494-calendar-js">(function(){let selectedDate='';const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function row(s,football){const badge=football?(s.detail==='강원'?'강원 🧡':s.detail==='수원'?'수원 💙':'기타 ⚽'):(s.type==='현진'?'🖤 현진':s.type==='서형'?'💛 서형':'❤️ 같이');return `<div class="match-item v49-schedule-item"><div class="v49-schedule-info"><b>${s.date.substring(5)} ${s.startTime||s.kickoff||''}</b> · ${esc(s.content)}${s.stadium?' · 🏟️ '+esc(s.stadium):''}<div class="v45-badges"><span>${badge}</span>${football&&s.work?'<span>💼 서형 근무</span>':''}</div>${s.memo?`<small>${esc(s.memo)}</small>`:''}</div><div class="v45-actions v49-icon-actions"><button onclick="v45ScheduleEdit(${s.id})">✏️</button><button onclick="v45ScheduleDelete(${s.id})">🗑️</button></div></div>`}function back(){selectedDate='';document.getElementById('v494-date-bar')?.remove();document.querySelector('#v45-personal-panel>.section-title').textContent='다가오는 개인·데이트 일정';document.querySelector('#v45-football-panel>.section-title').textContent='다가오는 경기 일정';v45RenderSchedules();renderCalendar()}function show(ds){if(selectedDate===ds){back();return}selectedDate=ds;renderCalendar();const p=allSchedules.filter(s=>s.date===ds&&s.type!=='K리그').sort((a,b)=>(a.startTime||'').localeCompare(b.startTime||'')),f=allSchedules.filter(s=>s.date===ds&&s.type==='K리그').sort((a,b)=>(a.startTime||a.kickoff||'').localeCompare(b.startTime||b.kickoff||'')),diaries=diaryFeeds.filter(x=>{const a=x.startDate||'',b=x.endDate||a;return a&&ds>=a&&ds<=b});document.querySelector('#v45-personal-panel>.section-title').textContent=`📅 ${ds} 개인·같이 일정`;document.querySelector('#v45-football-panel>.section-title').textContent=`📅 ${ds} 축구 일정`;document.getElementById('v45-personal-list').innerHTML=(p.map(x=>row(x,false)).join('')+diaries.map(x=>`<div class="match-item"><div><b>❤️ ${esc(x.comment)}</b><div style="font-size:.75rem;color:#8b909c">데이트 기록</div></div></div>`).join(''))||'<div style="padding:12px;color:#8b909c">등록된 개인·같이 일정이 없습니다.</div>';document.getElementById('v45-football-list').innerHTML=f.map(x=>row(x,true)).join('')||'<div style="padding:12px;color:#8b909c">등록된 축구 일정이 없습니다.</div>';let bar=document.getElementById('v494-date-bar');if(!bar){bar=document.createElement('div');bar.id='v494-date-bar';bar.className='v494-date-bar';document.querySelector('#v45-schedule-card .tabs').after(bar)}bar.innerHTML=`<b>${ds} 일정 조회 중</b><button onclick="v494Back()">선택 해제</button>`}window.v494Back=back;const oldCalendar=window.renderCalendar;window.renderCalendar=function(){oldCalendar.apply(this,arguments);const y=currentDate.getFullYear(),m=currentDate.getMonth();document.querySelectorAll('#calendar-grid .calendar-day').forEach(day=>{const d=parseInt(day.textContent,10);if(!d)return;const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(ds===selectedDate)day.classList.add('v494-selected');day.onclick=()=>show(ds)})};window.addEventListener('load',()=>setTimeout(()=>{v44RefreshDiaryLinks();void 0;renderCalendar()},900))})();</script>
-
-
-
-
-
 <!-- v4.9.5 stable: annual summary disabled -->
 <style id="v4951-wish-fix">
 [data-mobile-section="map"]{display:none!important}
@@ -1858,7 +1807,6 @@ function v492IsRevisit(p){
  [data-mobile-section="wish"] .item-text{min-width:0!important;flex:1!important;overflow-wrap:anywhere!important}
 }
 </style>
-
 <script id="v4954-sync-photo-edit-hotfix">
 (function(){
   const photoDrafts=new Map();
@@ -1955,7 +1903,6 @@ function v492IsRevisit(p){
   };
 })();
 </script>
-
 <script id="v4955-data-split-hotfix">
 (function(){
  const KEY='lovelyDateArchiveLocalPhotosV1';
@@ -1971,7 +1918,6 @@ function v492IsRevisit(p){
  setTimeout(()=>{merge();if(typeof recalculateStatsAndFeeds==='function')recalculateStatsAndFeeds()},0);
 })();
 </script>
-
 <script id="v4956-region-normalize-hotfix">
 (function(){
   const REGION_ALIASES = {
@@ -2081,6 +2027,5 @@ function v492IsRevisit(p){
   });
 })();
 </script>
-
 </body>
 </html>
